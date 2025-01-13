@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { FormDataProvider } from "@/app/context/FormDataContext";
+import { EmployeeProvider } from "@/app/context/EmployeeContext"; // Adicione o EmployeeProvider
+import './globals.css';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +29,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <FormDataProvider>
+          <EmployeeProvider> {/* Certifique-se de que o EmployeeProvider engloba todos os componentes */}
+            {children}
+          </EmployeeProvider>
+        </FormDataProvider>
       </body>
     </html>
   );

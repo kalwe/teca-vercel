@@ -1,0 +1,11 @@
+
+
+body {
+    background-image: url('./assets/eucalipto.png'); /* Caminho da imagem */
+    background-repeat: no-repeat; /* Evita repetição da imagem */
+    background-size: cover; /* Garante que a imagem cubra o elemento */
+    background-position: center; /* Centraliza a imagem */
+    height: 100vh; /* Define a altura para ocupar metade da tela */
+    width: 100%; /* Garante a largura total */
+  }
+  
