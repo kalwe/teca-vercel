@@ -1,43 +1,53 @@
 import { useEffect, useState } from "react";
-
-interface ContactProps {
-  data: {
-    tipoContato: string;
-    informacao: string;
-  };
-  onChange: (updatedData: ContactProps["data"]) => void;
-  onValid?: (isValid: boolean) => void;
-  onNext: () => void;
-  onPrev: () => void;
-}
+import { ContactData, ContactProps } from "@/app/types/employee";
+import { emailSchema } from "@/app/schemas/common/emailSchema";
+import { phoneSchema } from "@/app/schemas/common/phoneSchema";
+import { websiteSchema } from "@/app/schemas/common/urlSchema";
 
 export function Contact({
-  data,
+  data = { tipoContato: "", informacao: "" }, // Default values
   onChange,
-  onValid,
+  isEditable,
   onNext,
   onPrev,
 }: ContactProps) {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Validação dos campos
+  const currentData: ContactData = {
+    tipoContato: data.tipoContato || "",
+    informacao: data.informacao || "",
+  };
+
+  // Validate required fields and apply schema validation
   useEffect(() => {
     const isValid =
-      (data.tipoContato?.trim() || "") !== "" &&
-      (data.informacao?.trim() || "") !== "";
+      currentData.tipoContato.trim() !== "" &&
+      currentData.informacao.trim() !== "";
 
-    setIsNextEnabled(isValid); // Habilita ou desabilita o botão "Próximo"
-
-    if (onValid) {
-      onValid(isValid);
+    if (isValid) {
+      try {
+        if (currentData.tipoContato === "email") {
+          emailSchema.parse(currentData.informacao);
+        } else if (currentData.tipoContato === "telefone") {
+          phoneSchema.parse(currentData.informacao);
+        } else if (currentData.tipoContato === "website") {
+          websiteSchema.parse(currentData.informacao);
+        }
+        setError(null); // No validation errors
+        setIsNextEnabled(true);
+      } catch (err: any) {
+        setError(err.errors[0].message); // Capture schema validation error
+        setIsNextEnabled(false);
+      }
+    } else {
+      setError("Preencha todos os campos obrigatórios");
+      setIsNextEnabled(false);
     }
-  }, [data, onValid]);
+  }, [currentData]);
 
-  const handleInputChange = (field: string, value: any) => {
-    onChange({
-      ...data,
-      [field]: value,
-    });
+  const handleInputChange = (field: keyof ContactData, value: string) => {
+    onChange({ ...currentData, [field]: value });
   };
 
   return (
@@ -46,9 +56,10 @@ export function Contact({
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Tipo de Contato</label>
         <select
-          value={data.tipoContato || ""}
+          value={currentData.tipoContato}
           onChange={(e) => handleInputChange("tipoContato", e.target.value)}
           className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          disabled={!isEditable}
         >
           <option value="">-- Selecione --</option>
           <option value="email">E-mail</option>
@@ -61,29 +72,32 @@ export function Contact({
         <label className="block text-gray-400 mb-2">Informação</label>
         <input
           type="text"
-          value={data.informacao || ""}
+          value={currentData.informacao}
           onChange={(e) => handleInputChange("informacao", e.target.value)}
           placeholder="Digite o contato"
-          className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className={`w-full bg-gray-700 text-white placeholder-gray-400 border ${
+            error ? "border-red-500" : "border-gray-600"
+          } rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500`}
+          disabled={!isEditable}
         />
+        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
       </div>
-
       {/* Botões de Navegação */}
-      <div className="flex justify-between mt-6">
+      <div className="flex justify-between">
         <button
           onClick={onPrev}
-          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500"
+          className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
         >
           Voltar
         </button>
         <button
-          onClick={isNextEnabled ? onNext : undefined}
-          disabled={!isNextEnabled}
-          className={`px-4 py-2 rounded-md text-white ${
+          onClick={onNext}
+          className={`px-4 py-2 rounded-lg ${
             isNextEnabled
-              ? "bg-green-600 hover:bg-green-500"
-              : "bg-gray-500 cursor-not-allowed"
+              ? "bg-green-500 hover:bg-green-600 text-white"
+              : "bg-gray-600 text-gray-400 cursor-not-allowed"
           }`}
+          disabled={!isNextEnabled}
         >
           Próximo
         </button>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Navigation } from "@/app/components/navigation/navigation";
 import { useState } from "react";
 
+
 export default function Contract() {
   const router = useRouter();
 
@@ -61,7 +62,7 @@ export default function Contract() {
         {/* Ícone Circular */}
         <button
           className="w-[30px] h-[40px] bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
-          onClick={() => router.push("/dashboard-display/")}
+          onClick={() => router.push("/contract-display/employee/")}
         >
           {/* Ícone de seta para voltar */}
           <svg

@@ -1,11 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
+import { DropdownCheckboxGenderProps } from "@/app/types/employee";
 
-interface DropdownCheckboxGenderProps {
-  value: string; // Controlled value
-  onChange: (value: string) => void; // Callback to update the parent state
-  disabled?: boolean; // Add optional `disabled` prop
-}
 
 export function DropdownCheckboxGender({
   value = "",

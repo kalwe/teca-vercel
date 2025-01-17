@@ -2,25 +2,30 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useReminderContext } from '@/app/context/ReminderContext';
 
 const ReminderForm: React.FC = () => {
-    const [selectedDate, setSelectedDate] = useState<string>('');
-    const [reminderReason, setReminderReason] = useState<string>('');
-    const [reminderTime, setReminderTime] = useState<string>('00:00');
-    const [description, setDescription] = useState<string>('');
-    const router = useRouter();
+const { addReminder } = useReminderContext();
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [reminderReason, setReminderReason] = useState<string>('');
+  const [reminderTime, setReminderTime] = useState<string>('00:00');
+  const [description, setDescription] = useState<string>('');
+  const router = useRouter();
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log({
-            selectedDate,
-            reminderReason,
-            reminderTime,
-            description,
-        });
+
+        const newReminder = {
+          id: Date.now().toString(), // Gera um ID único
+          date: selectedDate,
+          time: reminderTime,
+          reason: reminderReason,
+        };
+
+        addReminder(newReminder);
 
         router.push('/dashboard-display/');
-    };
+      };
 
     const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let value = e.target.value;

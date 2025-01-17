@@ -1,11 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
+import { DropdownCheckboxEstadoCivilProps } from "@/app/types/employee";
 
-interface DropdownCheckboxEstadoCivilProps {
-  value: string; // Controlled value
-  onChange: (value: string) => void; // Callback to update value in parent
-  disabled?: boolean; // Optional disabled property
-}
 
 export function DropdownCheckboxEstadoCivil({
   value = "", // Default to an empty string to ensure controlled behavior

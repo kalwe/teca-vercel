@@ -1,34 +1,30 @@
-import { useState } from 'react';
+import React from 'react';
+import { BirthDayMaskProps } from '@/app/types/employee';
 
-export default function BirthDayMask() {
-  const [dataNascimento, setDataNascimento] = useState('');
+export default function BirthDayMask({ value, onChange }: BirthDayMaskProps) {
+    const handleDataNascimentoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let inputValue = e.target.value.replace(/\D/g, '');
 
-  // Função para aplicar máscara de data
-  const handleDataNascimentoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+        if (inputValue.length > 2 && inputValue.length <= 4) {
+            inputValue = inputValue.slice(0, 2) + '/' + inputValue.slice(2);
+        } else if (inputValue.length > 4) {
+            inputValue = inputValue.slice(0, 2) + '/' + inputValue.slice(2, 4) + '/' + inputValue.slice(4, 8);
+        }
 
-    if (value.length > 2 && value.length <= 4) {
-      value = value.slice(0, 2) + '/' + value.slice(2);
-    } else if (value.length > 4) {
-      value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 8);
-    }
+        onChange(inputValue);
+    };
 
-    setDataNascimento(value);
-  };
-
-  return (
-    <div>
-     <div className="w-full">
-                <input
-                  type="text"
-                  placeholder="Data de Nascimento"
-                  className="w-full bg-transparent border-none outline-none text-white placeholder-white"
-                  value={dataNascimento}
-                  onChange={handleDataNascimentoChange}
-                  maxLength={10}
-                />
-                <div className="border-t border-white w-full mt-1"></div>
-              </div>
-    </div>
-  );
+    return (
+        <div className="w-full">
+            <input
+                type="text"
+                placeholder="Data de Nascimento"
+                className="w-full bg-transparent border-none outline-none text-white placeholder-white"
+                value={value}
+                onChange={handleDataNascimentoChange}
+                maxLength={10}
+            />
+            <div className="border-t border-white w-full mt-1"></div>
+        </div>
+    );
 }

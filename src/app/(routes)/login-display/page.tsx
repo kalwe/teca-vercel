@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import "./style.css";
 import { useRouter } from "next/navigation";
+import { useUserContext } from "@/app/context/UserContext"; // Importa o contexto do usuário
+import "./style.css";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { login, loggedInUser } = useUserContext(); // Usa login e loggedInUser do contexto
   const router = useRouter();
 
   useEffect(() => {
@@ -17,9 +21,18 @@ export default function Home() {
 
   const handleLogin = () => {
     setLoading(true); // Ativar o loading novamente
+
     setTimeout(() => {
-      router.push("/dashboard-display");
-    }, 2000); // Simula um delay de 2 segundos antes de redirecionar
+      // Valida o login pelo contexto
+      const isLoggedIn = login(username, password); // Usando username no login
+      if (isLoggedIn) {
+        alert(`Bem-vindo(a), ${loggedInUser?.username || "Usuário"}!`);
+        router.push("/dashboard-display");
+      } else {
+        alert("Credenciais inválidas! Verifique seu username e senha.");
+        setLoading(false);
+      }
+    }, 2000); // Simula um delay de 2 segundos
   };
 
   if (loading) {
@@ -49,20 +62,22 @@ export default function Home() {
 
       {/* Login */}
       <div
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 
-        -translate-y-1/2 w-[500px] h-[400px] bg-gradient-to-br 
-        from-gray-800 to-gray-900 bg-opacity-80 rounded-lg 
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2
+        -translate-y-1/2 w-[500px] h-[400px] bg-gradient-to-br
+        from-gray-800 to-gray-900 bg-opacity-80 rounded-lg
         shadow-2xl flex items-center justify-center border border-gray-700"
       >
         <div className="w-[460px] h-[355px] rounded-lg flex flex-col items-center p-6">
           <h1 className="text-white text-3xl font-bold mb-6">LOGIN</h1>
 
-          {/* Input Email */}
+          {/* Input Username */}
           <div className="w-full relative mb-4">
             <input
-              type="email"
-              placeholder="Digite seu email"
+              type="text"
+              placeholder="Digite seu username"
               className="w-full text-center bg-transparent border-none outline-none text-white placeholder-gray-400 text-lg"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
             <div className="border-t border-gray-500 w-full mt-1"></div>
           </div>
@@ -73,6 +88,8 @@ export default function Home() {
               type="password"
               placeholder="Digite sua senha"
               className="w-full text-center bg-transparent border-none outline-none text-white placeholder-gray-400 text-lg"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <div className="border-t border-gray-500 w-full mt-1"></div>
           </div>
@@ -97,4 +114,3 @@ export default function Home() {
     </div>
   );
 }
-

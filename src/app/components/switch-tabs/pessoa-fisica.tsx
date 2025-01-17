@@ -1,132 +1,101 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import DropdownCheckboxEstadoCivil from "../DropDown/dropdown-estadocivil";
 import DropdownCheckboxGender from "../DropDown/dropdown-gender";
 import { CpfMask } from "../masks/cpf";
 import { RgMask } from "../masks/rg";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useFormData } from "@/app/context/FormDataContext";
+import { PessoaFisicaProps } from "@/app/types/employee";
 
-interface PessoaFisicaProps {
-  onNext: () => void; // Função chamada ao clicar em "Próximo"
-  onPrev: () => void; // Função chamada ao clicar em "Voltar"
-  isEditable: boolean; // Controla se os campos são editáveis
-}
+export function PessoaFisica({
+  data,
+  onChange,
+  isEditable,
+  onNext,
+  onPrev,
+}: PessoaFisicaProps) {
+  const [isNextEnabled, setIsNextEnabled] = useState(false);
 
-export function PessoaFisica({ onNext, onPrev, isEditable }: PessoaFisicaProps) {
-  const { formData, updateFormData } = useFormData(); // Usa o contexto centralizado
-  const datePickerRef = useRef<DatePicker | null>(null);
-  const [isNextEnabled, setIsNextEnabled] = useState(false); // Controla o estado do botão "Próximo"
-
-  // Validação dos campos
+  // Validate fields
   useEffect(() => {
     const isValid =
-      formData.pessoaFisica.nome.trim() !== "" &&
-      formData.pessoaFisica.cpf.trim() !== "" &&
-      formData.pessoaFisica.genero.trim() !== "" &&
-      formData.pessoaFisica.estadoCivil.trim() !== "" &&
-      formData.pessoaFisica.rg.trim() !== "" &&
-      formData.pessoaFisica.orgaoExpedidor.trim() !== "" &&
-      formData.pessoaFisica.selectedDate !== null;
+      data.nome.trim() !== "" &&
+      data.cpf.trim() !== "" &&
+      data.genero.trim() !== "" &&
+      data.estadoCivil.trim() !== "" &&
+      data.rg.trim() !== "" &&
+      data.orgaoExpedidor.trim() !== "" &&
+      data.selectedDate !== null;
 
-    setIsNextEnabled(isValid); // Habilita ou desabilita o botão
-  }, [formData.pessoaFisica]);
+    setIsNextEnabled(isValid);
+  }, [data]);
 
-  // Função para atualizar os dados no contexto
-  const handleInputChange = (
-    field: keyof typeof formData.pessoaFisica,
-    value: string | Date | null
-  ) => {
-    if (isEditable) {
-      updateFormData("pessoaFisica", { [field]: value }); // Atualiza o contexto
-    }
+  const handleInputChange = (field: keyof typeof data, value: string | Date | null) => {
+    onChange({ ...data, [field]: value });
   };
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-4 w-full">
       {/* CPF */}
       <CpfMask
-        value={formData.pessoaFisica.cpf}
-        onChange={(e: { target: { value: string } }) =>
-          handleInputChange("cpf", e.target.value)
-        }
-        disabled={!isEditable} // Desativa o campo se não for editável
-      />
+  value={data.cpf}
+  onChange={(cpfValue) => handleInputChange("cpf", cpfValue)}
+  disabled={!isEditable}
+/>
       {/* Nome */}
       <div className="w-full">
         <input
           type="text"
-          value={formData.pessoaFisica.nome}
+          value={data.nome}
           onChange={(e) => handleInputChange("nome", e.target.value)}
           placeholder="Digite o nome completo"
           className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-          disabled={!isEditable} // Desativa o campo se não for editável
+          disabled={!isEditable}
         />
       </div>
       {/* Gênero */}
       <DropdownCheckboxGender
-        value={formData.pessoaFisica.genero}
+        value={data.genero}
         onChange={(value) => handleInputChange("genero", value)}
-        disabled={!isEditable} // Desativa o campo se não for editável
+        disabled={!isEditable}
       />
       {/* Estado Civil */}
       <DropdownCheckboxEstadoCivil
-        value={formData.pessoaFisica.estadoCivil || ""}
+        value={data.estadoCivil}
         onChange={(value) => handleInputChange("estadoCivil", value)}
-        disabled={!isEditable} // Desativa o campo se não for editável
+        disabled={!isEditable}
       />
       {/* RG */}
       <RgMask
-        value={formData.pessoaFisica.rg || ""}
+        value={data.rg}
         onChange={(e) => handleInputChange("rg", e.target.value)}
-        disabled={!isEditable} // Desativa o campo se não for editável
+        disabled={!isEditable}
       />
       {/* Órgão Expedidor */}
       <div className="w-full">
         <input
           type="text"
-          value={formData.pessoaFisica.orgaoExpedidor}
+          value={data.orgaoExpedidor}
           onChange={(e) =>
             handleInputChange("orgaoExpedidor", e.target.value)
           }
           placeholder="Digite o órgão expedidor"
           className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-          disabled={!isEditable} // Desativa o campo se não for editável
+          disabled={!isEditable}
         />
       </div>
       {/* Data de Emissão */}
       <div className="w-full">
         <DatePicker
-          selected={formData.pessoaFisica.selectedDate}
+          selected={data.selectedDate}
           onChange={(date) => handleInputChange("selectedDate", date)}
           dateFormat="dd/MM/yyyy"
           placeholderText="Data de Emissão"
           className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-          ref={datePickerRef}
-          disabled={!isEditable} // Desativa o campo se não for editável
+          disabled={!isEditable}
         />
       </div>
 
-      {/* Botões de Navegação */}
-      <div className="flex justify-between mt-6">
-        <button
-          onClick={onPrev}
-          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500"
-        >
-          Voltar
-        </button>
-        <button
-          onClick={isNextEnabled ? onNext : undefined}
-          disabled={!isNextEnabled || !isEditable} // Botão "Próximo" desativado se não for editável
-          className={`px-4 py-2 rounded-md text-white ${
-            isNextEnabled
-              ? "bg-green-600 hover:bg-green-500"
-              : "bg-gray-500 cursor-not-allowed"
-          }`}
-        >
-          Próximo
-        </button>
-      </div>
     </div>
   );
 }

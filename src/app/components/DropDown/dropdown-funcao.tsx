@@ -1,10 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
+import { DropdownCheckboxFuncaoProps } from "@/app/types/employee";
 
-interface DropdownCheckboxFuncaoProps {
-  value: string; // Valor controlado
-  onChange: (value: string) => void; // Callback para atualizar o estado no componente pai
-}
 
 export function DropdownCheckboxFuncao({
   value = "",

@@ -1,55 +1,61 @@
-'use client'
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { Employee, EmployeeContextProps} from "../types/employee";
 
-// Define the Employee interface
-interface Employee {
-  pessoaFisica: {};
-  funcionario: {};
-  address: {};
-  contact: {};
-  bank: {};
-  vestuario: {};
-  id: number;
-  name: string;
-  role: string;
-  registration: string;
-  cpf: string;
-  supervisor: boolean;
-  manager: boolean;
-  active: boolean;
-}
 
-// Define the context properties
-interface EmployeeContextProps {
-  employees: Employee[];
-  addEmployee: (employee: Employee) => void;
-  updateEmployee: (id: number, updates: Partial<Employee>) => void;
-  deactivateEmployee: (id: number) => void; // Adicionada a função deactivateEmployee
-}
-
-// Create the context
 const EmployeeContext = createContext<EmployeeContextProps | undefined>(undefined);
 
-// EmployeeProvider to wrap the app
 export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
 
-  // Função para adicionar um funcionário
-  const addEmployee = (employee: Employee) => {
-    setEmployees((prevEmployees) => [...prevEmployees, employee]);
+  // Load employees from localStorage
+  useEffect(() => {
+    const storedEmployees = localStorage.getItem("employees");
+    if (storedEmployees) {
+      try {
+        const parsedEmployees: Employee[] = JSON.parse(storedEmployees);
+        setEmployees(parsedEmployees);
+      } catch (error) {
+        console.error("Erro ao carregar funcionários do localStorage:", error);
+      }
+    }
+  }, []);
+
+  // Save employees to localStorage whenever the state changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("employees", JSON.stringify(employees));
+    } catch (error) {
+      console.error("Erro ao salvar funcionários no localStorage:", error);
+    }
+  }, [employees]);
+
+  const addEmployee = (newEmployee: Employee) => {
+    setEmployees((prev) => {
+      const exists = prev.some(
+        (emp) => emp.cpf === newEmployee.cpf || emp.registration === newEmployee.registration
+      );
+
+      if (exists) {
+        alert(`Erro: O funcionário com CPF "${newEmployee.cpf}" ou matrícula "${newEmployee.registration}" já existe.`);
+        return prev; // Keep the state unchanged if the employee already exists
+      }
+
+      alert("Funcionário adicionado com sucesso!");
+      return [...prev, newEmployee];
+    });
   };
 
-  // Função para atualizar um funcionário
   const updateEmployee = (id: number, updates: Partial<Employee>) => {
     setEmployees((prevEmployees) =>
       prevEmployees.map((employee) =>
         employee.id === id ? { ...employee, ...updates } : employee
       )
     );
+    alert("Funcionário atualizado com sucesso!");
   };
 
-  // Função para desativar um funcionário
   const deactivateEmployee = (id: number) => {
     setEmployees((prevEmployees) =>
       prevEmployees.map((employee) =>
@@ -58,20 +64,29 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const getEmployeeById = (id: number): Employee | undefined => {
+    return employees.find((employee) => employee.id === id);
+  };
+
   return (
     <EmployeeContext.Provider
-      value={{ employees, addEmployee, updateEmployee, deactivateEmployee }}
+      value={{
+        employees,
+        addEmployee,
+        updateEmployee,
+        deactivateEmployee,
+        getEmployeeById,
+      }}
     >
       {children}
     </EmployeeContext.Provider>
   );
 };
 
-// Custom hook to access the EmployeeContext
 export const useEmployeeContext = () => {
   const context = useContext(EmployeeContext);
   if (!context) {
-    throw new Error("useEmployeeContext must be used within an EmployeeProvider");
+    throw new Error("useEmployeeContext deve ser usado dentro de um EmployeeProvider.");
   }
   return context;
 };

@@ -10,14 +10,14 @@ import Employees from '@/app/components/forms/registered-employees';
 
 
 export default function Contract() {
- 
+
 /* Change page */
 
 const router = useRouter()
 
 const handleClick = () => {
   router.push('/dashboard-display/')
-} 
+}
 
 
   return (
@@ -26,8 +26,6 @@ const handleClick = () => {
            <Navigation/>
       <Employees/>
 
-
-            {/* Botão "Voltar" */}
 <div
   style={{
     backgroundColor: "#D9D9D963",

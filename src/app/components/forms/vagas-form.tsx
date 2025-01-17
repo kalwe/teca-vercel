@@ -5,11 +5,13 @@ import { useState, useRef} from 'react'
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from 'next/navigation';
-
+import { useVagasContext } from '@/app/context/VagasContext';
 
 
 function VagasForm() {
-  
+
+  const { vagas } = useVagasContext();
+
   /*
   const [cnpj, setCnpj] = useState<string>()
   const handleCnpjMask = (e: ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +24,8 @@ function VagasForm() {
   {/* Calendar */}
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  
+
+
   // Referência para o componente DatePicker
   const datePickerRef = useRef<DatePicker | null>(null);
 
@@ -37,7 +40,7 @@ function VagasForm() {
     }
   };
 
-  /* Changing page */ 
+  /* Changing page */
 
   const router = useRouter()
   const changePage = () => {
@@ -83,7 +86,7 @@ function VagasForm() {
 
     {/* Barra de Pesquisa */}
     <div className="flex relative  items-center justify-center mb-2"
-    style={{ transform: "translateY(-200%)" }} 
+    style={{ transform: "translateY(-200%)" }}
     >
       <div className="relative flex items-center w-full max-w-md">
         <input
@@ -119,22 +122,31 @@ function VagasForm() {
       </div>
 
       {/* Contêiner com Scroll Automático */}
+
+{/* Lista de Vagas */}
+<div
+  className="overflow-y-auto rounded-lg"
+  style={{
+    maxHeight: "303px",
+  }}
+>
+  {vagas.length > 0 ? (
+    vagas.map((vaga, index) => (
       <div
-        className="overflow-y-auto rounded-lg"
-        style={{
-          maxHeight: "303px",
-        }}
+      key={index}
+      onClick={() => router.push(`/vagas-display/nova-vaga?index=${index}`)}
+        className="flex justify-between items-center p-2 bg-gray-800 rounded-md mb-2 cursor-pointer hover:bg-gray-700"
       >
-        {Array.from({ length: 20 }).map((_, index) => (
-          <div
-            key={index}
-            className="flex justify-between items-center py-3 px-4 hover:bg-gray-600 transition-all duration-200"
-          >
-            <h1 className="text-white">Vaga {index + 1}</h1>
-            <h1 className="text-white">{index + 1}</h1>
-          </div>
-        ))}
+        <span className="text-gray-300 font-medium">{vaga.vaga}</span>
+        <span className="text-gray-300 font-medium">{vaga.quantidade}</span>
       </div>
+    ))
+  ) : (
+    <p className="text-gray-300">Nenhuma vaga adicionada ainda.</p>
+  )}
+</div>
+
+
     </div>
 
   </form>

@@ -1,31 +1,38 @@
-import { SetStateAction, useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { DropdownCheckboxRegionalProps } from '@/app/types/employee';
 
-export function DropdownCheckboxRegional() {
+
+export function DropdownCheckboxRegional({
+  value,
+  onChange,
+}: DropdownCheckboxRegionalProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string>("");
-  const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  /* Only one to click  */
-  const handleCheckboxChange = (option: SetStateAction<string>) =>{
-    setSelectedOption(option)
-    setIsDropdownOpen(false)
-  }
-/* Menu droping */
+  // Alterna a visibilidade do dropdown
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+    setIsDropdownOpen((prev) => !prev);
   };
-/* Clicking out of the window */
-const handleClickOutise = (e: MouseEvent) => {
-  if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)){
-    setIsDropdownOpen(false)
-  }
-}
-useEffect(()=>{
-  document.addEventListener("mousedown", handleClickOutise)
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutise)
-  }
-})
+
+  // Fecha o dropdown ao clicar fora
+  const handleClickOutside = (e: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Manipula a seleção de opção
+  const handleCheckboxChange = (option: string) => {
+    onChange(option); // Atualiza o valor no componente pai
+    setIsDropdownOpen(false); // Fecha o dropdown
+  };
 
   return (
     <div>
@@ -35,10 +42,10 @@ useEffect(()=>{
         className="bg-[#D9D9D9] hover:bg-white focus:ring-4 focus:outline-none focus:ring-white-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-white-800 w-[100%]"
         type="button"
       >
-     {selectedOption || "Regional"}
+        {value || 'Regional'}
         <svg
           className="w-2.5 h-2.5 ms-3"
-          aria-hidden="true" 
+          aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 10 6"
@@ -61,62 +68,25 @@ useEffect(()=>{
           ref={dropdownRef}
         >
           <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
-            <li>
-              <div className="flex items-center">
-                <input
-                  id="checkbox-item-1"
-                  type="checkbox"
-                  defaultChecked={false}
-                  value=""
-                  checked={selectedOption == "Regional1"}
-                  onChange={() => handleCheckboxChange("Regional1")}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                />
-                <label
-                  htmlFor="checkbox-item-1"
-                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  Regional1
-                </label>
-              </div>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <input
-                  defaultChecked
-                  id="checkbox-item-2"
-                  type="checkbox"
-                  value=""
-                  checked={selectedOption == "Regional2"}
-                  onChange={() => handleCheckboxChange("Regional2")}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                />
-                <label
-                  htmlFor="checkbox-item-2"
-                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  Regional2
-                </label>
-              </div>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <input
-                  id="checkbox-item-3"
-                  type="checkbox"
-                  value=""
-                  checked={selectedOption == "Regional3"}
-                  onChange={() => handleCheckboxChange("Regional3")}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                />
-                <label
-                  htmlFor="checkbox-item-3"
-                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  Regional3
-                </label>
-              </div>
-            </li>
+            {['Regional1', 'Regional2', 'Regional3'].map((option) => (
+              <li key={option}>
+                <div className="flex items-center">
+                  <input
+                    id={`checkbox-item-${option}`}
+                    type="checkbox"
+                    checked={value === option}
+                    onChange={() => handleCheckboxChange(option)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                  />
+                  <label
+                    htmlFor={`checkbox-item-${option}`}
+                    className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >
+                    {option}
+                  </label>
+                </div>
+              </li>
+            ))}
           </ul>
         </div>
       )}

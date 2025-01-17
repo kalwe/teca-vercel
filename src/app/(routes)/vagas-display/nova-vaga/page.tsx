@@ -1,11 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import DatePicker from 'react-datepicker';
+import { useState, useRef, useEffect, SetStateAction } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
 import "react-datepicker/dist/react-datepicker.css";
-import plusButton from "../assets/Mais 1.png";
-import Image from 'next/image';
 
 import { DropDownBurger } from "@/app/components/DropDown/dropdown-burger";
 
@@ -16,38 +14,94 @@ import DropdownCheckbox from '@/app/components/DropDown/dropdown-cargo';
 import { QuantityMask } from '@/app/components/masks/quantity';
 import MoneyInput from '@/app/components/masks/salary';
 
+import { useVagasContext } from '@/app/context/VagasContext';
+
 function NovaVaga() {
-  // Calendar
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const datePickerRef = useRef<DatePicker | null>(null);
-
-  const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
-  };
-
-  const handleIconClick = () => {
-    if (datePickerRef.current) {
-      datePickerRef.current.setOpen(true);
-    }
-  };
 
   // Modal states for each field
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showBenefitsModal, setShowBenefitsModal] = useState(false);
 
+
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
   const [benefits, setBenefits] = useState("");
+  const [requisitos, setRequisitos] = useState("");
+  const [beneficios, setBeneficios] = useState("");
+  const [salario, setSalario] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [cargo, setCargo] = useState('');
+  const [quantidade, setQuantidade] = useState(0);
+  const searchParams = useSearchParams();
+  const { vagas, updateVaga, addVaga } = useVagasContext();
+  const index = searchParams.get("index");
+  const isEditMode = index !== null;
+
+
+  useEffect(() => {
+    if (isEditMode) {
+      const vaga = vagas[Number(index)];
+      if (vaga) {
+        setCargo(vaga.cargo);
+        setQuantidade(vaga.quantidade);
+        setDescricao(vaga.descricao);
+        setRequisitos(vaga.requisitos);
+        setBeneficios(vaga.beneficios);
+        setSalario(vaga.salario);
+      }
+    }
+  }, [index, isEditMode, vagas]);
+
+
+  const handleSave = () => {
+    // Validate required fields
+    if (!cargo || quantidade <= 0) {
+      alert("Por favor, preencha o cargo e a quantidade.");
+      return;
+    }
+
+    const newOrUpdatedVaga = {
+      vaga: cargo,
+      quantidade,
+      cargo,
+      descricao,
+      requisitos,
+      beneficios,
+      salario,
+    };
+
+    // Check if in edit mode
+    if (isEditMode) {
+      // Update existing vaga
+      updateVaga(Number(index), newOrUpdatedVaga);
+      alert("Vaga atualizada com sucesso.");
+    } else {
+      // Check for duplicate cargo
+      const exists = vagas.some((vaga) => vaga.cargo === cargo);
+      if (exists) {
+        alert(`O cargo "${cargo}" já existe. Por favor, escolha outro.`);
+        return;
+      }
+
+      // Add new vaga
+      addVaga(newOrUpdatedVaga);
+      alert("Nova vaga adicionada com sucesso.");
+    }
+
+    // Redirect to vagas-display page
+    router.push("/vagas-display/");
+  };
+
 
   // comeback button
   const router = useRouter();
-  
+
   const handleClick = () => {
     router.push('/vagas-display/');
   }
 
-  
+
 
   // Function to clear the text when cancel is clicked
   const handleCancelDescription = () => {
@@ -64,13 +118,15 @@ function NovaVaga() {
     setBenefits("");
     setShowBenefitsModal(false);
   };
+  const handleDescriptionSave = () => {
+    setShowDescriptionModal(false);
+  };
 
-     
     //comeback button
-    
+
     const comeback = () => {
       router.push('/dashboard-display/')
-    } 
+    }
 
 /* burger action */
 
@@ -79,6 +135,10 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+
+
+
 
   return (
     <div>
@@ -115,9 +175,9 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
                                ></span>
                              </div>
                            </button>
-                           
-                           
-                           
+
+
+
                                    <DropDownBurger isOpen={isMenuOpen}/>
                                    </div>
                                    </nav>
@@ -127,15 +187,25 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
           <div style={{ zIndex: 10, position: "absolute", top: "10%", left: "8%" }} className="bg-[#7A7A7A] w-[87%] h-[80%] rounded-[18px]">
             <form className="max-w-[50%] mx-auto py-20 flex flex-col gap-5 position relative bottom-[10%] right-[20%]">
               <div className="w-full mb-8 py-8">
-                <h1 className="text-lg font-bold text-white">Nova vaga</h1>
+                <h1 className="text-lg font-bold text-white">{isEditMode ? "Editar Vaga" : "Nova Vaga"}</h1>
               </div>
               <div className="w-full flex gap-4">
                 <div className="flex-1 flex gap-4">
+                <div className="flex-1">
+                <DropdownCheckbox
+        value={cargo}
+        onChange={setCargo}
+        disabled={isEditMode} // Disable dropdown in edit mode
+        options={["Cargo1", "Cargo2", "Cargo3", "Cargo4"]} // Dynamic options
+      />
+      <p>Cargo selecionado: {cargo}</p>
+</div>
+
                     <div className="flex-1">
-                        <DropdownCheckbox />
-                    </div>
-                    <div className="flex-1">
-                        <QuantityMask />
+                        <QuantityMask
+                        value={quantidade}
+                        onChange={(newQuantity: number) => setQuantidade(newQuantity)}
+                        />
                     </div>
                 </div>
               </div>
@@ -145,8 +215,10 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
                   placeholder="Descrição"
                   className="w-full bg-transparent border-none outline-none text-white placeholder-white cursor-pointer"
                   onClick={() => setShowDescriptionModal(true)}
-                  value={description}
+
                   readOnly
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
                 />
                 <div className="border-t border-white w-full mt-1"></div>
               </div>
@@ -156,7 +228,8 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
                   placeholder="Requisitos"
                   className="w-full bg-transparent border-none outline-none text-white placeholder-white cursor-pointer"
                   onClick={() => setShowRequirementsModal(true)}
-                  value={requirements}
+                  value={requisitos}
+                   onChange={(e) => setRequisitos(e.target.value)}
                   readOnly
                 />
                 <div className="border-t border-white w-full mt-1"></div>
@@ -167,108 +240,120 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
                   placeholder="Benefícios"
                   className="w-full bg-transparent border-none outline-none text-white placeholder-white cursor-pointer"
                   onClick={() => setShowBenefitsModal(true)}
-                  value={benefits}
+                  value={beneficios}
+                  onChange={(e) => setBeneficios(e.target.value)}
                   readOnly
                 />
                 <div className="border-t border-white w-full mt-1"></div>
               </div>
-             < MoneyInput/>
-              
+             < MoneyInput
+               value={salario} // Pass the state variable
+               onChange={(newValue) => setSalario(newValue)}
+             />
+
               {/* Descrição da vaga */}
               {showDescriptionModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-white rounded-lg shadow-lg p-6 w-[40%]">
-                    <h2 className="text-lg font-bold mb-4">Descrição</h2>
-                    <textarea
-                      className="w-full h-80 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Descreva aqui..."
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    ></textarea>
-                    <div className="flex justify-end mt-4">
-                      <button
-                        className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
-                        onClick={handleCancelDescription}
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                        onClick={() => setShowDescriptionModal(false)}
-                      >
-                        Salvar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Requisitos */}
-              {showRequirementsModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-white rounded-lg shadow-lg p-6 w-[40%]">
-                    <h2 className="text-lg font-bold mb-4">Requisitos</h2>
-                    <textarea
-                      className="w-full h-80 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Descreva os requisitos aqui..."
-                      value={requirements}
-                      onChange={(e) => setRequirements(e.target.value)}
-                    ></textarea>
-                    <div className="flex justify-end mt-4">
-                      <button
-                        className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
-                        onClick={handleCancelRequirements}
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                        onClick={() => setShowRequirementsModal(false)}
-                      >
-                        Salvar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg shadow-lg p-6 w-[40%]">
+      <h2 className="text-lg font-bold mb-4">Descrição</h2>
+      <textarea
+        className="w-full h-80 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Descreva aqui..."
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      ></textarea>
+      <div className="flex justify-end mt-4">
+        <button
+          className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+          onClick={() => setShowDescriptionModal(false)}
+        >
+          Cancelar
+        </button>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          type="button"
+          onClick={() => {
+            setDescricao(description); // Update the main form state
+            setShowDescriptionModal(false); // Close the modal
+          }}
+        >
+          {isEditMode ? "Salvar Alterações" : "Salvar"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}{/* Requisitos */}
+{showRequirementsModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg shadow-lg p-6 w-[40%]">
+      <h2 className="text-lg font-bold mb-4">Requisitos</h2>
+      <textarea
+        className="w-full h-80 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Descreva os requisitos aqui..."
+        value={requirements}
+        onChange={(e) => setRequirements(e.target.value)}
+      ></textarea>
+      <div className="flex justify-end mt-4">
+        <button
+          className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+          onClick={() => setShowRequirementsModal(false)}
+        >
+          Cancelar
+        </button>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={() => {
+            setRequisitos(requirements); // Update the main form state
+            setShowRequirementsModal(false); // Close the modal
+          }}
+        >
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+{/* Benefícios */}
+{showBenefitsModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg shadow-lg p-6 w-[40%]">
+      <h2 className="text-lg font-bold mb-4">Benefícios</h2>
+      <textarea
+        className="w-full h-80 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Descreva os benefícios aqui..."
+        value={benefits}
+        onChange={(e) => setBenefits(e.target.value)}
+      ></textarea>
+      <div className="flex justify-end mt-4">
+        <button
+          className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+          onClick={() => setShowBenefitsModal(false)}
+        >
+          Cancelar
+        </button>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={() => {
+            setBeneficios(benefits); // Update the main form state
+            setShowBenefitsModal(false); // Close the modal
+          }}
+        >
+          {isEditMode ? 'Atualizar' : 'Salvar'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-              {/* Benefícios */}
-              {showBenefitsModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-white rounded-lg shadow-lg p-6 w-[40%]">
-                    <h2 className="text-lg font-bold mb-4">Benefícios</h2>
-                    <textarea
-                      className="w-full h-80 border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Descreva os benefícios aqui..."
-                      value={benefits}
-                      onChange={(e) => setBenefits(e.target.value)}
-                    ></textarea>
-                    <div className="flex justify-end mt-4">
-                      <button
-                        className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
-                        onClick={handleCancelBenefits}
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                        onClick={() => setShowBenefitsModal(false)}
-                      >
-                        Salvar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
              <div className="w-full flex justify-end absolute left-[20%] top-[84%]">
-  <button
-    onClick={handleClick}
-    className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-white rounded-lg group bg-gradient-to-br from-green-500 via-green-600 to-green-700 hover:from-green-400 hover:via-green-500 hover:to-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 shadow-lg transition-transform transform hover:scale-105"
-  >
-    <span className="relative px-6 py-2 transition-all ease-in duration-75 bg-gray-800 rounded-md group-hover:bg-opacity-0">
-      Finalizar
-    </span>
-  </button>
+             <button
+  onClick={handleSave}
+  className="bg-blue-500 text-white px-4 py-2 rounded"
+>
+  {isEditMode ? "Atualizar Vaga" : "Salvar Nova Vaga"}
+</button>
+
+
 </div>
 
             </form>
@@ -305,7 +390,7 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
     </svg>
   </button>
 </div>
-      
+
     </div>
   );
 }

@@ -1,139 +1,131 @@
 "use client";
+
 import React, { createContext, useContext, useState } from "react";
+import { FormData, FormDataContextType } from "../types/employee";
 
-// Tipos para os dados do formulário
-interface FormData {
-    pessoaFisica: {
-        nome: string;
-        cpf: string;
-        genero: string;
-        estadoCivil: string;
-        rg: string;
-        orgaoExpedidor: string;
-        selectedDate: Date | null;
-    };
-    funcionario: {
-        supervisor: boolean;
-        manager: boolean;
-        matricula: string;
-        admissionDate: Date | null;
-        removalDate: Date | null;
-        funcao: string;
-        encarregado: boolean;
-        gerente: boolean;
-        ativo: boolean;
-    };
-    endereco: {
-        logradouro: string;
-        bairro: string;
-        cep: string;
-        estado: string;
-        municipio: string;
-    };
-    contato: {
-        tipoContato: string;
-        informacao: string;
-    };
-    dadosBancarios: {
-        banco: string;
-        agencia: string;
-        conta: string;
-        tipoConta: string;
-    };
-    vestuario: {
-        tamanhoCamisa: string;
-        tamanhoCalca: string;
-        tamanhoCalcado: string;
-    };
-}
+// Define types for the form data structure
 
-// Estado inicial do formulário (imutável)
+
+// Default initial form data state
 const defaultFormData: Readonly<FormData> = {
+    id: undefined,
     pessoaFisica: {
-        nome: "",
-        cpf: "",
-        genero: "",
-        estadoCivil: "",
-        rg: "",
-        orgaoExpedidor: "",
-        selectedDate: null,
+      nome: "",
+      cpf: "",
+      genero: "",
+      estadoCivil: "",
+      rg: "",
+      orgaoExpedidor: "",
+      selectedDate: null,
     },
     funcionario: {
-        supervisor: false,
-        manager: false,
-        matricula: "",
-        admissionDate: null,
-        removalDate: null,
-        funcao: "",
-        encarregado: false,
-        gerente: false,
-        ativo: true,
+      cargo: "",
+      salario: 0,
+      dataContratacao: "",
+      supervisor: false,
+      manager: false,
+      matricula: "",
+      admissionDate: null,
+      removalDate: null,
+      funcao: "",
+      encarregado: false,
+      gerente: false,
+      ativo: true,
     },
     endereco: {
-        logradouro: "",
-        bairro: "",
-        cep: "",
-        estado: "",
-        municipio: "",
+      logradouro: "",
+      bairro: "",
+      cep: "",
+      estado: "",
+      municipio: "",
     },
     contato: {
-        tipoContato: "",
-        informacao: "",
+      tipoContato: "",
+      informacao: "",
     },
     dadosBancarios: {
-        banco: "",
-        agencia: "",
-        conta: "",
-        tipoConta: "",
+      banco: "",
+      agencia: "",
+      conta: "",
+      tipoConta: "",
     },
     vestuario: {
-        tamanhoCamisa: "",
-        tamanhoCalca: "",
-        tamanhoCalcado: "",
+      tamanhoCamisa: "",
+      tamanhoCalca: "",
+      tamanhoCalcado: "",
     },
-};
+    // Adicionando as propriedades ausentes
+    address: {
+      rua: "",
+      numero: "",
+      bairro: "",
+      cidade: "",
+      estado: "",
+      cep: "",
+    },
+    contact: {
+      telefone: "",
+      email: "",
+    },
+    bank: {
+      banco: "",
+      agencia: "",
+      conta: "",
+    },
+  };
 
-// Tipo do contexto
-interface FormDataContextType {
-    formData: FormData; // Dados do formulário
-    updateFormData: (
-        section: keyof FormData,
-        data: Partial<FormData[keyof FormData]>
-    ) => void; // Atualizar uma seção específica do formulário
-    resetFormData: () => void; // Redefinir os dados para o estado inicial
-}
 
-// Criação do contexto
+
+// Create the context
 const FormDataContext = createContext<FormDataContextType | undefined>(undefined);
 
-// Provedor do contexto
+// Provider component
 export const FormDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [formData, setFormData] = useState<FormData>(defaultFormData);
 
-    // Função para atualizar os dados de uma seção específica
-    const updateFormData = (section: keyof FormData, data: Partial<FormData[keyof FormData]>) => {
-        setFormData((prev) => ({
-            ...prev,
-            [section]: {
-                ...prev[section],
-                ...data,
-            },
-        }));
-    };
+   // Update a single field in a specific section
+const updateField = <K extends keyof FormData>(
+    section: K,
+    field: keyof FormData[K],
+    value: FormData[K][keyof FormData[K]]
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: {
+        ...((prev[section] as Record<string, any>) || {}), // Ensure the section is an object
+        [field]: value,
+      },
+    }));
+  };
 
-    // Função para redefinir os dados do formulário
+  // Update an entire section
+  const updateSection = <K extends keyof FormData>(
+    section: K,
+    data: Partial<FormData[K]>
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: {
+        ...((prev[section] as Record<string, any>) || {}), // Ensure the section is an object
+        ...data,
+      },
+    }));
+  };
+
+
+    // Reset the form data to its default state
     const resetFormData = () => {
         setFormData(defaultFormData);
     };
 
     return (
-        <FormDataContext.Provider value={{ formData, updateFormData, resetFormData }}>
+        <FormDataContext.Provider value={{ formData, updateField, updateSection, resetFormData }}>
             {children}
         </FormDataContext.Provider>
     );
 };
 
-// Hook para usar o contexto do formulário
+// Hook for using the form data context
 export const useFormData = (): FormDataContextType => {
     const context = useContext(FormDataContext);
     if (!context) {

@@ -1,26 +1,30 @@
-import { useEffect, useState } from "react";
+"use client";
 
-interface BankProps {
-  data: {
-    banco: string;
-    agencia: string;
-    conta: string;
-    tipoConta: string;
-  };
-  onChange: (updatedData: BankProps["data"]) => void;
-  onValid?: (isValid: boolean) => void;
-  onNext: () => void;
-  onPrev: () => void;
-}
+import { useEffect, useState } from "react";
+import { BankProps } from "@/app/types/employee";
+import { agencySchema } from "@/app/schemas/bank/agencySchema";
+import { accountSchema } from "@/app/schemas/bank/accountSchema";
 
 export function Bank({
-  data,
+  data = { banco: "", agencia: "", conta: "", tipoConta: "" }, // Valores padrão
   onChange,
-  onValid,
   onNext,
   onPrev,
+  mode,
 }: BankProps) {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [errors, setErrors] = useState<{ agencia: string | null; conta: string | null }>({
+    agencia: null,
+    conta: null,
+  });
+
+  // Garante que `data` é sempre um objeto válido
+  const safeData = {
+    banco: data?.banco || "",
+    agencia: data?.agencia || "",
+    conta: data?.conta || "",
+    tipoConta: data?.tipoConta || "",
+  };
 
   const bancos = [
     "Banco BMG",
@@ -40,45 +44,53 @@ export function Bank({
     "BANCO WILL",
     "C6 BANK",
     "Caixa Econômica Federal",
-    "CAIXA FAZ CENTENARIO",
-    "DANIEL/DAPLAN",
-    "EDENRED TICKET EMPRESARIAL",
     "HSBC Bank Brasil",
     "Inter - INTERMEDIUM S.A.",
     "Itaú Unibanco",
     "MERCADO PAGO",
     "Nubank",
     "PAGBANK PAGSEGURO",
-    "PEDRO RABITO",
     "PICPAY SERVIÇOS S.A",
     "Sicoob",
-    "SUPER PAGAMENTOS",
-    "TECA",
     "Unicred",
   ];
 
   const tiposConta = ["Conta Corrente", "Conta Poupança", "Conta Salário"];
 
-  // Validação dos campos
+  // Validação
   useEffect(() => {
     const isValid =
-      (data.banco?.trim() || "") !== "" &&
-      (data.agencia?.trim() || "") !== "" &&
-      (data.conta?.trim() || "") !== "" &&
-      (data.tipoConta?.trim() || "") !== "";
+      safeData.banco.trim() !== "" &&
+      safeData.agencia.trim() !== "" &&
+      safeData.conta.trim() !== "" &&
+      safeData.tipoConta.trim() !== "" &&
+      !errors.agencia &&
+      !errors.conta;
 
-    setIsNextEnabled(isValid); // Habilita ou desabilita o botão "Próximo"
+    setIsNextEnabled(isValid);
+  }, [safeData, errors]);
 
-    if (onValid) {
-      onValid(isValid);
+  const handleInputChange = (field: keyof typeof safeData, value: string) => {
+    // Validação dinâmica para conta e agência
+    if (field === "agencia") {
+      try {
+        agencySchema.parse(value);
+        setErrors((prev) => ({ ...prev, agencia: null }));
+      } catch (err: any) {
+        setErrors((prev) => ({ ...prev, agencia: err.errors[0].message }));
+      }
     }
-  }, [data, onValid]);
 
-  const handleInputChange = (field: string, value: any) => {
-    onChange({
-      ...data,
-      [field]: value,
-    });
+    if (field === "conta") {
+      try {
+        accountSchema.parse({ tipo: safeData.tipoConta, numero: value });
+        setErrors((prev) => ({ ...prev, conta: null }));
+      } catch (err: any) {
+        setErrors((prev) => ({ ...prev, conta: err.errors[0].message }));
+      }
+    }
+
+    onChange({ ...safeData, [field]: value });
   };
 
   return (
@@ -87,9 +99,10 @@ export function Bank({
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Banco</label>
         <select
-          value={data.banco || ""}
+          value={safeData.banco}
           onChange={(e) => handleInputChange("banco", e.target.value)}
           className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          disabled={mode === "view"}
         >
           <option value="">-- Selecione --</option>
           {bancos.map((banco, index) => (
@@ -99,35 +112,47 @@ export function Bank({
           ))}
         </select>
       </div>
+
       {/* Agência */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Agência</label>
         <input
           type="text"
-          value={data.agencia || ""}
+          value={safeData.agencia}
           onChange={(e) => handleInputChange("agencia", e.target.value)}
           placeholder="Digite a agência"
-          className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className={`w-full bg-gray-700 text-white placeholder-gray-400 border ${
+            errors.agencia ? "border-red-500" : "border-gray-600"
+          } rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500`}
+          disabled={mode === "view"}
         />
+        {errors.agencia && <p className="text-red-500 text-sm mt-1">{errors.agencia}</p>}
       </div>
+
       {/* Conta */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Conta</label>
         <input
           type="text"
-          value={data.conta || ""}
+          value={safeData.conta}
           onChange={(e) => handleInputChange("conta", e.target.value)}
           placeholder="Digite a conta"
-          className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className={`w-full bg-gray-700 text-white placeholder-gray-400 border ${
+            errors.conta ? "border-red-500" : "border-gray-600"
+          } rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500`}
+          disabled={mode === "view"}
         />
+        {errors.conta && <p className="text-red-500 text-sm mt-1">{errors.conta}</p>}
       </div>
+
       {/* Tipo de Conta */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Tipo de Conta</label>
         <select
-          value={data.tipoConta || ""}
+          value={safeData.tipoConta}
           onChange={(e) => handleInputChange("tipoConta", e.target.value)}
           className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          disabled={mode === "view"}
         >
           <option value="">-- Selecione --</option>
           {tiposConta.map((tipo, index) => (
@@ -136,27 +161,6 @@ export function Bank({
             </option>
           ))}
         </select>
-      </div>
-
-      {/* Botões de Navegação */}
-      <div className="flex justify-between mt-6">
-        <button
-          onClick={onPrev}
-          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500"
-        >
-          Voltar
-        </button>
-        <button
-          onClick={isNextEnabled ? onNext : undefined}
-          disabled={!isNextEnabled}
-          className={`px-4 py-2 rounded-md text-white ${
-            isNextEnabled
-              ? "bg-green-600 hover:bg-green-500"
-              : "bg-gray-500 cursor-not-allowed"
-          }`}
-        >
-          Próximo
-        </button>
       </div>
     </div>
   );

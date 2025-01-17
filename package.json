@@ -14,9 +14,11 @@
     "@heroicons/react": "^2.2.0",
     "@mui/material": "^6.2.1",
     "@types/chart.js": "^2.9.41",
+    "axios": "^1.7.9",
     "chart.js": "^4.4.7",
     "date-fns": "^4.1.0",
     "framer-motion": "^11.15.0",
+    "jspdf": "^2.5.2",
     "next": "15.1.0",
     "query-string": "^9.1.1",
     "react": "^18.2.0",
@@ -28,7 +30,8 @@
     "react-input-mask": "^2.0.4",
     "react-resizable": "^3.0.5",
     "react-router-dom": "^7.0.2",
-    "routes": "^2.1.0"
+    "routes": "^2.1.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

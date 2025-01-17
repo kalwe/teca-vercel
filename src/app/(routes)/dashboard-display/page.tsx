@@ -8,12 +8,23 @@ import { useState, useEffect, useCallback, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 
 import { DropDownBurger } from "@/app/components/DropDown/dropdown-burger";
+import { useEmployeeContext } from "@/app/context/EmployeeContext"; // Importa o contexto dos funcionários
+import { useVagasContext } from "@/app/context/VagasContext";
+import { useCurriculoContext } from '@/app/context/CurriculoContext';
+import { useReminderContext } from "@/app/context/ReminderContext";
 
-import './style.css';
+
+import "./style.css";
+import { Navigation } from "@/app/components/navigation/navigation";
 
 export default function Home() {
   const ResponsiveGridLayout = WidthProvider(Responsive);
   const router = useRouter();
+
+  const { employees } = useEmployeeContext();
+  const { vagas } = useVagasContext();
+  const { curriculos } = useCurriculoContext();
+  const { reminders } = useReminderContext();
 
   const defaultLayout = [
     { i: "vagas", x: 0, y: 0, w: 3, h: 3 },
@@ -34,7 +45,6 @@ export default function Home() {
     }
   }, []);
 
-  // Save layout to localStorage whenever it changes
   const handleLayoutChange = useCallback((newLayout: SetStateAction<{ i: string; x: number; y: number; w: number; h: number; }[]>) => {
     setLayout(newLayout);
     localStorage.setItem("dashboardLayout", JSON.stringify(newLayout));
@@ -44,51 +54,24 @@ export default function Home() {
     router.push(path);
   }, [router]);
 
+
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const maxEmployeesToShow = 5;
+  const displayedEmployees = employees.slice(0, maxEmployeesToShow);
+  const maxVagasToShow = 5;
+
   return (
     <div className="p-0 overflow-y-auto">
       {/* Navbar */}
-      <nav
-        style={{ backgroundColor: '#53594BCC' }}
-        className="w-full border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
-      >
-        <div className="flex items-center justify-between px-4 py-3">
-          <a href="#" className="text-2xl font-semibold whitespace-nowrap text-white">
-            COIF
-          </a>
-          {/* Botão Hamburger */}
-          <button
-            onClick={toggleMenu}
-            className="fixed top-1 right-4 z-50 flex items-center justify-center rounded-full w-[40px] h-[40px] bg-gray-800 hover:bg-gray-700 transition-all duration-300 shadow-lg"
-          >
-            <div className="relative w-[20px] h-[20px]">
-              <span
-                className={`absolute top-1/2 left-1/2 bg-white w-[20px] h-[2px] rounded transform transition-transform duration-300 ${
-                  isMenuOpen
-                    ? "rotate-45 -translate-x-1/2 -translate-y-1/2"
-                    : "-translate-x-1/2 -translate-y-[6px]"
-                }`}
-              ></span>
-              <span
-                className={`absolute top-1/2 left-1/2 bg-white w-[20px] h-[2px] rounded transform transition-transform duration-300 ${
-                  isMenuOpen
-                    ? "-rotate-45 -translate-x-1/2 -translate-y-1/2"
-                    : "-translate-x-1/2 translate-y-[6px]"
-                }`}
-              ></span>
-            </div>
-          </button>
+     <Navigation/>
 
-          <DropDownBurger isOpen={isMenuOpen} />
-        </div>
-      </nav>
-
-      <div className="bg-[#4A701C] shadow-lg rounded-xl p-8 mt-4 mx-8 overflow-y-auto h-max-[50%]">
+      <div className="bg-[#4A701C] shadow-lg rounded-xl p-8 mt-24 mx-8 overflow-y-auto h-max-[50%]">
         <ResponsiveGridLayout
           className="layout"
           layouts={{ lg: layout }}
@@ -100,6 +83,8 @@ export default function Home() {
           useCSSTransforms={false}
           isDroppable={false}
         >
+
+         {/* Vagas */}
           <div
             key="vagas"
             className="bg-gradient-to-br from-[#434D36] to-[#555D4C] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300"
@@ -111,27 +96,43 @@ export default function Home() {
             >
               <h2 className="font-semibold text-xl mb-4 text-white">Vagas</h2>
               <ul className="list-disc pl-5 text-white space-y-2">
-                <li>Torneiro Mecânico</li>
-                <li>Auxiliar de RH</li>
-                <li>Departamento Pessoal</li>
+              {vagas.map((vaga, index) => (
+                  <li key={index}>
+                    {vaga.vaga} - {vaga.quantidade} disponíveis
+                  </li>
+                ))}
+                {employees.length > maxEmployeesToShow && (
+                  <li className="text-sm text-gray-400">
+                    + {vagas.length - maxVagasToShow} mais...
+                  </li>
+                )}
               </ul>
             </div>
           </div>
-
-          <div
+ {/* Widget Funcionário */}
+ <div
             key="funcionario"
             className="bg-gradient-to-br from-[#4A701C] to-[#88B257] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300"
+
           >
-            <div className="w-[50%]"
-              onClick={() => changePage('/contract-display/employee/')}
-              onMouseDown={(event) => event.stopPropagation()}
-              onTouchStart={(event) => event.stopPropagation()}
+            <div
+             onClick={() => changePage("/contract-display/employee/")}
+
+             onMouseDown={(event) => event.stopPropagation()}
+             onTouchStart={(event) => event.stopPropagation()}
             >
-              <h2 className="font-semibold text-xl mb-4 text-white">Funcionário</h2>
+              <h2 className="font-semibold text-xl mb-4 text-white">Funcionários</h2>
               <ul className="list-disc pl-5 text-white space-y-2">
-                <li>Juracir</li>
-                <li>Pedro Fagundes</li>
-                <li>Jorge Aragão</li>
+                {displayedEmployees.map((employee) => (
+                  <li key={employee.id}>
+                    <span className="font-bold">{employee.name}</span> - {employee.role || "Função não definida"}
+                  </li>
+                ))}
+                {employees.length > maxEmployeesToShow && (
+                  <li className="text-sm text-gray-400">
+                    + {employees.length - maxEmployeesToShow} mais...
+                  </li>
+                )}
               </ul>
             </div>
           </div>
@@ -166,6 +167,14 @@ export default function Home() {
             >
               Adicionar Funcionário
             </button>
+            <button
+              className="text-white bg-[#284703] hover:bg-[#4A701C] transition-all px-8 py-4 rounded-full font-bold text-lg shadow-md"
+              onClick={() => changePage('/user-display/')}
+              onMouseDown={(event) => event.stopPropagation()}
+              onTouchStart={(event) => event.stopPropagation()}
+            >
+              Adicionar Usuário
+            </button>
           </div>
 
           <div
@@ -179,28 +188,41 @@ export default function Home() {
             >
               <h2 className="font-semibold text-xl mb-4 text-white">Currículos</h2>
               <ul className="list-disc pl-5 text-white space-y-2">
-                <li>Fernanda Almeida - fernanda@gmail.com</li>
-                <li>João Silva - joao@gmail.com</li>
+              {curriculos.map((curriculo) => (
+        <li key={curriculo.id}>
+          {curriculo.nome} - {curriculo.email}
+        </li>
+      ))}
               </ul>
             </div>
           </div>
 
           <div
-            key="lembretes"
-            className="bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-y-auto"
-          >
-            <div className="w-[35%]"
-              onClick={() => changePage('/reminder-display/')}
-              onMouseDown={(event) => event.stopPropagation()}
-              onTouchStart={(event) => event.stopPropagation()}
-            >
-              <h2 className="font-semibold text-xl mb-4 text-white">Lembretes</h2>
-              <ul className="list-disc pl-5 text-white space-y-2">
-                <li>Aniversário Pedro - 20 Dezembro</li>
-                <li>Relatório - 21 Dezembro</li>
-              </ul>
-            </div>
-          </div>
+  key="lembretes"
+  className="bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-y-auto"
+>
+  <div
+    className="w-full"
+    onMouseDown={(event) => event.stopPropagation()}
+    onTouchStart={(event) => event.stopPropagation()}
+    onClick={() => changePage('/reminder-display/')}
+  >
+    <h2 className="font-semibold text-xl mb-4 text-white">Lembretes</h2>
+    <ul className="list-disc pl-5 text-white space-y-2">
+      {reminders.length > 0 ? (
+        reminders.map((reminder) => (
+          <li key={reminder.id} className="flex justify-between items-center">
+            <span>
+              <strong>{reminder.reason}</strong> - {reminder.date}
+            </span>
+          </li>
+        ))
+      ) : (
+        <p className="text-gray-400">Nenhum lembrete ativo.</p>
+      )}
+    </ul>
+  </div>
+</div>
         </ResponsiveGridLayout>
       </div>
     </div>

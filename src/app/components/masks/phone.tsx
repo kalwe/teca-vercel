@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
+import { PhoneMaskProps } from '@/app/types/employee';
 
-export function PhoneMask() {
-    const [phone, setPhone] = useState('');
 
+export function PhoneMask({ value, onChange }: PhoneMaskProps) {
     const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let value = event.target.value;
+        let phoneValue = event.target.value;
 
         // Remove qualquer coisa que não seja número
-        value = value.replace(/\D/g, '');
+        phoneValue = phoneValue.replace(/\D/g, '');
 
         // Aplica a máscara
-        if (value.length <= 2) {
-            value = `(${value}`;
-        } else if (value.length <= 7) {
-            value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+        if (phoneValue.length <= 2) {
+            phoneValue = `(${phoneValue}`;
+        } else if (phoneValue.length <= 7) {
+            phoneValue = `(${phoneValue.slice(0, 2)}) ${phoneValue.slice(2)}`;
         } else {
-            value = `(${value.slice(0, 2)}) ${value.slice(2, 3)} ${value.slice(3, 7)}-${value.slice(7, 11)}`;
+            phoneValue = `(${phoneValue.slice(0, 2)}) ${phoneValue.slice(2, 3)} ${phoneValue.slice(3, 7)}-${phoneValue.slice(7, 11)}`;
         }
 
-        setPhone(value);
+        // Atualiza o valor no componente pai
+        onChange(phoneValue);
     };
 
     return (
@@ -108,8 +109,8 @@ export function PhoneMask() {
                     type="tel"
                     id="phone-input"
                     className="block p-2.5 w-full  text-sm text-black bg-[#D9D9D9] border border-gray-300 rounded-r-lg h-[42px] focus:ring-blue-500 focus:border-blue-500 placeholder-gray-600"
-                    value={phone}
-                    onInput={handlePhoneChange}
+                    value={value} // Usa o valor controlado vindo do pai
+                    onChange={handlePhoneChange} // Atualiza o valor com a máscara aplicada
                     placeholder="(DDD) 9 9999 9999"
                     style={{ color: "#262626" }}
                     required
