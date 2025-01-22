@@ -5,10 +5,12 @@ import { EmployeeProvider } from "@/app/context/EmployeeContext";
 import { VagasProvider } from "@/app/context/VagasContext";
 import { CurriculoProvider } from "@/app/context/CurriculoContext";
 import { ReminderProvider } from "@/app/context/ReminderContext";
-import { UserProvider } from "@/app/context/UserContext"; // Add User Provider
+import { UserProvider } from "@/app/context/UserContext";
+import { HoursBankProvider } from "@/app/context/HoursBankContext"; // Added HoursBankProvider
+import { LoginProvider } from "@/app/context/LoginContext"; // Import LoginProvider
 import "./globals.css";
 
-// Configuração de fontes
+// Font Configuration
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,17 +29,21 @@ export const metadata: Metadata = {
 
 // Encapsulate Providers
 const AppProviders = ({ children }: { children: React.ReactNode }) => (
-  <UserProvider>
-    <FormDataProvider>
-      <EmployeeProvider>
-        <VagasProvider>
-          <CurriculoProvider>
-            <ReminderProvider>{children}</ReminderProvider>
-          </CurriculoProvider>
-        </VagasProvider>
-      </EmployeeProvider>
-    </FormDataProvider>
-  </UserProvider>
+  <LoginProvider> {/* Added LoginProvider */}
+    <UserProvider>
+      <FormDataProvider>
+        <EmployeeProvider>
+          <VagasProvider>
+            <CurriculoProvider>
+              <ReminderProvider>
+                <HoursBankProvider>{children}</HoursBankProvider>
+              </ReminderProvider>
+            </CurriculoProvider>
+          </VagasProvider>
+        </EmployeeProvider>
+      </FormDataProvider>
+    </UserProvider>
+  </LoginProvider>
 );
 
 // Root Layout Component

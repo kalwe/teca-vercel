@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+import apiClient from "./api";
 
 /**
  * Service for employee-related API operations.

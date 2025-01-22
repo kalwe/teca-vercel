@@ -40,7 +40,9 @@ export default function Contract() {
   };
 
   return (
-    <div>
+    <div
+
+    >
       <Navigation />
 
       <UserCreationForm
@@ -49,7 +51,9 @@ export default function Contract() {
         isEditable={true} // Permitir edição
         onSave={handleSave} // Função de salvar
         onCancel={handleCancel} // Função de cancelar
-        mode={"add"}      />
+        mode={"add"}
+
+        />
 
       {/* Botão "Voltar" */}
       <div

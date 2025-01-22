@@ -1,127 +1,105 @@
-'use client'
+'use client';
 
-import { useState, useRef} from 'react'
-
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-
+interface Employee {
+  id: string;
+  name: string;
+  weeklyHours?: number; // Placeholder for API integration
+}
 
 function HoursBank() {
-  
-  /*
-  const [cnpj, setCnpj] = useState<string>()
-  const handleCnpjMask = (e: ChangeEvent<HTMLInputElement>) => {
-    const {value} = e.target
-    const normalizedValue = normalizeCNPJ(value)
-    setCnpj(normalizedValue)
-  }
- */
+  const [employees, setEmployees] = useState<Employee[]>([]); // State for employees
+  const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
-  {/* Calendar */}
+  useEffect(() => {
+    // Example to load initial employees (replace this with actual API or data context logic)
+    const storedEmployees = JSON.parse(localStorage.getItem('employees') || '[]');
+    setEmployees(storedEmployees);
+  }, []);
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  
-  // Referência para o componente DatePicker
-  const datePickerRef = useRef<DatePicker | null>(null);
-
-  const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
-  // Manipulador de clique no ícone para abrir o calendário
-  const handleIconClick = () => {
-    if (datePickerRef.current) {
-      datePickerRef.current.setOpen(true); // Abre o calendário
-    }
+  const filteredEmployees = employees.filter((employee) =>
+    employee.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const changePage = (id: string) => {
+    router.push(`/hoursbank-display/employee/${id}`);
   };
 
-  /* Changing page */ 
-
-  const router = useRouter()
-  const changePage = () => {
-    router.push('hoursbank-display/employee')
-  }
-
-    return (
-      <div >
-      {/* Contêiner Principal */}
-      <div className="text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] h-[80%] bg-transparent rounded-[51px] flex items-center justify-center shadow-lg border-2 border-white">
-        <div className="w-[95%] h-[92%] bg-customGreen rounded-lg flex flex-col items-center p-6">
-          <div className="bg-[#829171] w-[100%] h-[100%] rounded-[26px]"></div>
-          <div style={{ zIndex: 10, position: "absolute", top: "10%", left: "8%" }} className="bg-[#7A7A7A] w-[87%] h-[80%] rounded-[18px]">
-            <form className="max-w-[50%] mx-auto py-20 flex flex-col gap-5 ">
-            {/* Cabeçalho */}
-            <div className="flex items-center justify-between mb-6">
-      <h1 className="text-4xl font-extrabold text-white relative right-[40%]">Banco de Horas</h1>
-      
-    </div>
-
-    {/* Barra de Pesquisa */}
-    <div className="flex relative  items-center justify-center mb-2"
-    style={{ transform: "translateY(-200%)" }} 
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-900"
+    style={{
+      background: "linear-gradient(to bottom right,rgb(11, 20, 11),rgb(79, 116, 82))"
+    }}
     >
-      <div className="relative flex items-center w-full max-w-md">
-        <input
-          type="text"
-          placeholder="Buscar funcionário..."
-          className="w-full px-4 py-2 rounded-full bg-gray-700 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"
-          />
-        </svg>
-      </div>
-    </div>
+      <div className="w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border relative flex flex-col gap-6">
+        <h1 className="text-4xl font-extrabold text-white text-center">Banco de Horas</h1>
 
-    {/* Lista de Vagas */}
-    <div className="p-8 bg-gray-700 rounded-lg shadow-inner w-[150%]  relative right-[20%] "
-    style={{transform: "translateY(-20%)" }}
-    >
-      {/* Cabeçalho da Tabela */}
-      <div className="flex justify-between items-center border-b border-gray-600 pb-8 mb-2">
-        <h1 className="text-gray-300 font-semibold">Funcionário</h1>
-        <h1 className="text-gray-300 font-semibold">Horas semanais</h1>
-      </div>
-
-      {/* Contêiner com Scroll Automático */}
-      <div
-        className="overflow-y-auto rounded-lg"
-        style={{
-          maxHeight: "303px",
-        }}
-      >
-        {Array.from({ length: 20 }).map((_, index) => (
-          <div
-            key={index}
-            className="flex justify-between items-center py-3 px-4 hover:bg-gray-600 transition-all duration-200"
-            onClick={changePage}
-          >
-            <h1 className="text-white">Funcionário {index + 1}</h1>
-            <h1 className="text-white">{index + 1}</h1>
+        {/* Search Bar */}
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-md">
+            <input
+              type="text"
+              placeholder="Buscar funcionário..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full px-4 py-2 rounded-full bg-gray-700 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"
+              />
+            </svg>
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
 
-  </form>
+        {/* Employees List */}
+        <div className="p-4 bg-gray-700 rounded-lg shadow-inner">
+          <div className="flex justify-between items-center border-b border-gray-600 pb-4">
+            <h2 className="text-gray-300 font-semibold">Funcionário</h2>
+            <h2 className="text-gray-300 font-semibold">Horas semanais</h2>
+          </div>
 
+          <div
+            className="overflow-y-auto mt-4"
+            style={{ maxHeight: '300px' }}
+          >
+            {filteredEmployees.length > 0 ? (
+              filteredEmployees.map((employee) => (
+                <div
+                  key={employee.id}
+                  className="flex justify-between items-center py-3 px-4 bg-gray-800 rounded-md mb-2 cursor-pointer hover:bg-gray-700 transition-all duration-200"
+                  onClick={() => changePage(employee.id)}
+                >
+                  <span className="text-white">{employee.name}</span>
+                  <span className="text-white">
+                    {employee.weeklyHours !== undefined ? `${employee.weeklyHours} hrs` : 'N/A'}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-300 text-center">Nenhum funcionário encontrado.</p>
+            )}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default HoursBank
+export default HoursBank;

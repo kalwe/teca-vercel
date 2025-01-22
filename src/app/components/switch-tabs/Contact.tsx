@@ -82,26 +82,7 @@ export function Contact({
         />
         {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
       </div>
-      {/* Botões de Navegação */}
-      <div className="flex justify-between">
-        <button
-          onClick={onPrev}
-          className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-        >
-          Voltar
-        </button>
-        <button
-          onClick={onNext}
-          className={`px-4 py-2 rounded-lg ${
-            isNextEnabled
-              ? "bg-green-500 hover:bg-green-600 text-white"
-              : "bg-gray-600 text-gray-400 cursor-not-allowed"
-          }`}
-          disabled={!isNextEnabled}
-        >
-          Próximo
-        </button>
-      </div>
+
     </div>
   );
 }

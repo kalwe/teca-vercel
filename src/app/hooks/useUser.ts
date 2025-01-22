@@ -1,31 +1,26 @@
-import { useState, useEffect } from "react";
-import { fetchUsers } from "../services/userService";
+import { useState, useEffect } from 'react';
+import { getUsers } from '../services/userService';
 
-/**
- * Custom hook to fetch and manage user data.
- * @returns Object containing users, loading state, and error state.
- */
 const useUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const fetchUsers = async () => {
       try {
-        const data = await fetchUsers(); // Axios call through userService
+        const data = await getUsers();
         setUsers(data);
-      } catch (err) {
-        setError("Failed to fetch users.");
+      } catch (error) {
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadUsers();
+    fetchUsers();
   }, []);
 
-  return { users, loading, error };
+  return { users, loading };
 };
 
 export default useUsers;

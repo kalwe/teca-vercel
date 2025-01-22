@@ -7,7 +7,7 @@ import "react-resizable/css/styles.css";
 import { useState, useEffect, useCallback, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 
-import { DropDownBurger } from "@/app/components/DropDown/dropdown-burger";
+import { useHoursBankContext } from "@/app/context/HoursBankContext";
 import { useEmployeeContext } from "@/app/context/EmployeeContext"; // Importa o contexto dos funcionários
 import { useVagasContext } from "@/app/context/VagasContext";
 import { useCurriculoContext } from '@/app/context/CurriculoContext';
@@ -25,6 +25,7 @@ export default function Home() {
   const { vagas } = useVagasContext();
   const { curriculos } = useCurriculoContext();
   const { reminders } = useReminderContext();
+  const { hoursBank } = useHoursBankContext()
 
   const defaultLayout = [
     { i: "vagas", x: 0, y: 0, w: 3, h: 3 },
@@ -65,24 +66,29 @@ export default function Home() {
   const maxEmployeesToShow = 5;
   const displayedEmployees = employees.slice(0, maxEmployeesToShow);
   const maxVagasToShow = 5;
+  const maxItemsToShow = 5;
 
   return (
-    <div className="p-0 overflow-y-auto">
-      {/* Navbar */}
-     <Navigation/>
+   <div className="p-0 overflow-auto h-screen"
+   style={{
+    background: "linear-gradient(to bottom right,rgb(11, 20, 11),rgb(79, 116, 82))"
+  }}
+   >
+  {/* Navbar */}
+  <Navigation />
 
-      <div className="bg-[#4A701C] shadow-lg rounded-xl p-8 mt-24 mx-8 overflow-y-auto h-max-[50%]">
-        <ResponsiveGridLayout
-          className="layout"
-          layouts={{ lg: layout }}
-          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-          cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-          rowHeight={100}
-          compactType="vertical"
-          onLayoutChange={handleLayoutChange}
-          useCSSTransforms={false}
-          isDroppable={false}
-        >
+  <div className="bg-[#4A701C] shadow-lg rounded-xl p-8 mt-24 mx-8 overflow-auto h-full">
+    <ResponsiveGridLayout
+      className="layout"
+      layouts={{ lg: layout }}
+      breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+      cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+      rowHeight={100}
+      compactType="vertical"
+      onLayoutChange={handleLayoutChange}
+      useCSSTransforms={false}
+      isDroppable={false}
+    >
 
          {/* Vagas */}
           <div
@@ -137,23 +143,37 @@ export default function Home() {
             </div>
           </div>
 
-          <div
-            key="banco-de-horas"
-            className="bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300"
-          >
-            <div className="w-[50%]"
-              onClick={() => changePage('/hoursbank-display/')}
-              onMouseDown={(event) => event.stopPropagation()}
-              onTouchStart={(event) => event.stopPropagation()}
-            >
-              <h2 className="font-semibold text-xl mb-4 text-white">Banco de Horas</h2>
-              <ul className="list-disc pl-5 text-white space-y-2">
-                <li>+5h Semanais</li>
-                <li>-5h Semanais</li>
-                <li>+10h Semanais</li>
-              </ul>
-            </div>
-          </div>
+         {/* Banco de Horas */}
+<div
+  key="banco-de-horas"
+  className="bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300"
+>
+  <div
+    className="w-full"
+    onClick={() => changePage('/hoursbank-display/')}
+    onMouseDown={(event) => event.stopPropagation()}
+    onTouchStart={(event) => event.stopPropagation()}
+  >
+    <h2 className="font-semibold text-xl mb-4 text-white">Banco de Horas</h2>
+    <ul className="list-disc pl-5 text-white space-y-2">
+      {hoursBank.length > 0 ? (
+        hoursBank.slice(0, maxItemsToShow).map((entry) => (
+          <li key={entry.id}>
+            <span className="font-bold">{entry.name}</span> - {entry.hours ? `${entry.hours} hrs` : 'N/A'}
+          </li>
+        ))
+      ) : (
+        <p className="text-gray-400">Nenhum registro encontrado.</p>
+      )}
+      {hoursBank.length > maxItemsToShow && (
+        <li className="text-sm text-gray-400">
+          + {hoursBank.length - maxItemsToShow} mais...
+        </li>
+      )}
+    </ul>
+  </div>
+</div>
+
 
           <div
             key="adicionar-funcionario"

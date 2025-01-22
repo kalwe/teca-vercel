@@ -11,9 +11,8 @@ import { useRouter } from "next/navigation";
 import { useEmployeeContext } from "@/app/context/EmployeeContext";
 import { ContractFormProps } from "@/app/types/employee";
 
-
 export default function ContractForm({ mode, employeeData }: ContractFormProps) {
-  const { employees, addEmployee, updateEmployee } = useEmployeeContext(); // Corrigido para incluir `employees`
+  const { employees, addEmployee, updateEmployee } = useEmployeeContext();
   const router = useRouter();
 
   const [formData, setFormData] = useState<any>({
@@ -80,9 +79,7 @@ export default function ContractForm({ mode, employeeData }: ContractFormProps) 
       bank: formData.bank,
       vestuario: formData.vestuario,
     };
-    console.log(newEmployee);
 
-    // Validações
     if (!newEmployee.cpf || newEmployee.cpf.trim() === "") {
       alert("Erro: O CPF não pode estar vazio.");
       return;
@@ -101,7 +98,7 @@ export default function ContractForm({ mode, employeeData }: ContractFormProps) 
 
       if (exists) {
         alert(
-          `Erro: O funcionário com CPF "${newEmployee.cpf}" ou matrícula "${newEmployee.registration}" já existe.`
+          `Erro: O funcionário com CPF \"${newEmployee.cpf}\" ou matrícula \"${newEmployee.registration}\" já existe.`
         );
         return;
       }
@@ -112,7 +109,7 @@ export default function ContractForm({ mode, employeeData }: ContractFormProps) 
       alert("Funcionário atualizado com sucesso!");
     }
 
-    router.push("/contract-display/employee"); // Redireciona para a lista
+    router.push("/contract-display/employee");
   };
 
   const isEditable = mode !== "view";
@@ -120,32 +117,30 @@ export default function ContractForm({ mode, employeeData }: ContractFormProps) 
   const currentTabKey = tabs[selectedTab].key;
 
   return (
-    <div className="absolute top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] h-[85%] bg-transparent rounded-[51px] flex items-center justify-center shadow-lg border-2 border-white">
-      <div className="w-[95%] h-[92%] bg-customGreen rounded-lg flex flex-col items-center p-6 relative">
-        <div className="bg-[#829171] w-[98%] h-[95%] rounded-[26px] absolute"></div>
-        <div
-          style={{ zIndex: 10, position: "absolute", top: "10%", left: "8%" }}
-          className="bg-[#7A7A7A] w-[87%] h-[85%] rounded-[18px]"
-        >
-          {/* Navegação entre abas */}
-          <div className="flex space-x-4 p-4 border-b border-gray-300">
-            {tabs.map((tab, index) => (
-              <button
-                key={tab.name}
-                onClick={() => setSelectedTab(index)}
-                className={`px-4 py-2 rounded-t-lg ${
-                  selectedTab === index
-                    ? "bg-white text-gray-700 font-bold"
-                    : "bg-transparent text-gray-400"
-                } hover:bg-gray-600 hover:text-white`}
-              >
-                {tab.name}
-              </button>
-            ))}
+    <div className="flex items-center justify-center min-h-screen p-4" style={{ background: " linear-gradient(to bottom right,rgb(11, 20, 11),rgb(79, 116, 82)", backgroundSize: "cover", backgroundPosition: "center" }}>
+      <div className="w-full max-w-5xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="flex flex-col md:flex-row">
+          {/* Tabs Navigation */}
+          <div className="w-full md:w-1/4 bg-gray-900 text-white">
+            <div className="flex flex-col space-y-2 p-4">
+              {tabs.map((tab, index) => (
+                <button
+                  key={tab.name}
+                  onClick={() => setSelectedTab(index)}
+                  className={`py-2 px-4 rounded-lg transition-all duration-200 ${
+                    selectedTab === index
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-700 text-gray-300 hover:bg-green-400 hover:text-white"
+                  }`}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Conteúdo da aba atual */}
-          <div className="p-8">
+          {/* Tab Content */}
+          <div className="w-full md:w-3/4 p-6">
             <CurrentComponent
               data={formData[currentTabKey]}
               onChange={(updatedData: any) =>
@@ -155,35 +150,35 @@ export default function ContractForm({ mode, employeeData }: ContractFormProps) 
               mode={mode}
             />
           </div>
+        </div>
 
-          {/* Botões de ação */}
-          <div className="flex justify-between px-8 pb-4">
-            {selectedTab > 0 && (
-              <button
-                onClick={() => setSelectedTab((prev) => Math.max(prev - 1, 0))}
-                className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Voltar
-              </button>
-            )}
-            {selectedTab < tabs.length - 1 ? (
-              <button
-                onClick={() =>
-                  setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))
-                }
-                className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                Próximo
-              </button>
-            ) : (
-              <button
-                onClick={handleSave}
-                className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                Salvar
-              </button>
-            )}
-          </div>
+        {/* Action Buttons */}
+        <div className="flex justify-between p-4 border-t border-gray-700">
+          {selectedTab > 0 && (
+            <button
+              onClick={() => setSelectedTab((prev) => Math.max(prev - 1, 0))}
+              className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            >
+              Voltar
+            </button>
+          )}
+          {selectedTab < tabs.length - 1 ? (
+            <button
+              onClick={() =>
+                setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))
+              }
+              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            >
+              Próximo
+            </button>
+          ) : (
+            <button
+              onClick={handleSave}
+              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            >
+              Salvar
+            </button>
+          )}
         </div>
       </div>
     </div>
