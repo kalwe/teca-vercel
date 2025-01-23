@@ -9,6 +9,7 @@ export default function UserCreationForm() {
   const { addUser } = useUserContext(); // Fetch addUser from context
   const router = useRouter();
 
+  // TODO: use schema UserSchema
   const [formData, setFormData] = useState({
     username: "",
     email: "",

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 // Criar uma instância do Axios
 const axiosInstance = axios.create({
+  // TODO: create '.env' with var REACT_APP_API_BASE_URL = '/api/v1'
   baseURL: process.env.REACT_APP_API_BASE_URL, // URL base da API
   timeout: 10000, // Tempo máximo para uma requisição
   headers: {
@@ -9,6 +10,7 @@ const axiosInstance = axios.create({
   },
 });
 
+// TODO:
 // Interceptador para adicionar o token de autenticação
 axiosInstance.interceptors.request.use(
   (config) => {

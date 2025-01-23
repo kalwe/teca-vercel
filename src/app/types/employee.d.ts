@@ -1,6 +1,7 @@
 
 // Contexts
 
+// TODO: can use var names in ingles?
 export interface PessoaFisica {
   nome: string;
   cpf: string;

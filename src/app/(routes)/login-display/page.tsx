@@ -10,6 +10,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  // TODO: why you use setTimeout?
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -18,9 +19,12 @@ export default function Home() {
   }, []);
 
   const handleLogin = async () => {
+    //  TODO: if already set true as default on line 8 don`t need set again
     setLoading(true); // Activate loading screen
 
     try {
+      // TODO: create const for base api url
+      // API_URL = "/api/v1"
       const response = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: {
