@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUserContext } from "@/app/context/UserContext";
 import { emailSchema } from "@/app/schemas/common/emailSchema";
 
+<<<<<<< HEAD
 export default function UserForm({
   mode,
   userData,
@@ -16,6 +17,9 @@ export default function UserForm({
   onSave: (data: any) => void;
   onCancel: () => void;
 }) {
+=======
+  // TODO: use schema UserSchema
+>>>>>>> a5091026a1deac6b11b07eeb745eaa68b7ad7469
   const [formData, setFormData] = useState({
     username: userData?.username || "",
     email: userData?.email || "",
