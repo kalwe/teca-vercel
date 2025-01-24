@@ -12,14 +12,14 @@ import { Navigation } from "@/app/components/navigation/navigation";
 
 
 export default function Contract() {
- 
+
 /* Change page */
 
 const router = useRouter()
 
 const handleClick = () => {
   router.push('/curriculo-display/visualize-cv')
-} 
+}
 
 
 

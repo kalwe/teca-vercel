@@ -9,7 +9,7 @@ function Employees() {
   const router = useRouter();
 
   const handleRowClick = (employeeId: number) => {
-    router.push(`/employees/${employeeId}`);
+    router.push(`/contract-display/${employeeId}`);
   };
 
   const handleAddEmployee = () => {

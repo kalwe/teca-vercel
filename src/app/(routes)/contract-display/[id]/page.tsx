@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ContractForm from "@/app/components/forms/contract-form";
 import { useEmployeeContext } from "@/app/context/EmployeeContext";
+import '../style.css'
+import { Navigation } from "@/app/components/navigation/navigation";
 
 export default function EmployeeDetailPage() {
   const { employees, updateEmployee } = useEmployeeContext();
@@ -44,8 +46,8 @@ export default function EmployeeDetailPage() {
   }
 
   return (
-    <div className="w-[90%] mx-auto mt-10">
-      <h1 className="text-center text-4xl font-bold mb-6">Atualizar funcionário</h1>
+    <div className="mx-auto mt-10">
+      <Navigation/>
       <ContractForm
         mode="edit"
         employeeData={formData}

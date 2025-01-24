@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DropDownBurger } from "../DropDown/dropdown-burger";
+import { useRouter } from "next/navigation";
 
 
 export function Navigation() {
@@ -10,6 +11,9 @@ export function Navigation() {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const router = useRouter()
+
 
   return (
     <div>
@@ -22,6 +26,8 @@ export function Navigation() {
         <a
           href="#"
           className="text-2xl font-bold tracking-wide text-white hover:text-gray-300 transition"
+          onClick={() => router.push('/dashboard-display')}
+
         >
           COIF
         </a>
