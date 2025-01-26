@@ -59,7 +59,7 @@ export interface Employee {
   cpf: string;
   supervisor: boolean;
   manager: boolean;
-  active: boolean;
+  is_active: boolean;
 }
 
 export interface Curriculo {
@@ -91,6 +91,7 @@ export interface ReminderContextData {
 export interface User {
   id: number;
   username: string;
+  password
   email: string;
   active: boolean;
 }
