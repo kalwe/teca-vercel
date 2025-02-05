@@ -1,43 +1,47 @@
-'use client';
+"use client";
 import React, { useState, useEffect, useRef } from "react";
-import { DropdownCheckboxProps } from "@/app/types/employee";
+import { PositionService } from "@/app/services/dropdownService";
 
-
-const DropdownCheckbox: React.FC<DropdownCheckboxProps> = ({
-  value = "",
-  onChange,
-  disabled = false,
-  options = ["Cargo1", "Cargo2", "Cargo3", "Cargo4"], // Default options
-}) => {
-  const [selectedOption, setSelectedOption] = useState<string>(value); // State to store selected option
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to control dropdown visibility
+const DropdownCheckbox = ({ value = "", onChange }: { value: string; onChange: (val: string) => void }) => {
+  const [selectedOption, setSelectedOption] = useState<string>(value);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [positions, setPositions] = useState<{ id: number; name: string }[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  // Fetch job positions from API
   useEffect(() => {
-    // Sync selected option with the provided value
-    setSelectedOption(value);
-  }, [value]);
+    const fetchPositions = async () => {
+      try {
+        setLoading(true);
+        const data = await PositionService.getAllPositions();
+
+        if (!Array.isArray(data)) {
+          throw new Error("Invalid response format");
+        }
+
+        setPositions(data);
+      } catch (err) {
+        setError("Failed to load positions.");
+        console.error("Error fetching positions:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPositions();
+  }, []);
 
   const handleCheckboxChange = (option: string) => {
-    const newOption = option === selectedOption ? "" : option; // Toggle selection
-    setSelectedOption(newOption); // Update the local state
-    onChange(newOption); // Notify the parent component about the change
-    setIsDropdownOpen(false); // Close the dropdown after selection
-  };
-
-  const toggleDropdown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!disabled) {
-      setIsDropdownOpen((prevState) => !prevState); // Toggle dropdown state
-    }
+    setSelectedOption(option === selectedOption ? "" : option);
+    onChange(option === selectedOption ? "" : option);
+    setIsDropdownOpen(false);
   };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
@@ -49,19 +53,13 @@ const DropdownCheckbox: React.FC<DropdownCheckboxProps> = ({
   }, []);
 
   return (
-    <div>
-      {/* Button to toggle the dropdown */}
+    <div className="relative w-full">
       <button
-        id="dropdownCheckboxButton"
-        onClick={toggleDropdown}
-        disabled={disabled}
-        aria-disabled={disabled}
-        className={`bg-[#D9D9D9] hover:bg-white focus:ring-4 focus:outline-none focus:ring-white-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center w-[100%] ${
-          disabled ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        type="button"
+        onClick={() => setIsDropdownOpen((prev) => !prev)}
+        className="bg-gray-200 hover:bg-gray-300 p-2 rounded-md w-full flex justify-between items-center text-left"
       >
-        {selectedOption || "Cargo"}
+        <span>{selectedOption || "Escolha um cargo"}</span>
+        {/* Dropdown arrow */}
         <svg
           className="w-2.5 h-2.5 ms-3"
           aria-hidden="true"
@@ -79,35 +77,28 @@ const DropdownCheckbox: React.FC<DropdownCheckboxProps> = ({
         </svg>
       </button>
 
-      {/* Dropdown menu */}
       {isDropdownOpen && (
-        <div
-          id="dropdownDefaultCheckbox"
-          className="z-10 w-48 bg-white divide-y divide-gray-100 absolute rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
-          ref={dropdownRef}
-        >
-          <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
-            {options.map((option) => (
-              <li key={option}>
-                <div className="flex items-center">
-                  <input
-                    id={`checkbox-item-${option}`}
-                    type="checkbox"
-                    value={option}
-                    checked={selectedOption === option}
-                    onChange={() => handleCheckboxChange(option)}
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                  />
-                  <label
-                    htmlFor={`checkbox-item-${option}`}
-                    className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+        <div className="absolute z-10 w-full bg-white border rounded-md mt-1 shadow-md" ref={dropdownRef}>
+          {loading && <p className="text-center p-2">Loading...</p>}
+          {error && <p className="text-center p-2 text-red-500">{error}</p>}
+
+          {!loading && !error && (
+            <ul className="p-2">
+              {positions.length > 0 ? (
+                positions.map((position) => (
+                  <li
+                    key={position.id}
+                    className={`p-2 cursor-pointer ${selectedOption === position.name ? "bg-gray-300" : "hover:bg-gray-200"}`}
+                    onClick={() => handleCheckboxChange(position.name)}
                   >
-                    {option}
-                  </label>
-                </div>
-              </li>
-            ))}
-          </ul>
+                    {position.name}
+                  </li>
+                ))
+              ) : (
+                <p className="text-center text-sm text-gray-500">Nenhum cargo disponível.</p>
+              )}
+            </ul>
+          )}
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import ContractForm from "@/app/components/forms/contract-form";
+import ContractForm from "@/app/components/display/contract-form";
 import "./style.css";
 import { useRouter } from "next/navigation";
 import { Navigation } from "@/app/components/navigation/navigation";

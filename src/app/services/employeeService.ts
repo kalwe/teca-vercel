@@ -1,84 +1,78 @@
-import apiClient from "./api";
+import api from "./api"; // Importa a instância do Axios configurada
 
-/**
- * Service for employee-related API operations.
- * Provides functions for creating, fetching, updating, and deleting employees.
- */
+export const EmployeeService = {
+  /**
+   * Cria um novo funcionário
+   * @param {object} employeeData - Dados do funcionário
+   * @returns {Promise} - Resposta da API
+   */
+  createEmployee: async (employeeData: any) => {
+    try {
+      const response = await api.post("/employee", employeeData);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao criar funcionário:", error);
+      throw error;
+    }
+  },
 
-/**
- * Create a new employee.
- * @param employeeData - Object containing employee details.
- * @returns Promise resolving with the created employee data.
- */
-export const createEmployee = async (employeeData: { name: string; position: string; salary: number }) => {
-  try {
-    const response = await apiClient.post("/employees", employeeData);
-    return response.data;
-  } catch (error) {
-    console.error("Error creating employee:", error);
-    throw error;
-  }
-};
+  /**
+   * Busca um funcionário por ID
+   * @param {number} id - ID do funcionário
+   * @returns {Promise} - Dados do funcionário
+   */
+  getEmployeeById: async (id: number) => {
+    try {
+      const response = await api.get(`/employee/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar funcionário:", error);
+      throw error;
+    }
+  },
 
-/**
- * Fetch a list of employees.
- * @returns Promise resolving with the list of employees.
- */
-export const fetchEmployees = async () => {
-  try {
-    const response = await apiClient.get("/employees");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching employees:", error);
-    throw error;
-  }
-};
+  /**
+   * Busca todos os funcionários cadastrados
+   * @returns {Promise} - Lista de funcionários
+   */
+  getAllEmployees: async () => {
+    try {
+      const response = await api.get("/employee");
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar todos os funcionários:", error);
+      throw error;
+    }
+  },
 
-/**
- * Fetch a single employee by ID.
- * @param employeeId - The ID of the employee to fetch.
- * @returns Promise resolving with the employee's data.
- */
-export const fetchEmployeeById = async (employeeId: string) => {
-  try {
-    const response = await apiClient.get(`/employees/${employeeId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching employee by ID:", error);
-    throw error;
-  }
-};
+  /**
+   * Atualiza um funcionário existente
+   * @param {number} id - ID do funcionário
+   * @param {object} employeeData - Novos dados do funcionário
+   * @returns {Promise} - Dados atualizados
+   */
+  updateEmployee: async (id: number, employeeData: any) => {
+    try {
+      const response = await api.put(`/employee/${id}`, employeeData);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao atualizar funcionário:", error);
+      throw error;
+    }
+  },
 
-/**
- * Update an employee by ID.
- * @param employeeId - The ID of the employee to update.
- * @param employeeData - Object containing the updated employee details.
- * @returns Promise resolving with the updated employee data.
- */
-export const updateEmployee = async (
-  employeeId: string,
-  employeeData: { name?: string; position?: string; salary?: number }
-) => {
-  try {
-    const response = await apiClient.put(`/employees/${employeeId}`, employeeData);
-    return response.data;
-  } catch (error) {
-    console.error("Error updating employee:", error);
-    throw error;
-  }
-};
-
-/**
- * Delete an employee by ID.
- * @param employeeId - The ID of the employee to delete.
- * @returns Promise resolving when the employee is successfully deleted.
- */
-export const deleteEmployee = async (employeeId: string) => {
-  try {
-    const response = await apiClient.delete(`/employees/${employeeId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error deleting employee:", error);
-    throw error;
-  }
+  /**
+   * Exclui um funcionário pelo ID
+   * @param {number} id - ID do funcionário a ser removido
+   * @returns {Promise} - Confirmação da exclusão
+   */
+  deleteEmployee: async (id: number) => {
+    try {
+      const response = await api.delete(`/employee/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao deletar funcionário:", error);
+      throw error;
+    }
+  },
 };

@@ -1,82 +1,105 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { VagasContextProps, Vaga } from '../types/employee';
+import { Vacancy, VacancyContextProps } from '../types/vacancyType';
+import { VacancyService } from '@/app/services/vacancyService';
 
-
-const VagasContext = createContext<VagasContextProps | undefined>(undefined);
+const VagasContext = createContext<VacancyContextProps | undefined>(undefined);
 
 export const VagasProvider = ({ children }: { children: ReactNode }) => {
-  const [vagas, setVagas] = useState<Vaga[]>([]);
+  const [vacancies, set_vacancies] = useState<Vacancy[]>([]);
 
-  // Helper para carregar vagas do localStorage
-  const loadVagas = () => {
+  /**
+   * Fetch all vacancies from the backend and update state.
+   */
+  const loadVacancies = async () => {
     try {
-      const storedVagas = localStorage.getItem('vagas');
-      if (storedVagas) {
-        const parsedVagas: Vaga[] = JSON.parse(storedVagas);
-        setVagas(parsedVagas);
+      const fetchedVacancies = await VacancyService.getAllVacancies();
+      if (fetchedVacancies) {
+        set_vacancies(fetchedVacancies);
       }
     } catch (error) {
-      console.error('Erro ao carregar vagas do localStorage:', error);
+      console.error('Error loading vacancies from backend:', error);
     }
   };
 
-  // Helper para salvar vagas no localStorage
-  const saveVagas = () => {
+  /**
+   * Create a new vacancy in the backend and update state.
+   * @param newVacancy - The vacancy to be added.
+   */
+  const add_vacancy = async (newVacancy: Vacancy) => {
     try {
-      localStorage.setItem('vagas', JSON.stringify(vagas));
+      const createdVacancy = await VacancyService.createVacancy(newVacancy);
+      set_vacancies((prevVacancies) => [...prevVacancies, createdVacancy]);
+      console.log('New vacancy added:', createdVacancy);
     } catch (error) {
-      console.error('Erro ao salvar vagas no localStorage:', error);
+      console.error('Error adding vacancy:', error);
     }
   };
 
-  // Carrega vagas ao montar o componente
+  /**
+   * Update an existing vacancy in the backend and update state.
+   * @param id - The ID of the vacancy to update.
+   * @param updates - The updated vacancy fields.
+   */
+  const update_vacancy = async (id: number, updates: Partial<Vacancy>) => {
+    try {
+      const existingVacancy = vacancies.find((vacancy) => vacancy.id === id);
+      if (!existingVacancy) {
+        console.error(`Vacancy with ID ${id} not found.`);
+        return;
+      }
+
+      // Merge existing vacancy with updates to ensure all required fields are provided
+      const updatedVacancy: Vacancy = {
+        ...existingVacancy,
+        ...updates,
+        quantity: updates.quantity ?? existingVacancy.quantity, // Ensure 'quantity' is not undefined
+      };
+
+      const responseVacancy = await VacancyService.updateVacancy(id, updatedVacancy);
+      set_vacancies((prevVacancies) =>
+        prevVacancies.map((vacancy) => (vacancy.id === id ? responseVacancy : vacancy))
+      );
+      console.log(`Vacancy ${id} updated.`);
+    } catch (error) {
+      console.error(`Error updating vacancy ${id}:`, error);
+    }
+  };
+
+  /**
+   * Delete a vacancy in the backend and update state.
+   * @param id - The ID of the vacancy to remove.
+   */
+  const remove_vacancy = async (id: number) => {
+    try {
+      await VacancyService.deleteVacancy(id);
+      set_vacancies((prevVacancies) => prevVacancies.filter((vacancy) => vacancy.id !== id));
+      console.log(`Vacancy ${id} removed.`);
+    } catch (error) {
+      console.error(`Error removing vacancy ${id}:`, error);
+    }
+  };
+
+  /**
+   * Fetch vacancies when the component is mounted.
+   */
   useEffect(() => {
-    loadVagas();
+    loadVacancies();
   }, []);
 
-  // Salva vagas sempre que o estado muda
-  useEffect(() => {
-    saveVagas();
-  }, [vagas]);
-
-  // Adiciona ou atualiza uma vaga
-  const addVaga = (newVaga: Vaga) => {
-    setVagas((prevVagas) => {
-      const exists = prevVagas.some((vaga) => vaga.vaga === newVaga.vaga);
-      if (exists) {
-        alert(`O cargo "${newVaga.vaga}" já existe na lista.`);
-        return prevVagas; // Não adiciona vaga duplicada
-      }
-      return [...prevVagas, newVaga];
-    });
-    console.log('Nova vaga adicionada:', newVaga);
-  };
-
-
-  // Atualiza uma vaga pelo índice
-  const updateVaga = (index: number, updates: Partial<Vaga>) => {
-    setVagas((prevVagas) =>
-      prevVagas.map((vaga, i) => (i === index ? { ...vaga, ...updates } : vaga))
-    );
-    console.log(`Vaga no índice ${index} atualizada.`);
-  };
-
-  // Remove uma vaga pelo índice
-  const removeVaga = (index: number) => {
-    setVagas((prevVagas) => prevVagas.filter((_, i) => i !== index));
-    console.log(`Vaga no índice ${index} removida.`);
-  };
-
   return (
-    <VagasContext.Provider value={{ vagas, addVaga, updateVaga, removeVaga }}>
-      {children}
-    </VagasContext.Provider>
+    <VagasContext.Provider
+    value={{ vacancies, set_vacancies, add_vacancy, update_vacancy, remove_vacancy }}
+  >
+    {children}
+  </VagasContext.Provider>
   );
 };
 
-// Hook customizado para acessar o VagasContext
+/**
+ * Custom hook to access the Vacancies context.
+ */
 export const useVagasContext = () => {
   const context = useContext(VagasContext);
   if (!context) {

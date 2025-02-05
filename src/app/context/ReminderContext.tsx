@@ -1,51 +1,61 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Reminder, ReminderContextData } from '../types/employee';
+import { Reminder } from '../types/reminderType';
 
+interface ReminderContextData {
+    reminders: Reminder[];
+    addReminder: (reminder: Reminder) => void;
+    setReminders: React.Dispatch<React.SetStateAction<Reminder[]>>;
+}
 
-const ReminderContext = createContext<ReminderContextData | undefined>(
-  undefined
-);
+const ReminderContext = createContext<ReminderContextData | undefined>(undefined);
 
-export const ReminderProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [reminders, setReminders] = useState<Reminder[]>([]);
+export const ReminderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [reminders, setReminders] = useState<Reminder[]>([]);
 
-  const addReminder = (reminder: Reminder) => {
-    setReminders((prev) => [...prev, reminder]);
-  };
+    const addReminder = (reminder: Reminder) => {
+        setReminders((prev) => [...prev, reminder]);
+        localStorage.setItem('reminders', JSON.stringify([...reminders, reminder]));
+    };
 
-  // Remoção automática de lembretes expirados
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const currentDate = now.toLocaleDateString('pt-BR');
-      const currentTime = now.toTimeString().slice(0, 5);
+    useEffect(() => {
+        const storedReminders = localStorage.getItem('reminders');
+        if (storedReminders) {
+            setReminders(JSON.parse(storedReminders));
+        }
+    }, []);
 
-      setReminders((prevReminders) =>
-        prevReminders.filter(
-          (reminder) =>
-            !(reminder.date === currentDate && reminder.time <= currentTime)
-        )
-      );
-    }, 60000); // Verifica a cada minuto
+    // Remoção automática de lembretes expirados
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = new Date();
+            const currentDate = now.toLocaleDateString('pt-BR');
+            const currentTime = now.toTimeString().slice(0, 5);
 
-    return () => clearInterval(interval);
-  }, []);
+            setReminders((prevReminders) => {
+                const filteredReminders = prevReminders.filter(
+                    (reminder) => !(reminder.date === currentDate && reminder.time <= currentTime)
+                );
+                localStorage.setItem('reminders', JSON.stringify(filteredReminders));
+                return filteredReminders;
+            });
+        }, 60000); // Verifica a cada minuto
 
-  return (
-    <ReminderContext.Provider value={{ reminders, addReminder }}>
-      {children}
-    </ReminderContext.Provider>
-  );
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <ReminderContext.Provider value={{ reminders, addReminder, setReminders }}>
+            {children}
+        </ReminderContext.Provider>
+    );
 };
 
 export const useReminderContext = (): ReminderContextData => {
-  const context = useContext(ReminderContext);
-  if (!context) {
-    throw new Error('useReminderContext must be used within a ReminderProvider');
-  }
-  return context;
+    const context = useContext(ReminderContext);
+    if (!context) {
+        throw new Error('useReminderContext must be used within a ReminderProvider');
+    }
+    return context;
 };

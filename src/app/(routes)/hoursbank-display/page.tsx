@@ -1,6 +1,6 @@
 "use client"
 
-import HoursBank from '@/app/components/forms/hoursbank-form';
+import HoursBank from '@/app/components/display/hoursbank-form';
 import './style.css'
 import { useRouter } from "next/navigation";
 import { useState } from 'react';
@@ -9,14 +9,14 @@ import { Navigation } from '@/app/components/navigation/navigation';
 
 
 export default function Contract() {
- 
+
 /* Change page */
 
 const router = useRouter()
 
 const handleClick = () => {
   router.push('/dashboard-display/')
-} 
+}
 
 
   return (

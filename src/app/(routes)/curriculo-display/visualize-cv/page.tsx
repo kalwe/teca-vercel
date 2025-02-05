@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import plusButton from '../assets/Mais 1.png'
-import { VisualizeCV } from "@/app/components/forms/visualize-cv";
+import { VisualizeCV } from "@/app/components/display/visualize-cv";
 import { DropDownBurger } from "@/app/components/DropDown/dropdown-burger";
 import '../style.css'
 import { useRouter } from "next/navigation";
@@ -12,21 +12,21 @@ import { Navigation } from "@/app/components/navigation/navigation";
 
 
 export default function Contract() {
- 
+
 /* Change page */
 
 const router = useRouter()
 
 const handleClick = () => {
   router.push('/dashboard-display/')
-} 
+}
 
 
   return (
     <div>
      <Navigation/>
-      
-      
+
+
       <VisualizeCV/>
 
         {/* Botão "Voltar" */}

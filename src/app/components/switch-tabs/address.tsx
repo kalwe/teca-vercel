@@ -1,140 +1,133 @@
-import { useEffect, useState } from "react";
-import CepMask from "../masks/cep";
-import { AddressData, AddressProps } from "@/app/types/employee";
+"use client";
 
+import { useEffect, useState } from "react";
+import type { AddressType, AddressProps } from "@/app/types/address";
+import { addressSchema } from "@/app/schemas/addressSchema";
+import { AddressService } from "@/app/services/addressService";
+import employeeData from "@/app/components/data/employeeData.json"; // 🔥 Importando JSON inicial
 
 export function Address({
-  data = {
-    logradouro: "",
-    bairro: "",
-    cep: "",
-    estado: "",
-    municipio: "",
-  },
+  data = employeeData.address, // 🔥 Carrega dados do JSON se não houver dados
   onChange,
   isEditable,
   onNext,
   onPrev,
+  employeeId, // ID do funcionário para vincular endereço
 }: AddressProps) {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [errors, setErrors] = useState<{ [key in keyof AddressType]?: string }>({});
 
-  // Ensure default values for data fields
-  const currentData: AddressData = {
-    logradouro: data.logradouro || "",
-    bairro: data.bairro || "",
-    cep: data.cep || "",
-    estado: data.estado || "",
-    municipio: data.municipio || "",
-  };
-
-  // Validation of required fields
+  // **Validação dos campos**
   useEffect(() => {
-    const isValid =
-      currentData.logradouro.trim() !== "" &&
-      currentData.bairro.trim() !== "" &&
-      currentData.cep.trim() !== "" &&
-      currentData.estado.trim() !== "" &&
-      currentData.municipio.trim() !== "";
-    setIsNextEnabled(isValid);
-  }, [currentData]);
+    try {
+      addressSchema.parse(data);
+      setErrors({});
+      setIsNextEnabled(true);
+    } catch (error: any) {
+      const validationErrors: { [key in keyof AddressType]?: string } = {};
+      if (error.errors) {
+        error.errors.forEach((e: any) => {
+          validationErrors[e.path[0] as keyof AddressType] = e.message;
+        });
+      }
+      setErrors(validationErrors);
+      setIsNextEnabled(false);
+    }
+  }, [data]);
 
-  const handleInputChange = (field: keyof AddressData, value: string) => {
-    onChange({ ...currentData, [field]: value });
+  const handleInputChange = (field: keyof AddressType, value: string) => {
+    onChange({ ...data, [field]: value });
   };
+
+  // **Criar um novo endereço (POST)**
+  const createAddress = async () => {
+    try {
+      await AddressService.createAddress({ ...data, employee: employeeId });
+      alert("Endereço criado com sucesso!");
+      onNext();
+    } catch (error) {
+      alert("Erro ao criar endereço.");
+    }
+  };
+
+  useEffect(() => {
+    if (employeeId) {
+      AddressService.getAddressById(employeeId)
+        .then((addressData) => onChange(addressData))
+        .catch((error) => console.error("Erro ao buscar endereço:", error));
+    }
+  }, [employeeId]);
 
   return (
-    <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-[100%]">
+    <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
+      <h2 className="text-white text-xl font-bold">Endereço</h2>
+
       {/* Logradouro */}
       <div className="w-full">
-        <label className="block text-gray-400 mb-2">Logradouro</label>
         <input
           type="text"
-          value={currentData.logradouro}
-          onChange={(e) => handleInputChange("logradouro", e.target.value)}
+          value={data.street || ""}
+          onChange={(e) => handleInputChange("street", e.target.value)}
           placeholder="Digite o logradouro"
-          className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className={`w-full bg-gray-700 text-white border ${errors.street ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
           disabled={!isEditable}
         />
+        {errors.street && <p className="text-red-500 text-sm mt-1">{errors.street}</p>}
+      </div>
+
+      {/* Número */}
+      <div className="w-full">
+        <input
+          type="text"
+          value={data.number || ""}
+          onChange={(e) => handleInputChange("number", e.target.value)}
+          placeholder="Digite o número"
+          className={`w-full bg-gray-700 text-white border ${errors.number ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
+          disabled={!isEditable}
+        />
+        {errors.number && <p className="text-red-500 text-sm mt-1">{errors.number}</p>}
       </div>
 
       {/* Bairro */}
       <div className="w-full">
-        <label className="block text-gray-400 mb-2">Bairro</label>
         <input
           type="text"
-          value={currentData.bairro}
-          onChange={(e) => handleInputChange("bairro", e.target.value)}
+          value={data.neighborhood || ""}
+          onChange={(e) => handleInputChange("neighborhood", e.target.value)}
           placeholder="Digite o bairro"
-          className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className={`w-full bg-gray-700 text-white border ${errors.neighborhood ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
           disabled={!isEditable}
         />
-      </div>
-
-      {/* CEP */}
-      <div className="w-full">
-
-        <CepMask
-          value={currentData.cep}
-          onChange={(value) => handleInputChange("cep", value)}
-          disabled={!isEditable}
-        />
+        {errors.neighborhood && <p className="text-red-500 text-sm mt-1">{errors.neighborhood}</p>}
       </div>
 
       {/* Estado */}
       <div className="w-full">
-        <label className="block text-gray-400 mb-2">Estado</label>
         <select
-  value={currentData.estado}
-  onChange={(e) => handleInputChange("estado", e.target.value)}
-  className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-  disabled={!isEditable}
->
-  <option value="">Selecione o estado</option>
-  <option value="AC">Acre</option>
-  <option value="AL">Alagoas</option>
-  <option value="AP">Amapá</option>
-  <option value="AM">Amazonas</option>
-  <option value="BA">Bahia</option>
-  <option value="CE">Ceará</option>
-  <option value="DF">Distrito Federal</option>
-  <option value="ES">Espírito Santo</option>
-  <option value="GO">Goiás</option>
-  <option value="MA">Maranhão</option>
-  <option value="MT">Mato Grosso</option>
-  <option value="MS">Mato Grosso do Sul</option>
-  <option value="MG">Minas Gerais</option>
-  <option value="PA">Pará</option>
-  <option value="PB">Paraíba</option>
-  <option value="PR">Paraná</option>
-  <option value="PE">Pernambuco</option>
-  <option value="PI">Piauí</option>
-  <option value="RJ">Rio de Janeiro</option>
-  <option value="RN">Rio Grande do Norte</option>
-  <option value="RS">Rio Grande do Sul</option>
-  <option value="RO">Rondônia</option>
-  <option value="RR">Roraima</option>
-  <option value="SC">Santa Catarina</option>
-  <option value="SP">São Paulo</option>
-  <option value="SE">Sergipe</option>
-  <option value="TO">Tocantins</option>
-</select>
-
-      </div>
-
-      {/* Município */}
-      <div className="w-full">
-        <label className="block text-gray-400 mb-2">Município</label>
-        <input
-          type="text"
-          value={currentData.municipio}
-          onChange={(e) => handleInputChange("municipio", e.target.value)}
-          placeholder="Digite o município"
-          className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+          value={data.state || ""}
+          onChange={(e) => handleInputChange("state", e.target.value)}
+          className={`w-full bg-gray-700 text-white border ${errors.state ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
           disabled={!isEditable}
-        />
+        >
+          <option value="">Selecione o estado</option>
+          {["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT",
+            "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO",
+            "RR", "SC", "SP", "SE", "TO"].map((estado) => (
+            <option key={estado} value={estado}>{estado}</option>
+          ))}
+        </select>
+        {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state}</p>}
       </div>
 
-
+      {/* Botões */}
+      <div className="flex justify-between mt-6">
+        <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+          Voltar
+        </button>
+        <button onClick={createAddress} className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" disabled={!isNextEnabled}>
+          Próximo
+        </button>
+      </div>
     </div>
   );
 }

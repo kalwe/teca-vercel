@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { DropdownCheckboxSchoolProps } from '@/app/types/employee';
+import { DropdownCheckboxSchoolProps } from '@/app/types/dropdown';
 
 export function DropdownCheckboxSchool({
   value,

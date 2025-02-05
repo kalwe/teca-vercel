@@ -1,0 +1,40 @@
+{
+    "pessoaFisica": {
+      "name": "",
+      "national_id": "",
+      "gender": "",
+      "martial_status": "",
+      "rg": "",
+      "issuing_body": "",
+      "selectedDate": null
+    },
+    "funcionario": {
+      "function": "",
+      "registration": "",
+      "supervisor": false,
+      "manager": false
+    },
+    "address": {
+      "street": "",
+      "number": "",
+      "neighborhood": "",
+      "city": "",
+      "zip_code": "",
+      "state": ""
+    },
+    "contact": {
+      "phone_number": "",
+      "email": ""
+    },
+    "bank_account": {
+      "bank": "",
+      "agency": "",
+      "account": "",
+      "account_type": ""
+    },
+    "clothing": {
+      "shirt_size": "",
+      "pants_size": "",
+      "shoe_size": ""
+    }
+  }

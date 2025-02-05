@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useState, useContext } from "react";
-import { User, UserContextType } from "../types/employee";
+import { User, UserContextType } from "../types/old/employee";
 
 /// Create context
 const UserContext = createContext<UserContextType | undefined>(undefined);

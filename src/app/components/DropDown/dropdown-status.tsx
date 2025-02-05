@@ -3,7 +3,7 @@ import { SetStateAction, useState, useRef, useEffect } from 'react';
 export function DropdownStatus(){
 
 
-     const [selectedOption, setSelectedOption] = useState<string>("");       
+     const [selectedOption, setSelectedOption] = useState<string>("");
      const [isDropdownOpen, setIsDropdownOpen] = useState(false);
      const dropdownRef = useRef<HTMLDivElement | null>(null)
 
@@ -32,7 +32,7 @@ useEffect(()=>{
   }
 })
 
-       
+
         return (
             <div className="relative">
               <div className="w-full flex items-center">
@@ -58,7 +58,7 @@ useEffect(()=>{
                   </svg>
                 </button>
               </div>
-          
+
               {/* Dropdown menu */}
               {isDropdownOpen && (
                 <div
@@ -116,6 +116,6 @@ useEffect(()=>{
                 </div>
               )}
             </div>
-          
+
           )
         }

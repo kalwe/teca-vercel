@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
-import { DropdownCheckboxGenderProps } from "@/app/types/employee";
+import { DropdownCheckboxGenderProps } from "@/app/types/dropdown";
 
 
 export function DropdownCheckboxGender({
