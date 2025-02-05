@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { rgSchema } from "@/app/schemas/common/rgSchema";
-import { RgMaskProps } from "@/app/types/employee";
+import { RgMaskProps } from "@/app/types/old/employee";
 
 export function RgMask({ value = "", onChange, disabled = false }: RgMaskProps) {
   const [error, setError] = useState<string | null>(null);

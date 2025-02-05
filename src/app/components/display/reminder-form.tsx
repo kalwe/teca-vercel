@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useReminderContext } from '@/app/context/ReminderContext';
+import { ReminderService } from '@/app/services/reminderService';
 
 const ReminderForm: React.FC = () => {
     const { addReminder } = useReminderContext();
@@ -12,25 +13,29 @@ const ReminderForm: React.FC = () => {
     const [description, setDescription] = useState<string>('');
     const router = useRouter();
 
-    const handleFormSubmit = (e: React.FormEvent) => {
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const newReminder = {
-            id: Date.now().toString(),
             date: selectedDate,
             time: reminderTime,
             reason: reminderReason,
+            description,
         };
 
-        addReminder(newReminder);
-
-        router.push('/dashboard-display/');
+        try {
+            const createdReminder = await ReminderService.createReminder(newReminder);
+            addReminder(createdReminder);
+            router.push('/dashboard-display/');
+        } catch (error) {
+            console.error("Erro ao criar lembrete", error);
+        }
     };
 
     const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let value = e.target.value;
 
-        value = value.replace(/\D/g, ''); // Remove non-numeric characters
+        value = value.replace(/\D/g, '');
 
         if (value.length > 2) value = value.slice(0, 2) + '/' + value.slice(2);
         if (value.length > 5) value = value.slice(0, 5) + '/' + value.slice(5, 9);

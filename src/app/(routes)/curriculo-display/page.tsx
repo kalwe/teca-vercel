@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import plusButton from "./assets/Mais 1.png";
-import CvForm from "@/app/components/forms/cv-form";
+import CvForm from "@/app/components/display/cv-form";
 import './style.css'
 import { useRouter } from "next/navigation";
 import { useState } from "react";

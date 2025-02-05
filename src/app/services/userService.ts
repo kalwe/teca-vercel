@@ -1,28 +1,62 @@
+import axios from "../utils/axiosInstance";
+import { UserOutput, UserInput } from "../types/user";
+import { userOutputSchema } from "../schemas/userSchema";
 
-import axios from '../utils/axiosInstance'
+export const UserService = {
+  /**
+   * Fetch all users from API
+   */
+  async getAllUsers(): Promise<UserOutput[]> {
+    const response = await axios.get("/users");
+    return response.data.map((user: unknown) => userOutputSchema.parse(user));
+  },
 
-// TODO: don`t use plural, prefer 'user'
-export const getUsers = async () => {
-  const response = await axios.get('/users')
-  return response.data;
+  /**
+   * Fetch a single user by ID
+   */
+  async getUserById(id: number): Promise<UserOutput | null> {
+    try {
+      const response = await axios.get(`/users/${id}`);
+      return userOutputSchema.parse(response.data); // ✅ Valida com Zod antes de retornar
+    } catch (error) {
+      console.error(`⚠ Erro ao buscar usuário com ID ${id}:`, error);
+      return null; // ✅ Retorna `null` se o usuário não for encontrado
+    }
+  },
+
+  /**
+   * Create a new user
+   */
+  async createUser(userData: UserInput): Promise<UserOutput> {
+    const response = await axios.post("/users", userData);
+    return userOutputSchema.parse(response.data);
+  },
+
+  /**
+   * Update user by ID
+   */
+  async updateUser(id: number, userData: Partial<UserInput>): Promise<UserOutput> {
+    const response = await axios.put(`/users/${id}`, userData);
+    return userOutputSchema.parse(response.data);
+  },
+
+  /**
+   * Delete user by ID
+   */
+  async deleteUser(id: number): Promise<void> {
+    await axios.delete(`/users/${id}`);
+  },
+
+  /**
+   * 🔥 Login Function - Authenticates user with email and password
+   */
+  async login(email: string, password: string): Promise<UserOutput | null> {
+    try {
+      const response = await axios.post("/auth/login", { email, password });
+      return userOutputSchema.parse(response.data);
+    } catch (error) {
+      console.error("⚠ Erro no login:", error);
+      return null;
+    }
+  }
 };
-
-// TODO: don`t allow receive type 'any', set type with schema,
-// UserSchema with Zod
-export const createUser = async (userData: any) =>{
-  // TODO: fiz correct indentation
-const response = await axios.post('/users', userData);
-return response.data
-}
-
-// TODO: use 'id: int'
-export const updateUser = async (id: any, userData: any) => {
-  const response = await axios.put(`/users/${id}`, userData);
-  return response.data;
-}
-
-// TODO: use 'id: int'
-export const deleteUser = async (id: any) => {
-const response = await axios.delete(`/users/${id}`)
-return response.data
-}

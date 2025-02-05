@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
-import { FormData, FormDataContextType } from "../types/employee";
+import { FormData, FormDataContextType } from "../types/old/employee";
 
 // Define types for the form data structure
 

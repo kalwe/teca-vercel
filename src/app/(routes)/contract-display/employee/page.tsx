@@ -1,12 +1,12 @@
 "use client"
 
-import HoursBank from '@/app/components/forms/hoursbank-form';
+import HoursBank from '@/app/components/display/hoursbank-form';
 import '../style.css'
 import { useRouter } from "next/navigation";
 import { useState } from 'react';
 import { DropDownBurger } from '@/app/components/DropDown/dropdown-burger';
 import { Navigation } from '@/app/components/navigation/navigation';
-import Employees from '@/app/components/forms/registered-employees';
+import Employees from '@/app/components/display/registered-employees';
 
 
 export default function Contract() {

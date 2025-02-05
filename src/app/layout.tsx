@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { FormDataProvider } from "@/app/context/FormDataContext";
 import { EmployeeProvider } from "@/app/context/EmployeeContext";
 import { VagasProvider } from "@/app/context/VagasContext";
-import { CurriculoProvider } from "@/app/context/CurriculoContext";
+import { CvProvider } from "./context/CurriculoContext";
 import { ReminderProvider } from "@/app/context/ReminderContext";
 import { UserProvider } from "@/app/context/UserContext";
 import { HoursBankProvider } from "@/app/context/HoursBankContext"; // Added HoursBankProvider
@@ -34,11 +34,11 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
       <FormDataProvider>
         <EmployeeProvider>
           <VagasProvider>
-            <CurriculoProvider>
+            <CvProvider>
               <ReminderProvider>
                 <HoursBankProvider>{children}</HoursBankProvider>
               </ReminderProvider>
-            </CurriculoProvider>
+            </CvProvider>
           </VagasProvider>
         </EmployeeProvider>
       </FormDataProvider>

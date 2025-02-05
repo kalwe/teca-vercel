@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
-import { DropdownCheckboxFuncaoProps } from "@/app/types/employee";
+import { DropdownCheckboxFuncaoProps } from "@/app/types/dropdown";
 
 
 export function DropdownCheckboxFuncao({

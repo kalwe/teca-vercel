@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/app/context/UserContext"; // Import the user context
-import { DropDownBurgerProps } from "@/app/types/employee";
+import { DropDownBurgerProps } from "@/app/types/dropdown";
 
 
 export function DropDownBurger({ isOpen }: DropDownBurgerProps) {

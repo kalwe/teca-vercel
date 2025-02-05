@@ -1,67 +1,89 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { UserContextType, User } from "../types/employee";
+import { UserContextType, UserOutput } from "../types/user";
+import { UserService } from "../services/userService"; // ✅ Backend principal
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<UserOutput[]>([]);
+  const [loggedInUser, setLoggedInUser] = useState<UserOutput | null>(null);
 
-  // Carregar dados do localStorage
+  // ✅ Busca usuários do backend ao carregar
   useEffect(() => {
-    const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-    const storedLoggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "null");
-    setUsers(storedUsers);
-    setLoggedInUser(storedLoggedInUser);
+    const fetchUsers = async () => {
+      try {
+        const usersFromAPI = await UserService.getAllUsers();
+        setUsers(usersFromAPI);
+      } catch (error) {
+        console.error("⚠ Erro ao buscar usuários do backend:", error);
+      }
+    };
+
+    fetchUsers();
   }, []);
 
-  // Salvar alterações de `users` no localStorage
-  useEffect(() => {
-    localStorage.setItem("users", JSON.stringify(users));
-  }, [users]);
-
-  // Salvar alterações de `loggedInUser` no localStorage
-  useEffect(() => {
-    localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
-  }, [loggedInUser]);
-
-  const addUser = (user: Omit<User, "id" | "active">) => {
-    // Adicionar novo usuário
-    setUsers((prev) => [...prev, { ...user, id: Date.now(), active: true }]);
-  };
-
-  const updateUser = (id: number, updatedData: Partial<User>) => {
-    setUsers((prev) =>
-      prev.map((user) => (user.id === id ? { ...user, ...updatedData } : user))
-    );
-    // Salvar username em localStorage somente em edição
-    if (updatedData.username) {
-      const editedUser = users.find((user) => user.id === id);
-      if (editedUser) {
-        localStorage.setItem("editedUsername", updatedData.username); // Armazena o nome atualizado
+  // ✅ Criar usuário via backend
+  const addUser = async (userData: Omit<UserOutput, "id" | "active"> & { password: string }) => {
+    try {
+      if (!userData.password) {
+        throw new Error("A senha é obrigatória para criar um usuário.");
       }
+
+      const newUser = await UserService.createUser(userData);
+      setUsers((prevUsers) => [...prevUsers, newUser]);
+    } catch (error) {
+      console.error("⚠ Erro ao adicionar usuário:", error);
     }
   };
 
-  const deleteUser = (id: number) => {
-    setUsers((prev) => prev.filter((user) => user.id !== id));
-  };
+  // ✅ Atualizar usuário via backend
+  const updateUser = async (id: number, updatedData: Partial<UserOutput>) => {
+    try {
+      const updatedUser = await UserService.updateUser(id, updatedData);
+      setUsers((prevUsers) => prevUsers.map((user) => (user.id === id ? updatedUser : user)));
 
-  const login = (email: string, password: string): boolean => {
-    const user = users.find((user) => user.email === email);
-    if (user) {
-      setLoggedInUser(user);
-      localStorage.setItem("loggedInUser", JSON.stringify(user)); // Armazena somente no login
-      return true;
+      if (loggedInUser?.id === id) {
+        setLoggedInUser(updatedUser);
+      }
+    } catch (error) {
+      console.error("⚠ Erro ao atualizar usuário:", error);
     }
-    return false;
   };
 
+  // ✅ Deletar usuário via backend
+  const deleteUser = async (id: number) => {
+    try {
+      await UserService.deleteUser(id);
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+
+      if (loggedInUser?.id === id) {
+        setLoggedInUser(null);
+      }
+    } catch (error) {
+      console.error("⚠ Erro ao deletar usuário:", error);
+    }
+  };
+
+  // ✅ Faz login via backend
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const user = await UserService.login(email, password);
+      if (user) {
+        setLoggedInUser(user);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("⚠ Erro no login:", error);
+      return false;
+    }
+  };
+
+  // ✅ Logout
   const logout = () => {
     setLoggedInUser(null);
-    localStorage.removeItem("loggedInUser");
   };
 
   return (
@@ -81,11 +103,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook para acessar o contexto
+// ✅ Hook para acessar o contexto
 export const useUserContext = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error("useUserContext must be used within a UserProvider");
+    throw new Error("useUserContext deve ser usado dentro de um UserProvider.");
   }
   return context;
 };

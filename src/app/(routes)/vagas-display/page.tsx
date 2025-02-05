@@ -1,6 +1,6 @@
 "use client";
 
-import VagasForm from "@/app/components/forms/vagas-form";
+import VagasForm from "@/app/components/display/vagas-form";
 import "./style.css";
 import { useRouter } from "next/navigation";
 

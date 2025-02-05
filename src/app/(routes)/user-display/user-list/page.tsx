@@ -3,7 +3,7 @@
 import '../style.css'
 import { useRouter } from "next/navigation";
 import { Navigation } from '@/app/components/navigation/navigation';
-import UserList from '@/app/components/forms/registered-users';
+import UserList from '@/app/components/display/registered-users';
 
 
 export default function Contract() {
