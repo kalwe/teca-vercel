@@ -9,7 +9,7 @@ export interface PessoaFisica {
   estadoCivil: string;
   rg: string;
   orgaoExpedidor: string;
-  selectedDate: Date | null;
+  selectedDate: Date | null; // TODO: ?
 }
 
 export interface Funcionario {
@@ -45,11 +45,15 @@ export interface Vestuario {
   tamanhoSapato: string;
 }
 
-export interface Employee {
-  name: ReactNode;
+export interface Employee(Funcionario) {
   id: number;
+  name: string;
+  matricula: string;
+  cargo: string;
+  salario: number;
+  dataContratacao: string;
   pessoaFisica: PessoaFisica;
-  funcionario: Funcionario;
+  // funcionario: Funcionario;
   address: Address;
   contact: Contact;
   bank: Bank;

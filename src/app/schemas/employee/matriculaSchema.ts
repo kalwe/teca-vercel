@@ -4,3 +4,4 @@ import { z } from "zod";
 export const matriculaSchema = z
   .string()
   .regex(/^\d{1,4}$/, "A matrícula deve conter apenas números inteiros com no máximo 4 dígitos");
+
