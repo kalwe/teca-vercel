@@ -1,29 +1,49 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useRouter } from 'next/navigation';
-import { useVagasContext } from '@/app/context/VagasContext';
-import { VacancyService } from '@/app/services/vacancyService';
-import { Vacancy } from '@/app/types/vacancyType';
+import { useState, useEffect, useRef } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useRouter } from "next/navigation";
+import { useVagasContext } from "@/app/context/VagasContext";
+import { vacancySchema, Vacancy, sanitizeVacancy, VacancyService } from "@/app/schemas/vacancySchema";
 
-function VagasForm() {
+interface VagasFormProps {
+  vacancyData: Vacancy;
+  setVacancyData: React.Dispatch<React.SetStateAction<Vacancy>>;
+}
+
+const VagasForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) => {
   const { vacancies, set_vacancies } = useVagasContext();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const datePickerRef = useRef<DatePicker | null>(null);
   const router = useRouter();
 
   /**
-   * Fetch all vacancies from the backend on component mount.
+   * 🔹 Busca todas as vagas no backend ao carregar o componente
    */
   useEffect(() => {
     const fetchVacancies = async () => {
       try {
         const fetchedVacancies = await VacancyService.getAllVacancies();
-        set_vacancies(fetchedVacancies);
+
+        if (!Array.isArray(fetchedVacancies)) {
+          throw new Error("Os dados recebidos não são um array.");
+        }
+
+        const validatedVacancies = fetchedVacancies
+          .map((vacancy) => {
+            try {
+              return sanitizeVacancy(vacancySchema.parse(vacancy)); // Validação com Zod
+            } catch (error) {
+              console.warn("⚠️ Vaga inválida ignorada:", error);
+              return null;
+            }
+          })
+          .filter((v) => v !== null);
+
+        set_vacancies(validatedVacancies as Vacancy[]);
       } catch (error) {
-        console.error('Error fetching vacancies:', error);
+        console.error("❌ Erro ao buscar vagas:", error);
       }
     };
 
@@ -41,14 +61,16 @@ function VagasForm() {
   };
 
   const changePage = () => {
-    router.push('vagas-display/nova-vaga');
+    router.push("vagas-display/nova-vaga");
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen"
+    <div
+      className="flex justify-center items-center min-h-screen"
       style={{
-        background: "linear-gradient(to bottom right,rgb(11, 20, 11),rgb(79, 116, 82))"
-      }}>
+        background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
+      }}
+    >
       <div className="w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border relative flex flex-col gap-6">
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-extrabold text-white">Vagas</h1>
@@ -65,11 +87,7 @@ function VagasForm() {
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4v16m8-8H4"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
             </div>
             <span className="text-gray-700 text-sm font-medium">Adicionar vaga</span>
@@ -80,7 +98,7 @@ function VagasForm() {
           <div className="relative w-full max-w-md">
             <input
               type="text"
-              placeholder="Search vacancy..."
+              placeholder="Buscar vaga..."
               className="w-full px-4 py-2 rounded-full bg-gray-700 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <svg
@@ -91,11 +109,7 @@ function VagasForm() {
               stroke="currentColor"
               strokeWidth="2"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
             </svg>
           </div>
         </div>
@@ -106,7 +120,7 @@ function VagasForm() {
             <h1 className="text-gray-300 font-semibold">Quantidade</h1>
           </div>
 
-          <div className="overflow-y-auto rounded-lg" style={{ maxHeight: '300px' }}>
+          <div className="overflow-y-auto rounded-lg" style={{ maxHeight: "300px" }}>
             {vacancies.length > 0 ? (
               vacancies.map((vacancy, index) => (
                 <div
@@ -119,13 +133,13 @@ function VagasForm() {
                 </div>
               ))
             ) : (
-              <p className="text-gray-300">Sem cargo adicionado</p>
+              <p className="text-gray-300">Nenhuma vaga adicionada</p>
             )}
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default VagasForm;

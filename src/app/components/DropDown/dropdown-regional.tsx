@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { DropdownCheckboxRegionalProps } from "@/app/types/dropdown";
 import { RegionService } from "@/app/services/dropdownService";
+import { regionSchema } from "@/app/schemas/regionSchema"; // ✅ Importando o Schema
 
 export function DropdownCheckboxRegional({
   value,
@@ -14,17 +15,28 @@ export function DropdownCheckboxRegional({
   const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Fetch regions from API
+  // 📌 Busca as regiões da API ao carregar o componente
   useEffect(() => {
     const fetchRegions = async () => {
       try {
         setLoading(true);
         setError(null);
         const data = await RegionService.getAllRegions();
-        setRegions(data.map((region) => region.name)); // Assuming API returns { id, name }
+
+        // 🔥 Valida os dados da API antes de usar
+        const validRegions = data.map((region) => {
+          try {
+            return regionSchema.parse(region).name;
+          } catch (err) {
+            console.error("Erro de validação na região:", err);
+            return null;
+          }
+        }).filter((r) => r !== null); // Remove valores inválidos
+
+        setRegions(validRegions);
       } catch (err) {
-        console.error("❌ Error loading regions:", err);
-        setError("Carregando....");
+        console.error("❌ Erro ao carregar regiões:", err);
+        setError("Erro ao carregar regiões.");
       } finally {
         setLoading(false);
       }
@@ -33,13 +45,13 @@ export function DropdownCheckboxRegional({
     fetchRegions();
   }, []);
 
-  // Toggle dropdown visibility
+  // Alterna a visibilidade do dropdown
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDropdownOpen((prev) => !prev);
   };
 
-  // Close dropdown when clicking outside
+  // Fecha o dropdown ao clicar fora dele
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -51,10 +63,15 @@ export function DropdownCheckboxRegional({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle selection
-  const handleCheckboxChange = (option: string) => {
-    onChange(option);
-    setIsDropdownOpen(false);
+  // 🔍 Valida e atualiza a seleção
+  const handleSelect = (option: string) => {
+    try {
+      regionSchema.parse({ name: option }); // ✅ Valida a seleção antes de alterar o estado
+      onChange(option);
+      setIsDropdownOpen(false);
+    } catch (err) {
+      console.error("Erro na validação da região selecionada:", err);
+    }
   };
 
   return (
@@ -62,10 +79,17 @@ export function DropdownCheckboxRegional({
       <button
         id="dropdownCheckboxButton"
         onClick={toggleDropdown}
-        className="bg-[#D9D9D9] hover:bg-white focus:ring-4 focus:outline-none focus:ring-white-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-white-800 w-[100%]"
+        className={`bg-[#D9D9D9] hover:bg-white focus:ring-4 focus:outline-none focus:ring-white-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-white-800 w-[100%] ${
+          error ? "border-red-500" : ""
+        }`}
         type="button"
+        disabled={loading || !!error}
       >
-        {value || "Regional"}
+        {loading
+          ? "Carregando..."
+          : error
+          ? "Erro ao carregar"
+          : value || "Regional"}
         <svg
           className="w-2.5 h-2.5 ms-3"
           aria-hidden="true"
@@ -77,26 +101,26 @@ export function DropdownCheckboxRegional({
         </svg>
       </button>
 
+      {/* Exibe erro caso a API falhe */}
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+
       {/* Dropdown menu */}
-      {isDropdownOpen && (
+      {isDropdownOpen && !loading && !error && (
         <div
           id="dropdownDefaultCheckbox"
           className="absolute z-10 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
           ref={dropdownRef}
         >
           <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
-            {loading && <li className="text-gray-500">Loading...</li>}
-            {error && <li className="text-red-500">{error}</li>}
-            {!loading &&
-              !error &&
+            {regions.length > 0 ? (
               regions.map((option) => (
                 <li key={option}>
                   <div className="flex items-center">
                     <input
                       id={`checkbox-item-${option}`}
-                      type="checkbox"
+                      type="radio"
                       checked={value === option}
-                      onChange={() => handleCheckboxChange(option)}
+                      onChange={() => handleSelect(option)}
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                     />
                     <label htmlFor={`checkbox-item-${option}`} className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
@@ -104,7 +128,10 @@ export function DropdownCheckboxRegional({
                     </label>
                   </div>
                 </li>
-              ))}
+              ))
+            ) : (
+              <li className="text-gray-500 text-sm px-3 py-2">Nenhuma regional disponível</li>
+            )}
           </ul>
         </div>
       )}

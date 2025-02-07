@@ -1,64 +1,78 @@
-"use client"
+"use client";
 
-
-import Image from "next/image";
-import plusButton from "./assets/Mais 1.png";
+import { useSearchParams } from "next/navigation"; // Importando o hook correto
+import { CvService } from "@/app/schemas/cvSchema";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Importando o useRouter para navegação
 import CvForm from "@/app/components/display/cv-form";
-import './style.css'
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { DropDownBurger } from "@/app/components/DropDown/dropdown-burger";
-import { Navigation } from "@/app/components/navigation/navigation";
+import { cvSchema } from "@/app/schemas/cvSchema"; // Importando o cvSchema para validação
 
+export default function CvRoutes() {
+  const router = useRouter();
 
-export default function Contract() {
+  // Usando useSearchParams para pegar parâmetros de URL
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id"); // Obtendo o parâmetro de query "id"
 
-/* Change page */
+  // Estado de carregamento e dados do currículo
+  const [loading, setLoading] = useState(false);
+  const [curriculoData, setCurriculoData] = useState<any>(undefined); // Dados do currículo
 
-const router = useRouter()
+  // Carregar dados de um currículo específico se for edição
+  useEffect(() => {
+    const loadCurriculoData = async () => {
+      setLoading(true);
+      try {
+        if (id) {
+          // Verifica se o ID está presente e busca o currículo via API
+          const cv = await CvService.getCvById(Number(id)); // Buscar pelo ID
+          setCurriculoData(cv); // Armazenar os dados do currículo
+        }
+      } catch (error) {
+        console.error("Erro ao carregar currículo:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-const handleClick = () => {
-  router.push('/curriculo-display/visualize-cv')
-}
+    if (id) {
+      loadCurriculoData(); // Se houver um ID na query, carrega os dados
+    }
+  }, [id]);
 
+  // Função para salvar os dados
+  const handleSave = async (updatedData: any) => {
+    setLoading(true);
+    try {
+      if (updatedData.id) {
+        await CvService.updateCv(updatedData.id, updatedData); // Atualiza a API
+      } else {
+        await CvService.createCv(updatedData); // Cria um novo currículo na API
+      }
+      alert("Currículo salvo com sucesso!");
+      router.push("/curriculo-display/visualize-cv"); // Redireciona após salvar
+    } catch (error) {
+      console.error("Erro ao salvar currículo:", error);
+      alert("Erro ao salvar o currículo. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Função para cancelar e voltar para a visualização
+  const handleCancel = () => {
+    router.push("/curriculo-display/visualize-cv"); // Redireciona para visualizar
+  };
 
   return (
     <div>
-     <Navigation/>
-      <CvForm/>
-
-           {/* Botão "Voltar" */}
-<div
-  style={{
-    backgroundColor: "#D9D9D963",
-    zIndex: 6,
-  }}
-  className="absolute right-[88%] bottom-[70%] text-white p-4 rounded-[21px] h-[12%] shadow-md transition-all duration-300 transform hover:scale-105  flex items-center justify-center"
->
-  {/* Ícone Circular */}
-  <button
-    className="w-[30px] h-[40px] bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
-    onClick={handleClick}
-  >
-    {/* Ícone de seta para voltar */}
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-6 h-6 text-gray-700 hover:text-gray-900 transition-colors duration-300"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15 19l-7-7 7-7"
+      <CvForm
+        mode={curriculoData ? "edit" : "create"} // Verifica se estamos criando ou editando
+        curriculoData={curriculoData} // Dados do currículo
+        onSave={handleSave} // Callback para salvar
+        onCancel={handleCancel} // Callback para cancelar
+        loading={loading} // Estado de carregamento
       />
-    </svg>
-  </button>
-</div>
-
     </div>
   );
 }

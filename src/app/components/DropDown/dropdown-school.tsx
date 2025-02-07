@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { DropdownCheckboxSchoolProps } from '@/app/types/dropdown';
+import React, { useState, useRef, useEffect } from "react";
+import { DropdownCheckboxSchoolProps } from "@/app/types/dropdown";
+import { ScholarityType } from "@/app/schemas/cvSchema";
 
 export function DropdownCheckboxSchool({
   value,
@@ -21,9 +22,9 @@ export function DropdownCheckboxSchool({
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -41,7 +42,7 @@ export function DropdownCheckboxSchool({
         className="bg-[#D9D9D9] hover:bg-white focus:ring-4 focus:outline-none focus:ring-white-300 font-medium rounded-lg text-sm px-5 py-2.5 relative bottom-[20px] text-center inline-flex items-center dark:focus:ring-white-800 w-[100%]"
         type="button"
       >
-        {value || 'Escolaridade'}
+        {value || "Escolaridade"}
         <svg
           className="w-2.5 h-2.5 ms-3"
           aria-hidden="true"
@@ -67,7 +68,7 @@ export function DropdownCheckboxSchool({
           ref={dropdownRef}
         >
           <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
-            {['Ensino fundamental', 'Ensino médio', 'Ensino superior'].map((option) => (
+            {Object.values(ScholarityType).map((option) => (
               <li key={option}>
                 <div className="flex items-center">
                   <input

@@ -2,50 +2,69 @@
 
 import { useEffect, useState } from "react";
 import { employeeSchema } from "@/app/schemas/employeeModelSchema";
-import { EmployeeProps } from "@/app/types/employee";
-import { EmployeeService } from "@/app/services/employeeService"; // 🔥 Importando o serviço
-import DropdownCheckboxFuncao from "../DropDown/dropdown-funcao";
-import employeeData from "@/app/components/data/employeeData.json"; // 🔥 Fallback JSON
+import { Employee } from "@/app/types/employee";
+import { EmployeeService } from "@/app/services/employeeService";
+import DropdownCheckboxFuncao from "../DropDown/dropdown-role";
 
 export function Funcionario({
-  data = employeeData.funcionario, // 🔥 Fallback para JSON
+  data,
   onChange,
   isEditable,
   onNext,
   onPrev,
-}: EmployeeProps) {
+}: {
+  data: Employee;
+  onChange: (updatedData: Employee) => void;
+  isEditable: boolean;
+  onNext: () => void;
+  onPrev: () => void;
+}) {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [errors, setErrors] = useState<Record<string, string | null>>({});
 
   // 🔍 Validação do formulário
   useEffect(() => {
-    try {
-      employeeSchema.parse(data);
+    const validationResult = employeeSchema.safeParse(data);
+    if (validationResult.success) {
       setErrors({});
       setIsNextEnabled(true);
-    } catch (err: any) {
-      if (err.errors) {
-        const validationErrors: Record<string, string> = {};
-        err.errors.forEach((e: any) => {
-          validationErrors[e.path[0]] = e.message;
-        });
-        setErrors(validationErrors);
-      }
+    } else {
+      const validationErrors: Record<string, string> = {};
+      validationResult.error.errors.forEach((e) => {
+        validationErrors[e.path[0]] = e.message;
+      });
+      setErrors(validationErrors);
       setIsNextEnabled(false);
     }
   }, [data]);
 
-  const handleInputChange = (field: keyof EmployeeProps["data"], value: any) => {
+  // 📌 Atualiza os campos corretamente
+  const handleInputChange = (field: keyof Employee, value: any) => {
     onChange({ ...data, [field]: value });
   };
 
   // **Criar funcionário via EmployeeService**
   const createEmployee = async () => {
     try {
-      await EmployeeService.createEmployee({
+      // 🔍 Valida os dados antes do envio
+      const validationResult = employeeSchema.safeParse(data);
+      if (!validationResult.success) {
+        console.error("Erro de validação Zod:", validationResult.error.format());
+        alert("Erro na validação dos dados. Veja o console.");
+        return;
+      }
+
+      const formattedData: Employee = {
         ...data,
-        function: { id: Number(data.function?.id) || null }, // 🔥 Converte função para número
-      });
+        function: {
+          id: data.function?.id ? String(data.function.id) : "",
+          name: data.function?.name
+        },
+        contract_date: data.contract_date || null,
+        removal_date: data.removal_date || null,
+      };
+
+      await EmployeeService.createEmployee(formattedData);
       alert("Funcionário cadastrado com sucesso!");
       onNext();
     } catch (error) {

@@ -1,72 +1,86 @@
 "use client";
 
-import { createContext, useState, useContext } from "react";
-import { User, UserContextType } from "../types/old/employee";
+import { createContext, useState, useContext, useEffect } from "react";
+import { LoginData, User, AuthContextType, AuthResponse } from "@/app/types/authType";
+import { AuthService } from "@/app/services/not-use/authService";
 
-/// Create context
-const UserContext = createContext<UserContextType | undefined>(undefined);
+// ✅ Criando o contexto de autenticação
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Provider
-export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+// ✅ Provider para autenticação e gerenciamento de usuários
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const addUser = (user: Omit<User, "id" | "active">) => {
-    const newUser: User = {
-      id: users.length + 1, // Auto-increment ID
-      ...user,
-      active: true, // Default to active
-    };
-    setUsers([...users, newUser]);
-  };
+  /**
+   * 🔥 Recupera usuário e token do `localStorage` ao iniciar
+   */
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
 
-  const updateUser = (id: number, updatedData: Partial<User>) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === id ? { ...user, ...updatedData } : user
-      )
-    );
-  };
-
-  const deleteUser = (id: number) => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-  };
-
-  const login = (email: string, password: string): boolean => {
-    const user = users.find((u) => u.email === email);
-    if (user) {
-      setLoggedInUser(user);
-      return true;
+    if (storedUser && token) {
+      try {
+        const parsedUser: User = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("⚠ Erro ao recuperar usuário:", error);
+        logout();
+      }
     }
-    return false;
+  }, []);
+
+  /**
+   * ✅ Realiza login chamando a API via `AuthService`
+   */
+  const login = async (credentials: LoginData): Promise<void> => {
+    try {
+      const response = await AuthService.login(credentials);
+
+      if (!response || !response.token) {
+        throw new Error("Resposta inválida do servidor.");
+      }
+
+      // 🔥 Armazena token e usuário no `localStorage`
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user", JSON.stringify(response));
+
+      setUser({
+        id: response.id,
+        username: response.username,
+        email: response.email,
+        role: response.role,
+      });
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("⚠ Erro ao fazer login:", error);
+      throw new Error("Credenciais inválidas ou erro na autenticação.");
+    }
   };
 
+  /**
+   * ✅ Faz logout removendo dados do `localStorage`
+   */
   const logout = () => {
-    setLoggedInUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setIsAuthenticated(false);
   };
 
   return (
-    <UserContext.Provider
-      value={{
-        users,
-        loggedInUser,
-        addUser,
-        updateUser,
-        deleteUser,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
       {children}
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
-// Hook to use the context
-export const useUserContext = (): UserContextType => {
-  const context = useContext(UserContext);
+// ✅ Hook customizado para consumir o contexto de autenticação
+export const useAuthContext = (): AuthContextType => {
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useUserContext must be used within a UserProvider");
+    throw new Error("useAuthContext deve ser usado dentro de um AuthProvider");
   }
   return context;
 };

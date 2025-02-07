@@ -9,7 +9,7 @@ export type Cv = {
     zip_code: string; // Candidate's ZIP code
     position: string; // Desired job position
     region: string; // Candidate's region
-    education_level: string; // Candidate's education level
+    scholarity: string; // Candidate's education level
     date_of_birth: string; // Date of birth (Format: YYYY-MM-DD)
     pdf_url: string; // URL of the CV PDF file
   };

@@ -21,51 +21,45 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
   const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
 
-  // Estados individuais por aba (sanitizados)
-  const [pessoaFisica, setPessoaFisica] = useState(personModelSchema.parse({}));
-  const [funcionario, setFuncionario] = useState(employeeSchema.parse({}));
-  const [address, setAddress] = useState(addressSchema.parse({}));
-  const [contact, setContact] = useState(contactSchema.parse({}));
-  const [bankAccount, setBankAccount] = useState(bankAccountSchema.parse({}));
-  const [clothing, setClothing] = useState(clothingSchema.parse({}));
+  // Estados individuais por aba (com valores iniciais seguros)
+  const [pessoaFisica, setPessoaFisica] = useState(() => personModelSchema.parse(employeeData?.pessoaFisica || {}));
+  const [funcionario, setFuncionario] = useState(() => employeeSchema.parse(employeeData?.funcionario || {}));
+  const [address, setAddress] = useState(() => addressSchema.parse(employeeData?.address || {}));
+  const [contact, setContact] = useState(() => contactSchema.parse(employeeData?.contact || {}));
+  const [bankAccount, setBankAccount] = useState(() => bankAccountSchema.parse(employeeData?.bank_account || {}));
+  const [clothing, setClothing] = useState(() => clothingSchema.parse(employeeData?.clothing || {}));
 
   // Tabs
   const tabs = [
-    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, type: "person" },
-    { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario, type: "employee" },
-    { name: "ENDEREÇO", component: Address, state: address, setState: setAddress, type: "address" },
-    { name: "CONTATO", component: Contact, state: contact, setState: setContact, type: "contact" },
-    { name: "DADOS BANCÁRIOS", component: Bank, state: bankAccount, setState: setBankAccount, type: "bank_account" },
-    { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing, type: "clothing" }
+    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personModelSchema },
+    { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario, schema: employeeSchema },
+    { name: "ENDEREÇO", component: Address, state: address, setState: setAddress, schema: addressSchema },
+    { name: "CONTATO", component: Contact, state: contact, setState: setContact, schema: contactSchema },
+    { name: "DADOS BANCÁRIOS", component: Bank, state: bankAccount, setState: setBankAccount, schema: bankAccountSchema },
+    { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing, schema: clothingSchema }
   ];
 
   const CurrentComponent = tabs[selectedTab]?.component;
   const setState = tabs[selectedTab]?.setState;
-  const currentTabType = tabs[selectedTab]?.type;
+  const schema = tabs[selectedTab]?.schema;
 
-  // Se for modo "editar", preenche os estados com os dados do funcionário
-  useEffect(() => {
-    if (mode === "edit" && employeeData) {
-      try {
-        setPessoaFisica(personModelSchema.parse(employeeData.pessoaFisica || {}));
-        setFuncionario(employeeSchema.parse(employeeData.funcionario || {}));
-        setAddress(addressSchema.parse(employeeData.address || {}));
-        setContact(contactSchema.parse(employeeData.contact || {}));
-        setBankAccount(bankAccountSchema.parse(employeeData.bank_account || {}));
-        setClothing(clothingSchema.parse(employeeData.clothing || {}));
-      } catch (error) {
-        console.error("❌ Erro ao carregar dados para edição:", error);
-        alert("Erro ao carregar os dados do funcionário.");
-      }
+  // Atualiza os dados ao trocar de aba, validando antes
+  const handleNext = () => {
+    try {
+      schema.parse(tabs[selectedTab].state); // 🔥 Valida os dados da aba atual antes de continuar
+      setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
+    } catch (error: any) {
+      alert("Corrija os erros antes de avançar.");
+      console.error("Erro de validação:", error.errors);
     }
-  }, [mode, employeeData]);
+  };
 
-  // Atualiza o estado correto com os dados alterados
+  // Atualiza os estados conforme os dados mudam
   const handleInputChange = (updatedData: any) => {
     setState((prev: any) => ({ ...prev, ...updatedData }));
   };
 
-  // Envio dos dados ao backend
+  // Envio final dos dados ao backend
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -135,21 +129,17 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
           {/* Tab Content */}
           <div className="w-full md:w-3/4 p-6">
             <CurrentComponent
-              data={tabs[selectedTab].state} // Passando o tipo correto de `data` para o componente
+              data={tabs[selectedTab].state}
               onChange={handleInputChange}
-              isEditable={mode === "create" || mode === "edit"}
+              isEditable={isEditable}
               mode={mode}
-              onNext={() => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))}
+              onNext={handleNext}
               onPrev={() => setSelectedTab((prev) => Math.max(prev - 1, 0))}
             />
 
             {/* Botão de salvar somente na última aba */}
             {selectedTab === tabs.length - 1 && (
-              <button
-                onClick={handleSave}
-                className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
-                disabled={loading}
-              >
+              <button onClick={handleSave} className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50" disabled={loading}>
                 {loading ? "Salvando..." : "Finalizar e Enviar"}
               </button>
             )}

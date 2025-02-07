@@ -1,8 +1,12 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import axios from 'axios';
 import { Vacancy, VacancyContextProps } from '../types/vacancyType';
-import { VacancyService } from '@/app/services/vacancyService';
+import { sanitizeVacancy } from '@/app/schemas/vacancySchema'; // 🔥 Sanitização de dados
+import { vacancySchema } from '@/app/schemas/vacancySchema'; // 🔥 Importando o schema
+
+const API_URL = "https://api.example.com/vacancies"; // 🚀 Substitua pela URL real
 
 const VagasContext = createContext<VacancyContextProps | undefined>(undefined);
 
@@ -14,10 +18,9 @@ export const VagasProvider = ({ children }: { children: ReactNode }) => {
    */
   const loadVacancies = async () => {
     try {
-      const fetchedVacancies = await VacancyService.getAllVacancies();
-      if (fetchedVacancies) {
-        set_vacancies(fetchedVacancies);
-      }
+      const response = await axios.get(API_URL);
+      const validatedVacancies = vacancySchema.array().parse(response.data); // 🔥 Validando com o schema
+      set_vacancies(validatedVacancies);
     } catch (error) {
       console.error('Error loading vacancies from backend:', error);
     }
@@ -29,9 +32,11 @@ export const VagasProvider = ({ children }: { children: ReactNode }) => {
    */
   const add_vacancy = async (newVacancy: Vacancy) => {
     try {
-      const createdVacancy = await VacancyService.createVacancy(newVacancy);
-      set_vacancies((prevVacancies) => [...prevVacancies, createdVacancy]);
-      console.log('New vacancy added:', createdVacancy);
+      const sanitizedVacancy = sanitizeVacancy(newVacancy); // 🔥 Sanitiza a vaga antes de enviar para a API
+      const response = await axios.post(API_URL, sanitizedVacancy);
+      const validatedVacancy = vacancySchema.parse(response.data); // 🔥 Validando resposta
+      set_vacancies((prevVacancies) => [...prevVacancies, validatedVacancy]);
+      console.log('New vacancy added:', validatedVacancy);
     } catch (error) {
       console.error('Error adding vacancy:', error);
     }
@@ -57,9 +62,12 @@ export const VagasProvider = ({ children }: { children: ReactNode }) => {
         quantity: updates.quantity ?? existingVacancy.quantity, // Ensure 'quantity' is not undefined
       };
 
-      const responseVacancy = await VacancyService.updateVacancy(id, updatedVacancy);
+      const sanitizedUpdatedVacancy = sanitizeVacancy(updatedVacancy); // 🔥 Sanitiza antes de enviar
+      const response = await axios.put(`${API_URL}/${id}`, sanitizedUpdatedVacancy);
+      const validatedVacancy = vacancySchema.parse(response.data); // 🔥 Validando resposta
+
       set_vacancies((prevVacancies) =>
-        prevVacancies.map((vacancy) => (vacancy.id === id ? responseVacancy : vacancy))
+        prevVacancies.map((vacancy) => (vacancy.id === id ? validatedVacancy : vacancy))
       );
       console.log(`Vacancy ${id} updated.`);
     } catch (error) {
@@ -73,7 +81,7 @@ export const VagasProvider = ({ children }: { children: ReactNode }) => {
    */
   const remove_vacancy = async (id: number) => {
     try {
-      await VacancyService.deleteVacancy(id);
+      await axios.delete(`${API_URL}/${id}`);
       set_vacancies((prevVacancies) => prevVacancies.filter((vacancy) => vacancy.id !== id));
       console.log(`Vacancy ${id} removed.`);
     } catch (error) {
@@ -90,10 +98,10 @@ export const VagasProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <VagasContext.Provider
-    value={{ vacancies, set_vacancies, add_vacancy, update_vacancy, remove_vacancy }}
-  >
-    {children}
-  </VagasContext.Provider>
+      value={{ vacancies, set_vacancies, add_vacancy, update_vacancy, remove_vacancy }}
+    >
+      {children}
+    </VagasContext.Provider>
   );
 };
 

@@ -2,58 +2,62 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { AuthService } from "@/app/services/authService";
-import { loginSchema } from "@/app/schemas/authSchema";
-import { LoginData } from "@/app/types/authType";
 
+// Importando corretamente os schemas e o serviço de autenticação
+import { useAuthInputSchema, AuthService } from "@/app/schemas/authSchema";
 import "./style.css";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
-  const [credentials, setCredentials] = useState<LoginData>({ username: "", password: "" });
+  const [credentials, setCredentials] = useState({ name: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({}); // Armazena erros de validação
   const router = useRouter();
 
+  // UseEffect para simular o carregamento da página
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleChange = (field: keyof LoginData, value: string) => {
+  // Handle para atualizar as credenciais
+  const handleChange = (field: string, value: string) => {
     setCredentials((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Função para login
   const handleLogin = async () => {
     try {
       setLoading(true);
 
-      // ✅ Validação com Zod antes de enviar para API
-      loginSchema.parse(credentials);
+      // Validação com Zod antes de enviar para a API
+      useAuthInputSchema.parse(credentials); // Isso valida as credenciais usando o useAuthInputSchema
       setErrors({}); // Limpa os erros se passar na validação
 
-      // ✅ Envia para a API via Service
+      // Envia para a API via Service
       const response = await AuthService.login(credentials);
 
-      // ✅ Armazena o token no localStorage para persistência
       localStorage.setItem("token", response.token);
 
-      alert(`✅ Bem-vindo(a), ${response.username}!`);
+      alert(`Bem-vindo(a), ${response.current_user_id}!`);
       router.push("/dashboard-display");
     } catch (error: any) {
       setLoading(false);
 
       if (error.name === "ZodError") {
+        // Se o erro for de validação Zod
         const validationErrors: Record<string, string> = {};
         error.errors.forEach((err: any) => {
           validationErrors[err.path[0]] = err.message;
         });
-        setErrors(validationErrors);
+        setErrors(validationErrors); // Exibe os erros de validação
       } else {
-        alert("❌ Erro ao conectar ao servidor. Verifique suas credenciais.");
+        // Se for um erro do AuthService ou qualquer outro erro
+        alert("Erro ao conectar ao servidor. Verifique suas credenciais.");
       }
     }
   };
 
+  // Exibição de carregamento
   if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-[#4CAF50]">
@@ -75,7 +79,7 @@ export default function Home() {
         style={{ background: "linear-gradient(90deg,rgb(11, 20, 11),rgb(79, 116, 82))", zIndex: -1 }}
       ></div>
 
-      {/* Login */}
+      {/* Login Form */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 bg-gradient-to-br from-[#0B140B] to-[#4F7452] opacity-90 rounded-lg shadow-lg flex flex-col items-center p-6">
         <h1 className="text-white text-3xl font-bold mb-6">LOGIN</h1>
 
@@ -83,13 +87,13 @@ export default function Home() {
         <div className="w-full relative mb-4">
           <input
             type="text"
-            placeholder="Digite seu username"
+            placeholder="Digite seu nome"
             className="w-full text-center bg-transparent border-none outline-none text-white placeholder-gray-300 text-lg"
-            value={credentials.username}
-            onChange={(e) => handleChange("username", e.target.value)}
+            value={credentials.name}
+            onChange={(e) => handleChange("name", e.target.value)} // 'name' é esperado pelo schema
           />
           <div className="border-t border-white w-full mt-1"></div>
-          {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
         </div>
 
         {/* Input Password */}

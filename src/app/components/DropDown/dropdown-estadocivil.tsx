@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
 import { DropdownCheckboxEstadoCivilProps } from "@/app/types/dropdown";
+import { MartialStatusType } from "@/app/schemas/personSchema";
 
 
 export function DropdownCheckboxEstadoCivil({
@@ -10,6 +11,8 @@ export function DropdownCheckboxEstadoCivil({
 }: DropdownCheckboxEstadoCivilProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to control dropdown visibility
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const martialStatusOptions = Object.entries(MartialStatusType);
+
 
   // Toggle dropdown visibility
   const toggleDropdown = (e: React.MouseEvent) => {
@@ -72,36 +75,30 @@ export function DropdownCheckboxEstadoCivil({
           id="dropdownDefaultCheckbox"
           className="z-10 w-48 bg-white divide-y divide-gray-100 absolute rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         >
-          <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
-            {[
-              "Amasiado/Concubinado",
-              "Casado",
-              "Divorciado",
-              "Solteiro",
-              "União Estável",
-              "Viúvo",
-            ].map((option) => (
-              <li key={option}>
-                <div className="flex items-center">
-                  <input
-                    id={`checkbox-item-${option}`}
-                    type="checkbox"
-                    value={option}
-                    checked={value === option} // Controlled behavior
-                    onChange={() => onChange(value === option ? "" : option)} // Toggle value
-                    disabled={disabled} // Disable input when `disabled` is true
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                  />
-                  <label
-                    htmlFor={`checkbox-item-${option}`}
-                    className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                  >
-                    {option}
-                  </label>
-                </div>
-              </li>
-            ))}
-          </ul>
+        <ul>
+  {martialStatusOptions.map(([key, value]) => (
+    <li key={key}>
+      <div className="flex items-center">
+        <input
+          id={`checkbox-item-${key}`}
+          type="checkbox"
+          value={value}
+          checked={value === value} // Verifica se o valor está selecionado
+          onChange={() => onChange(value === value ? "" : value)} // Alterna o estado
+          disabled={disabled} // Controla a desativação
+          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+        />
+        <label
+          htmlFor={`checkbox-item-${key}`}
+          className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+        >
+          {value}
+        </label>
+      </div>
+    </li>
+  ))}
+</ul>
+
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from "react";
 import { DropdownCheckboxGenderProps } from "@/app/types/dropdown";
-
+import { GenderType } from "@/app/schemas/personSchema";
 
 export function DropdownCheckboxGender({
   value = "",
@@ -73,47 +73,29 @@ export function DropdownCheckboxGender({
           className="z-10 w-48 bg-white divide-y divide-gray-100 absolute rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         >
           <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
-            {/* Masculino Option */}
-            <li>
-              <div className="flex items-center">
-                <input
-                  id="checkbox-item-masculino"
-                  type="radio" // Use radio for exclusive selection
-                  value="Masculino"
-                  checked={value === "Masculino"} // Controlled by parent
-                  onChange={() => onChange("Masculino")} // Update parent state
-                  disabled={disabled} // Disable input if `disabled` is true
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                />
-                <label
-                  htmlFor="checkbox-item-masculino"
-                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  Masculino
-                </label>
-              </div>
-            </li>
+            {/* Map Enum for Options */}
+            {Object.entries(GenderType).map(([key, value]) => (
+  <li key={key}>
+    <div className="flex items-center">
+      <input
+        id={`checkbox-item-${key}`}
+        type="radio" // Use radio for exclusive selection
+        value={value}
+        checked={value === value} // Controlled by parent
+        onChange={() => onChange(value)} // Update parent state
+        disabled={disabled} // Disable input if `disabled` is true
+        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+      />
+      <label
+        htmlFor={`checkbox-item-${key}`}
+        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+      >
+        {value}
+      </label>
+    </div>
+  </li>
+))}
 
-            {/* Feminino Option */}
-            <li>
-              <div className="flex items-center">
-                <input
-                  id="checkbox-item-feminino"
-                  type="radio" // Use radio for exclusive selection
-                  value="Feminino"
-                  checked={value === "Feminino"} // Controlled by parent
-                  onChange={() => onChange("Feminino")} // Update parent state
-                  disabled={disabled} // Disable input if `disabled` is true
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                />
-                <label
-                  htmlFor="checkbox-item-feminino"
-                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  Feminino
-                </label>
-              </div>
-            </li>
           </ul>
         </div>
       )}

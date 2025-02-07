@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { FormDataProvider } from "@/app/context/FormDataContext";
+
 import { EmployeeProvider } from "@/app/context/EmployeeContext";
 import { VagasProvider } from "@/app/context/VagasContext";
 import { CvProvider } from "./context/CurriculoContext";
 import { ReminderProvider } from "@/app/context/ReminderContext";
 import { UserProvider } from "@/app/context/UserContext";
 import { HoursBankProvider } from "@/app/context/HoursBankContext"; // Added HoursBankProvider
-import { LoginProvider } from "@/app/context/LoginContext"; // Import LoginProvider
+import { AuthProvider } from "./context/LoginContext";
 import "./globals.css";
 
 // Font Configuration
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
 
 // Encapsulate Providers
 const AppProviders = ({ children }: { children: React.ReactNode }) => (
-  <LoginProvider> {/* Added LoginProvider */}
+  <AuthProvider> {/* Added AuthProvider */}
     <UserProvider>
-      <FormDataProvider>
+
         <EmployeeProvider>
           <VagasProvider>
             <CvProvider>
@@ -41,9 +41,9 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
             </CvProvider>
           </VagasProvider>
         </EmployeeProvider>
-      </FormDataProvider>
+
     </UserProvider>
-  </LoginProvider>
+  </AuthProvider>
 );
 
 // Root Layout Component

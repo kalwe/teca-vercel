@@ -21,7 +21,7 @@ export const PositionService = {
 };
 
 
-export const FunctionService = {
+export const RoleService = {
   /**
    * Fetches all functions (roles) from the Python API
    * @returns {Promise<{ id: number; name: string }[]>} - List of functions

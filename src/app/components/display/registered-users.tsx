@@ -1,25 +1,31 @@
 "use client";
 
-import { useUserContext } from "@/app/context/UserContext"; // Importa o contexto de usuários
+import { useUserContext } from "@/app/context/UserContext"; // Contexto de usuários
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { UserOutput } from "@/app/types/user"; // Usa o tipo correto de usuário
-import { UserService } from "@/app/services/userService"; // ✅ Service para chamadas ao backend
+import { userOutputSchema, UserService } from "@/app/schemas/userSchema"; // 🔹 Agora usa os schemas corretos
+import { z } from "zod";
+
+// 🔹 Define o tipo do usuário baseado no `userOutputSchema`
+type UserOutput = z.infer<typeof userOutputSchema>;
 
 function UserList() {
-  const { updateUser } = useUserContext(); // Obtém funções do contexto
+  const { updateUser } = useUserContext(); // Obtém função do contexto para atualizar usuários
   const router = useRouter();
   const [userList, setUserList] = useState<UserOutput[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // ✅ Carregar usuários do backend ao montar o componente
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const usersFromAPI = await UserService.getAllUsers();
-        setUserList(usersFromAPI);
-      } catch (error) {
-        console.error("⚠ Erro ao buscar usuários do backend:", error);
+        const usersFromAPI = await UserService.getUsers();
+        const validatedUsers = userOutputSchema.array().parse(usersFromAPI);
+        setUserList(validatedUsers);
+      } catch (err) {
+        console.error("⚠ Erro ao buscar usuários do backend:", err);
+        setError("Erro ao carregar usuários. Tente novamente.");
       } finally {
         setLoading(false);
       }
@@ -28,12 +34,12 @@ function UserList() {
     fetchUsers();
   }, []);
 
-  // Redirecionar para editar usuário
+  // 🔹 Redirecionar para editar usuário
   const handleEditUser = (userId: number) => {
     router.push(`/user-display/${userId}`);
   };
 
-  // Ativar/desativar usuário pelo backend
+  // 🔹 Ativar/desativar usuário via API
   const toggleUserStatus = async (userId: number, isActive: boolean) => {
     try {
       await updateUser(userId, { active: !isActive });
@@ -42,35 +48,33 @@ function UserList() {
           user.id === userId ? { ...user, active: !isActive } : user
         )
       );
-    } catch (error) {
-      console.error("⚠ Erro ao alterar status do usuário:", error);
+    } catch (err) {
+      console.error("⚠ Erro ao alterar status do usuário:", err);
+      setError("Erro ao atualizar status do usuário.");
     }
   };
 
-  // ✅ Excluir usuário via API
+  // 🔹 Excluir usuário via API
   const handleDeleteUser = async (userId: number) => {
     try {
       if (confirm("Tem certeza que deseja excluir este usuário?")) {
         await UserService.deleteUser(userId);
         setUserList((prev) => prev.filter((user) => user.id !== userId));
       }
-    } catch (error) {
-      console.error("⚠ Erro ao deletar usuário:", error);
+    } catch (err) {
+      console.error("⚠ Erro ao deletar usuário:", err);
+      setError("Erro ao excluir usuário.");
     }
   };
 
-  // Redirecionar para adicionar novo usuário
+  // 🔹 Redirecionar para adicionar novo usuário
   const handleAddUser = () => {
     router.push("/user-display/");
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-6"
-      style={{
-        background:
-          "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
-      }}
+    <div className="min-h-screen flex items-center justify-center p-6"
+      style={{ background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))" }}
     >
       <div className="w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg">
         {/* Cabeçalho */}
@@ -83,6 +87,9 @@ function UserList() {
             Adicionar Usuário
           </button>
         </div>
+
+        {/* Exibição de erros */}
+        {error && <div className="p-4 bg-red-500 text-white text-center">{error}</div>}
 
         {/* Loader */}
         {loading ? (

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PhoneMaskProps } from '@/app/types/old/employee';
+import { PhoneMaskProps } from '@/app/types/employee';
 
 
 export function PhoneMask({ value, onChange }: PhoneMaskProps) {

@@ -1,32 +1,53 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Reminder } from '../types/reminderType';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { ReminderInput, sanitizeReminder } from '@/app/schemas/reminderSchema'; // 🔥 Importando ReminderInput e sanitizeReminder
+import axios from 'axios';
+
+const API_URL = "https://api.example.com/reminders"; // 🚀 Substitua pela URL real
 
 interface ReminderContextData {
-    reminders: Reminder[];
-    addReminder: (reminder: Reminder) => void;
-    setReminders: React.Dispatch<React.SetStateAction<Reminder[]>>;
+    reminders: ReminderInput[];
+    addReminder: (reminder: ReminderInput) => void;
+    setReminders: React.Dispatch<React.SetStateAction<ReminderInput[]>>;
 }
 
 const ReminderContext = createContext<ReminderContextData | undefined>(undefined);
 
-export const ReminderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [reminders, setReminders] = useState<Reminder[]>([]);
+export const ReminderProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [reminders, setReminders] = useState<ReminderInput[]>([]);
 
-    const addReminder = (reminder: Reminder) => {
-        setReminders((prev) => [...prev, reminder]);
-        localStorage.setItem('reminders', JSON.stringify([...reminders, reminder]));
+    // 🔹 Função para adicionar um novo lembrete
+    const addReminder = async (reminder: ReminderInput) => {
+        try {
+            const sanitizedReminder = sanitizeReminder(reminder); // 🔥 Sanitizando antes de adicionar
+            // Envia o lembrete para o backend
+            const response = await axios.post(API_URL, sanitizedReminder);
+            const validatedReminder = response.data; // Considerando que a API retorna os dados validados
+
+            // Atualiza o estado e salva no localStorage
+            setReminders((prev) => {
+                const updatedReminders = [...prev, validatedReminder];
+                localStorage.setItem('reminders', JSON.stringify(updatedReminders));
+                return updatedReminders;
+            });
+        } catch (error) {
+            console.error('⚠ Erro ao adicionar lembrete:', error);
+        }
     };
 
+    // 🔹 Carrega os lembretes do localStorage quando o componente é montado
     useEffect(() => {
         const storedReminders = localStorage.getItem('reminders');
         if (storedReminders) {
-            setReminders(JSON.parse(storedReminders));
+            const parsedReminders = JSON.parse(storedReminders);
+            // 🔥 Sanitizando os lembretes carregados
+            const sanitizedReminders = parsedReminders.map((reminder: any) => sanitizeReminder(reminder));
+            setReminders(sanitizedReminders);
         }
     }, []);
 
-    // Remoção automática de lembretes expirados
+    // 🔹 Remoção automática de lembretes expirados a cada minuto
     useEffect(() => {
         const interval = setInterval(() => {
             const now = new Date();
@@ -52,10 +73,11 @@ export const ReminderProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     );
 };
 
+// 🔹 Hook personalizado para acessar o contexto de lembretes
 export const useReminderContext = (): ReminderContextData => {
     const context = useContext(ReminderContext);
     if (!context) {
-        throw new Error('useReminderContext must be used within a ReminderProvider');
+        throw new Error('useReminderContext deve ser usado dentro de um ReminderProvider');
     }
     return context;
 };

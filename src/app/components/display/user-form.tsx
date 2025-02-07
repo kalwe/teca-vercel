@@ -1,36 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { userInputSchema } from "@/app/schemas/userSchema";
-import { UserInput, UserOutput, UserFormProps } from "@/app/types/user"; // ✅ Agora `UserFormProps` está importado corretamente!
+import { userInputSchema, UserService } from "@/app/schemas/userSchema";
+import { UserFormProps } from "@/app/schemas/userSchema";
 
-export default function UserForm({ mode, userData, onSave, onCancel }: UserFormProps) {
+export default function UserForm({ onSave, onCancel }: UserFormProps) {
   const router = useRouter();
 
-  // ✅ Estado inicial seguro baseado no `userInputSchema`
-  const [formData, setFormData] = useState<UserInput>(() =>
-    userInputSchema.parse({
-      name: userData?.name || "",
-      email: userData?.email || "",
-      password: "",
-    })
-  );
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string | null>>({});
-  const [loading, setLoading] = useState(userData === undefined);
-
-  useEffect(() => {
-    if (userData) {
-      setFormData({
-        name: userData.name,
-        email: userData.email,
-        password: "", // ✅ Nunca carregar senhas antigas
-      });
-      setLoading(false);
-    }
-  }, [userData]);
-
-  if (loading) return <p className="text-white text-center">🔄 Carregando...</p>;
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,59 +23,58 @@ export default function UserForm({ mode, userData, onSave, onCancel }: UserFormP
       [name]: value,
     }));
 
-    // ✅ Validação dinâmica pelo Zod
-    if (name in userInputSchema.shape) {
+    // 🔹 Validação dinâmica pelo Zod
+    if (Object.prototype.hasOwnProperty.call(userInputSchema.shape, name)) {
+      const fieldSchema = userInputSchema.shape[name as keyof typeof userInputSchema.shape];
+      const result = fieldSchema.safeParse(value);
+      setErrors((prev) => ({
+        ...prev,
+        [name]: result.success ? null : result.error.errors[0].message,
+      }));
+    }
+    }
+
+    const handleSave = async () => {
+      if (loading) return;
+
       try {
-        const fieldSchema = userInputSchema.shape[name as keyof typeof userInputSchema.shape];
-        const result = fieldSchema.safeParse(value);
-        setErrors((prev) => ({
-          ...prev,
-          [name]: result.success ? null : result.error.errors[0].message,
-        }));
-      } catch {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: "Erro inesperado na validação.",
-        }));
+        setLoading(true);
+
+        // 🔹 Valida os dados antes do envio
+        const validatedData = userInputSchema.parse(formData);
+
+        // 🔹 Chamada correta ao `UserService.createUser`
+        const newUser = await UserService.createUser(validatedData)
+
+        console.log("✅ Usuário criado com sucesso!", newUser);
+
+        // 🔹 Garante que `password` esteja presente antes de chamar `onSave`
+        const userWithPassword = { ...newUser, password: validatedData.password };
+
+        // 🔹 Aguarda `onSave` e passa os dados corretamente
+        await onSave(userWithPassword);
+
+        // 🔹 Redireciona apenas se o usuário foi realmente criado
+        router.push("/user-display/user-list");
+
+      } catch (error) {
+        console.error("Erro ao criar usuário:", error);
+
+        if (error instanceof Error) {
+          alert(`Erro ao criar usuário: ${error.message}`);
+        }
+      } finally {
+        setLoading(false);
       }
-    }
-  };
+    };
 
-  const handleSave = async () => {
-    const parsedData = userInputSchema.safeParse(formData);
-    if (!parsedData.success) {
-      const validationErrors: Record<string, string> = {};
-      parsedData.error.errors.forEach((error) => {
-        validationErrors[error.path[0]] = error.message;
-      });
-      setErrors(validationErrors);
-      return;
-    }
 
-    if (mode === "create") {
-      if (!formData.password.trim()) {
-        alert("❌ O campo 'Senha' é obrigatório para criação.");
-        return;
-      }
-      if (formData.password !== confirmPassword) {
-        alert("❌ As senhas não coincidem.");
-        return;
-      }
-    }
 
-    console.log("✅ Usuário salvo com sucesso!", formData);
-    await onSave(formData);
-
-    router.push("/user-display/user-list");
-  };
-
-  return (
+return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-3xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">
-            {mode === "edit" ? "✏ Editar Usuário" : "➕ Criar Usuário"}
-          </h2>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">➕ Criar Usuário</h2>
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block mb-2 text-white">Nome</label>
@@ -132,28 +115,27 @@ export default function UserForm({ mode, userData, onSave, onCancel }: UserFormP
               />
               {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
             </div>
-            {mode === "create" && (
-              <div>
-                <label htmlFor="confirmPassword" className="block mb-2 text-white">Confirmar Senha</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full p-2 rounded border border-gray-300 bg-gray-700 text-white"
-                  placeholder="Confirme a senha"
-                />
-                {formData.password !== confirmPassword && <p className="text-red-500 text-sm mt-1">As senhas não coincidem.</p>}
-              </div>
-            )}
+            <div>
+              <label htmlFor="confirmPassword" className="block mb-2 text-white">Confirmar Senha</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-2 rounded border border-gray-300 bg-gray-700 text-white"
+                placeholder="Confirme a senha"
+              />
+              {formData.password !== confirmPassword && <p className="text-red-500 text-sm mt-1">As senhas não coincidem.</p>}
+            </div>
           </div>
           <div className="flex justify-end mt-6">
             <button
               onClick={handleSave}
               className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all"
+              disabled={loading}
             >
-              Salvar
+              {loading ? "Salvando..." : "Salvar"}
             </button>
             <button
               onClick={onCancel}

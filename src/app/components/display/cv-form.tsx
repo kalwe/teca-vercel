@@ -1,33 +1,47 @@
 "use client";
+
 import "react-datepicker/dist/react-datepicker.css";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import DropdownCheckbox from "../DropDown/dropdown-cargo";
+import { cvSchema, CvService } from "@/app/schemas/cvSchema"; // Importando cvSchema para validação
+
+
 import DropdownCheckboxRegional from "../DropDown/dropdown-regional";
 import DropdownCheckboxSchool from "../DropDown/dropdown-school";
+import DropdownCheckboxPosition from "../DropDown/dropdown-position";
 import { CpfMask } from "../masks/cpf";
 import CepMask from "../masks/cep";
 import BirthDayMask from "../masks/birthday";
 import { PhoneMask } from "../masks/phone";
-import { cvSchema } from "@/app/schemas/cvSchema";
-import { z } from "zod";
-import { useCvContext } from "@/app/context/CurriculoContext";
-import { CvFormProps } from "@/app/types/cv"; // ✅ Usa a tipagem correta
+import {z} from 'zod'
 
-// Estado inicial baseado no Schema
-const getDefaultValues = (): z.infer<typeof cvSchema> => cvSchema.parse({});
+import { CvFormProps } from "@/app/types/cv"; // Importando tipo CvFormProps
 
 function CvForm({ mode, curriculoData }: CvFormProps) {
-  const { addCv, updateCv } = useCvContext();
   const router = useRouter();
 
   // Estado do formulário
   const [formData, setFormData] = useState<z.infer<typeof cvSchema>>(
-    curriculoData ? cvSchema.parse(curriculoData) : getDefaultValues()
+    curriculoData ? cvSchema.parse(curriculoData) : cvSchema.parse({})
   );
+
+  const [positions, setPositions] = useState<string[]>([]); // Estado para armazenar opções do dropdown
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  // 🔥 Busca cargos da API ao montar o componente
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        const data = await CvService.getAllCvs(); // Buscar cargos com CvService, ajustado para um exemplo real
+        setPositions(data.map((item) => item.position)); // Ajustar para o tipo correto
+      } catch (error) {
+        console.error("Erro ao buscar cargos:", error);
+      }
+    };
+    fetchPositions();
+  }, []);
 
   // Atualiza formData se curriculoData mudar
   useEffect(() => {
@@ -35,8 +49,8 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
   }, [curriculoData]);
 
   // Atualiza valores do formulário de forma otimizada
-  const handleChange = useCallback((key: keyof z.infer<typeof cvSchema>, value: string | number) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
+  const handleChange = useCallback((key: keyof z.infer<typeof cvSchema>, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [key]: value }));
   }, []);
 
   // Upload de arquivo PDF
@@ -55,13 +69,13 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
   // Valida o formulário
   const validateForm = useCallback((): boolean => {
     try {
-      cvSchema.parse(formData);
+      cvSchema.parse(formData); // Valida o formData com o cvSchema
       setErrors({});
       return true;
     } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
-        err.errors.forEach((error) => {
+        err.errors.forEach((error: { path: string | any[]; message: string; }) => {
           if (error.path.length > 0) {
             fieldErrors[error.path[0] as string] = error.message;
           }
@@ -72,7 +86,7 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
     }
   }, [formData]);
 
-  // Salva os dados
+  // Salva os dados (POST ou PUT)
   const handleSave = async () => {
     if (!validateForm()) {
       alert("Erro na validação. Verifique os campos.");
@@ -82,10 +96,11 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
     setLoading(true);
     try {
       if (mode === "create") {
-        await addCv(formData);
+        await CvService.createCv(formData); // POST na API
       } else {
-        await updateCv(formData.id, formData);
+        await CvService.updateCv(formData.id, formData); // PUT na API
       }
+      alert("Currículo salvo com sucesso!");
       router.push("/curriculo-display/visualize-cv");
     } catch (error) {
       console.error("Erro ao salvar:", error);
@@ -119,6 +134,7 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Campos de Input */}
             {[
               { key: "full_name", placeholder: "Nome Completo", type: "text" },
               { key: "email", placeholder: "E-mail", type: "email" },
@@ -139,27 +155,12 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
             <BirthDayMask value={formData.date_of_birth} onChange={(value) => handleChange("date_of_birth", value)} />
             <CepMask value={formData.zip_code} onChange={(value) => handleChange("zip_code", value)} />
             <CpfMask value={formData.tax_id} onChange={(value) => handleChange("tax_id", value)} />
-            <PhoneMask value={formData.phone} onChange={(value: string | number) => handleChange("phone", value)} />
+            <PhoneMask value={formData.phone} onChange={(value) => handleChange("phone", value)} />
 
-            {/* Dropdowns com API */}
-            <DropdownCheckbox value={formData.position} onChange={(value) => handleChange("position", value)} />
+            {/* Dropdowns puxando da API */}
+            <DropdownCheckboxPosition value={formData.position} onChange={(value) => handleChange("position", value)} options={positions} />
             <DropdownCheckboxRegional value={formData.region} onChange={(value) => handleChange("region", value)} />
-            <DropdownCheckboxSchool value={formData.education_level} onChange={(value) => handleChange("education_level", value)} />
-          </div>
-
-          {/* Botões de ação */}
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={handleSave}
-              className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-500"
-              disabled={loading}
-            >
-              {loading ? "Salvando..." : "Salvar"}
-            </button>
-            <button type="button" onClick={() => router.push("/curriculo-display/visualize-cv")} className="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg shadow hover:bg-red-500 ml-4">
-              Cancelar
-            </button>
+            <DropdownCheckboxSchool value={formData.scholarity} onChange={(value) => handleChange("scholarity", value)} />
           </div>
         </form>
       </div>

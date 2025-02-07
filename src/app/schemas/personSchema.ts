@@ -2,16 +2,21 @@
 import { z } from "zod";
 
 // Enums para gênero e estado civil
-export const GenderType = z.enum(["Masculino", "Feminino"]);
+export enum GenderType {
+  male = 'Masculino',
+  female = 'Feminino',
+  other = 'Outro',
+  not_given = 'Não informado',
+}
 
-export const MaritalStatusType = z.enum([
-  "Amasiado/Concubinado",
-  "Casado",
-  "Divorciado",
-  "Solteiro",
-  "União Estável",
-  "Viúvo"
-]);
+export enum MartialStatusType {
+  SINGLE = 'Solteiro',
+  MARRIED = 'Casado',
+  DIVORCED = 'Divorciado',
+  LIVING_TOGETHER = "Amasiado/Concubinado",
+  STABLE_UNION = "União Estável",
+  WIDOWER = "Viúvo"
+}
 
 export const personModelSchema = z.object({
   full_name: z
@@ -30,14 +35,14 @@ export const personModelSchema = z.object({
   date_of_birth: z
     .string()
     .refine(
-      (date) => /^\d{4}-\d{2}-\d{2}$/.test(date),
-      "A data de nascimento deve estar no formato YYYY-MM-DD."
+      (date) => /^\d{2}-\d{2}-\d{4}$/.test(date),
+      "A data de nascimento deve estar no formato dd-mm-aaaa."
     )
     .transform((date) => new Date(date)),
   issuing_body: z
     .string()
     .max(120, "O órgão emissor não pode ter mais de 120 caracteres.")
     .nonempty("O órgão emissor é obrigatório."),
-  gender: GenderType,
-  marital_status: MaritalStatusType,
+  gender: z.nativeEnum(GenderType),
+  marital_status: z.nativeEnum(MartialStatusType),
 });

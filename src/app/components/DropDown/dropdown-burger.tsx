@@ -22,7 +22,7 @@ export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
         {loggedInUser && (
           <div className="text-center text-xl font-bold">
 
-            <p>{loggedInUser.username}</p>
+            <p>{loggedInUser.name}</p>
           </div>
         )}
 
