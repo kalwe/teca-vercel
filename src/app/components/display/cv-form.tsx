@@ -14,8 +14,7 @@ import CepMask from "../masks/cep";
 import BirthDayMask from "../masks/birthday";
 import { PhoneMask } from "../masks/phone";
 import {z} from 'zod'
-
-import { CvFormProps } from "@/app/types/cv"; // Importando tipo CvFormProps
+import { CvFormProps } from "@/app/schemas/cvSchema";
 
 function CvForm({ mode, curriculoData }: CvFormProps) {
   const router = useRouter();

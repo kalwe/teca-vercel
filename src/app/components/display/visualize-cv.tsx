@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { cvSchema } from "@/app/schemas/cvSchema"; // Importando diretamente o schema
-import cvImage from "../assets/pasta-de-documentos (1) 1.png"; // Imagem do currículo
+import cvImage from '../assets/cvImage.png' // Imagem do currículo
 
 export function VisualizeCV() {
   const router = useRouter();

@@ -3,7 +3,7 @@
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
 import { useRouter } from "next/navigation";
 import { Layout } from "react-grid-layout";
 import { useHoursBankContext } from "@/app/context/HoursBankContext";
@@ -111,7 +111,7 @@ export default function DashboardDisplay() {
           >
             <h2 className="font-semibold text-xl mb-4 text-white">Vagas</h2>
             <ul className="text-white text-sm">
-              {displayedVagas.map((vacancy, index) => (
+              {displayedVagas.map((vacancy: { position: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; quantity: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, index: Key | null | undefined) => (
                 <li key={index}>{vacancy.position} - {vacancy.quantity} disponíveis</li>
               ))}
             </ul>

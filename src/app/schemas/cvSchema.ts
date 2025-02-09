@@ -82,6 +82,15 @@ export const cvSchema = z.object({
     }),
 });
 
+export interface CvFormProps {
+  mode: "edit" | "create";
+  curriculoData?: Cv;
+  onSave: (updatedData: Cv) => Promise<void>; // Callback para salvar
+  onCancel: () => void; // Callback para cancelar
+  loading: boolean; // Indica estado de carregamento
+}
+
+
 // Tipos inferidos do schema
 export type Cv = z.infer<typeof cvSchema>;
 

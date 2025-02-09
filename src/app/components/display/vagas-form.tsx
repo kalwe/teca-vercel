@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ interface VagasFormProps {
 }
 
 const VagasForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) => {
-  const { vacancies, set_vacancies } = useVagasContext();
+  const { vacancies, setVacancies } = useVagasContext();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const datePickerRef = useRef<DatePicker | null>(null);
   const router = useRouter();
@@ -41,14 +41,14 @@ const VagasForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) =>
           })
           .filter((v) => v !== null);
 
-        set_vacancies(validatedVacancies as Vacancy[]);
+        setVacancies(validatedVacancies as Vacancy[]);
       } catch (error) {
         console.error("❌ Erro ao buscar vagas:", error);
       }
     };
 
     fetchVacancies();
-  }, [set_vacancies]);
+  }, [setVacancies]);
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -122,7 +122,7 @@ const VagasForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) =>
 
           <div className="overflow-y-auto rounded-lg" style={{ maxHeight: "300px" }}>
             {vacancies.length > 0 ? (
-              vacancies.map((vacancy, index) => (
+              vacancies.map((vacancy: { position: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; quantity: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, index: Key | null | undefined) => (
                 <div
                   key={index}
                   onClick={() => router.push(`/vagas-display/nova-vaga?index=${index}`)}
