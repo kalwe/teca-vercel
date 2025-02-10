@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { employeeSchema } from "@/app/schemas/employeeModelSchema";
+import { employeeSchema } from "@/app/schemas/employeeSchema";
 import { Employee } from "@/app/types/employee";
 import { EmployeeService } from "@/app/services/employeeService";
 import DropdownCheckboxFuncao from "../DropDown/dropdown-role";

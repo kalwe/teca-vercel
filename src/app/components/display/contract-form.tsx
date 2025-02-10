@@ -9,8 +9,8 @@ import { Contact } from "../switch-tabs/Contact";
 import { Bank } from "../switch-tabs/bank";
 import { Clothing } from "../switch-tabs/clothing";
 import { ContractFormProps } from "@/app/types/employee";
-import { personModelSchema } from "@/app/schemas/personSchema";
-import { employeeSchema } from "@/app/schemas/employeeModelSchema";
+import { personSchema } from "@/app/schemas/personSchema";
+import { employeeSchema } from "@/app/schemas/employeeSchema";
 import { addressSchema } from "@/app/schemas/addressSchema";
 import { contactSchema } from "@/app/schemas/contactSchema";
 import { bankAccountSchema } from "@/app/schemas/bankAccountSchema";
@@ -22,7 +22,7 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
   const [selectedTab, setSelectedTab] = useState(0);
 
   // Estados individuais por aba (com valores iniciais seguros)
-  const [pessoaFisica, setPessoaFisica] = useState(() => personModelSchema.parse(employeeData?.pessoaFisica || {}));
+  const [pessoaFisica, setPessoaFisica] = useState(() => personSchema.parse(employeeData?.pessoaFisica || {}));
   const [funcionario, setFuncionario] = useState(() => employeeSchema.parse(employeeData?.funcionario || {}));
   const [address, setAddress] = useState(() => addressSchema.parse(employeeData?.address || {}));
   const [contact, setContact] = useState(() => contactSchema.parse(employeeData?.contact || {}));
@@ -31,7 +31,7 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
 
   // Tabs
   const tabs = [
-    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personModelSchema },
+    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personSchema },
     { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario, schema: employeeSchema },
     { name: "ENDEREÇO", component: Address, state: address, setState: setAddress, schema: addressSchema },
     { name: "CONTATO", component: Contact, state: contact, setState: setContact, schema: contactSchema },
@@ -65,7 +65,7 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
     try {
       // Monta e sanitiza os dados antes do envio
       const employeePayload = {
-        pessoaFisica: personModelSchema.parse(pessoaFisica),
+        pessoaFisica: personSchema.parse(pessoaFisica),
         funcionario: employeeSchema.parse(funcionario),
         address: addressSchema.parse(address),
         contact: contactSchema.parse(contact),
