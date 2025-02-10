@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { userInputSchema, UserService } from "@/app/schemas/userSchema";
@@ -23,58 +25,62 @@ export default function UserForm({ onSave, onCancel }: UserFormProps) {
       [name]: value,
     }));
 
-    // 🔹 Validação dinâmica pelo Zod
-    if (Object.prototype.hasOwnProperty.call(userInputSchema.shape, name)) {
+    // Validação dinâmica pelo Zod
+    if (userInputSchema.shape[name as keyof typeof userInputSchema.shape]) {
       const fieldSchema = userInputSchema.shape[name as keyof typeof userInputSchema.shape];
       const result = fieldSchema.safeParse(value);
+
       setErrors((prev) => ({
         ...prev,
-        [name]: result.success ? null : result.error.errors[0].message,
+        [name]: result.success ? null : result.error.errors[0]?.message,
       }));
     }
+  };
+
+  const handleSave = async () => {
+    if (loading) return;
+
+    if (formData.password !== confirmPassword) {
+      alert("As senhas não coincidem.");
+      return;
     }
 
-    const handleSave = async () => {
-      if (loading) return;
+    try {
+      setLoading(true);
 
-      try {
-        setLoading(true);
+      // 🔹 Valida os dados antes do envio
+      const validatedData = userInputSchema.parse(formData);
 
-        // 🔹 Valida os dados antes do envio
-        const validatedData = userInputSchema.parse(formData);
+      // 🔹 Chama a API para criar o usuário (POST)
+      const newUser = await UserService.createUser(validatedData);
 
-        // 🔹 Chamada correta ao `UserService.createUser`
-        const newUser = await UserService.createUser(validatedData)
+      console.log("Usuário criado com sucesso!", newUser);
 
-        console.log("✅ Usuário criado com sucesso!", newUser);
+      // 🔹 Garante que `password` esteja presente antes de chamar `onSave`
+      const userWithPassword = { ...newUser, password: validatedData.password };
 
-        // 🔹 Garante que `password` esteja presente antes de chamar `onSave`
-        const userWithPassword = { ...newUser, password: validatedData.password };
+      // 🔹 Aguarda `onSave` e passa os dados corretamente
+      await onSave(userWithPassword);
 
-        // 🔹 Aguarda `onSave` e passa os dados corretamente
-        await onSave(userWithPassword);
+      // 🔹 Redireciona após sucesso
+      router.push("/user-display/user-list");
 
-        // 🔹 Redireciona apenas se o usuário foi realmente criado
-        router.push("/user-display/user-list");
+    } catch (error) {
+      console.error("Erro ao criar usuário:", error);
 
-      } catch (error) {
-        console.error("Erro ao criar usuário:", error);
-
-        if (error instanceof Error) {
-          alert(`Erro ao criar usuário: ${error.message}`);
-        }
-      } finally {
-        setLoading(false);
+      if (error instanceof Error) {
+        alert(`Erro ao criar usuário: ${error.message}`);
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
-
-return (
+  return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-3xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">➕ Criar Usuário</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">Criar Usuário</h2>
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block mb-2 text-white">Nome</label>
@@ -126,7 +132,9 @@ return (
                 className="w-full p-2 rounded border border-gray-300 bg-gray-700 text-white"
                 placeholder="Confirme a senha"
               />
-              {formData.password !== confirmPassword && <p className="text-red-500 text-sm mt-1">As senhas não coincidem.</p>}
+              {formData.password !== confirmPassword && confirmPassword !== "" && (
+                <p className="text-red-500 text-sm mt-1">As senhas não coincidem.</p>
+              )}
             </div>
           </div>
           <div className="flex justify-end mt-6">

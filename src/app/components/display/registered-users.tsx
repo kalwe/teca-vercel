@@ -1,30 +1,33 @@
 "use client";
 
-import { useUserContext } from "@/app/context/UserContext"; // Contexto de usuários
+import { useUserContext } from "@/app/context/UserContext";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { userOutputSchema, UserService } from "@/app/schemas/userSchema"; // 🔹 Agora usa os schemas corretos
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { userOutputSchema, UserService } from "@/app/schemas/userSchema";
 import { z } from "zod";
 
-// 🔹 Define o tipo do usuário baseado no `userOutputSchema`
+// Define o tipo do usuário baseado no `userOutputSchema`
 type UserOutput = z.infer<typeof userOutputSchema>;
 
 function UserList() {
-  const { updateUser } = useUserContext(); // Obtém função do contexto para atualizar usuários
+  const { updateUser } = useUserContext();
   const router = useRouter();
   const [userList, setUserList] = useState<UserOutput[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const lastUserRef = useRef<HTMLTableRowElement | null>(null);
 
-  // ✅ Carregar usuários do backend ao montar o componente
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const usersFromAPI = await UserService.getUsers();
+        const usersFromAPI = await UserService.getUsers(page);
         const validatedUsers = userOutputSchema.array().parse(usersFromAPI);
-        setUserList(validatedUsers);
+        setUserList((prev) => [...prev, ...validatedUsers]);
       } catch (err) {
-        console.error("⚠ Erro ao buscar usuários do backend:", err);
+        console.error("Erro ao buscar usuários do backend:", err);
         setError("Erro ao carregar usuários. Tente novamente.");
       } finally {
         setLoading(false);
@@ -32,14 +35,31 @@ function UserList() {
     };
 
     fetchUsers();
+  }, [page]);
+
+  const fetchMoreUsers = useCallback(() => {
+    setPage((prevPage) => prevPage + 1);
   }, []);
 
-  // 🔹 Redirecionar para editar usuário
+  useEffect(() => {
+    if (observerRef.current) observerRef.current.disconnect();
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchMoreUsers();
+        }
+      },
+      { rootMargin: "100px" }
+    );
+
+    if (lastUserRef.current) observerRef.current.observe(lastUserRef.current);
+  }, [fetchMoreUsers]);
+
   const handleEditUser = (userId: number) => {
     router.push(`/user-display/${userId}`);
   };
 
-  // 🔹 Ativar/desativar usuário via API
   const toggleUserStatus = async (userId: number, isActive: boolean) => {
     try {
       await updateUser(userId, { active: !isActive });
@@ -49,12 +69,11 @@ function UserList() {
         )
       );
     } catch (err) {
-      console.error("⚠ Erro ao alterar status do usuário:", err);
+      console.error("Erro ao alterar status do usuário:", err);
       setError("Erro ao atualizar status do usuário.");
     }
   };
 
-  // 🔹 Excluir usuário via API
   const handleDeleteUser = async (userId: number) => {
     try {
       if (confirm("Tem certeza que deseja excluir este usuário?")) {
@@ -62,22 +81,30 @@ function UserList() {
         setUserList((prev) => prev.filter((user) => user.id !== userId));
       }
     } catch (err) {
-      console.error("⚠ Erro ao deletar usuário:", err);
+      console.error("Erro ao deletar usuário:", err);
       setError("Erro ao excluir usuário.");
     }
   };
 
-  // 🔹 Redirecionar para adicionar novo usuário
   const handleAddUser = () => {
     router.push("/user-display/");
   };
+
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) return userList;
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return userList.filter(
+      (user) =>
+        user.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        user.email.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+  }, [searchTerm, userList]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6"
       style={{ background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))" }}
     >
       <div className="w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg">
-        {/* Cabeçalho */}
         <div className="p-6 bg-gray-900 rounded-t-lg flex justify-between items-center">
           <h1 className="text-3xl font-bold text-white">Usuários</h1>
           <button
@@ -88,14 +115,22 @@ function UserList() {
           </button>
         </div>
 
-        {/* Exibição de erros */}
+        <div className="p-4">
+          <input
+            type="text"
+            placeholder="Buscar usuário..."
+            className="w-full px-4 py-2 bg-gray-700 text-gray-300 border border-gray-600 rounded-lg"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
         {error && <div className="p-4 bg-red-500 text-white text-center">{error}</div>}
 
-        {/* Loader */}
         {loading ? (
           <div className="p-6 text-center text-gray-300">Carregando usuários...</div>
         ) : (
-          <div className="overflow-x-auto p-6">
+          <div className="overflow-y-auto p-6 border-t border-gray-600" style={{ maxHeight: "400px" }}>
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-700 text-gray-200">
@@ -107,13 +142,14 @@ function UserList() {
                 </tr>
               </thead>
               <tbody>
-                {userList.length > 0 ? (
-                  userList.map((user, index) => (
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user, index) => (
                     <tr
                       key={user.id}
                       className={`hover:bg-gray-600 transition-all duration-200 ${
                         !user.active ? "bg-gray-500 text-gray-400" : "text-white"
                       }`}
+                      ref={index === filteredUsers.length - 1 ? lastUserRef : null}
                     >
                       <td className="px-4 py-3 border border-gray-600">{index + 1}</td>
                       <td className="px-4 py-3 border border-gray-600">
@@ -153,10 +189,7 @@ function UserList() {
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan={5}
-                      className="px-4 py-3 text-center border border-gray-600 text-gray-400"
-                    >
+                    <td colSpan={5} className="px-4 py-3 text-center border border-gray-600 text-gray-400">
                       Nenhum usuário encontrado.
                     </td>
                   </tr>

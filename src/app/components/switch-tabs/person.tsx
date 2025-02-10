@@ -10,31 +10,29 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { PersonProps, Person } from "@/app/types/person";
 import { personModelSchema } from "@/app/schemas/personSchema";
-import { EmployeeService } from "@/app/services/employeeService"; // 🔥 Importando EmployeeService
-import employeeData from "@/app/components/data/employeeData.json"; // 🔥 Fallback JSON
+import { EmployeeService } from "@/app/services/employeeService";
 
 export function PessoaFisica({
-  data = {} as Person, // 🔥 Agora inicia com um objeto vazio
+  data = {} as Person,
   onChange,
-  isEditable = true,  // 🔥 Garante que será editável por padrão
+  isEditable = true,
   onNext,
   onPrev,
 }: PersonProps) {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof Person, string | null>>>({});
 
-  // 🔍 Validação dinâmica
   useEffect(() => {
     validateData(data);
   }, [data]);
 
-  // ✅ Função de validação
   const validateData = (updatedData: Person) => {
     try {
       personModelSchema.parse(updatedData);
       setErrors({});
       setIsNextEnabled(true);
     } catch (err: any) {
+      console.error("Erro de validação:", err.errors);
       const newErrors: Record<string, string> = {};
       err.errors?.forEach((e: any) => {
         newErrors[e.path[0]] = e.message;
@@ -44,13 +42,11 @@ export function PessoaFisica({
     }
   };
 
-  // 🔄 Atualiza os dados
   const handleInputChange = (field: keyof Person, value: string | Date | null) => {
     const updatedData = { ...data, [field]: value };
     onChange(updatedData);
   };
 
-  // **Criar pessoa via EmployeeService**
   const createEmployee = async () => {
     try {
       await EmployeeService.createEmployee(data);
@@ -64,7 +60,6 @@ export function PessoaFisica({
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-4 w-full">
-      {/* Nome */}
       <div className="w-full">
         <input
           type="text"
@@ -79,7 +74,6 @@ export function PessoaFisica({
         {errors.full_name && <p className="text-red-500 text-sm mt-1">{errors.full_name}</p>}
       </div>
 
-      {/* CPF */}
       <CpfMask
         value={data.tax_id || ""}
         onChange={(cpfValue) => handleInputChange("tax_id", cpfValue)}
@@ -87,7 +81,6 @@ export function PessoaFisica({
       />
       {errors.tax_id && <p className="text-red-500 text-sm mt-1">{errors.tax_id}</p>}
 
-      {/* RG */}
       <RgMask
         value={data.national_id || ""}
         onChange={(e: { target: { value: string | Date | null } }) => handleInputChange("national_id", e.target.value)}
@@ -95,7 +88,6 @@ export function PessoaFisica({
       />
       {errors.national_id && <p className="text-red-500 text-sm mt-1">{errors.national_id}</p>}
 
-      {/* Data de Nascimento */}
       <div className="w-full">
         <DatePicker
           selected={data.date_of_birth ? new Date(data.date_of_birth) : null}
@@ -110,7 +102,6 @@ export function PessoaFisica({
         {errors.date_of_birth && <p className="text-red-500 text-sm mt-1">{errors.date_of_birth}</p>}
       </div>
 
-      {/* Órgão Expedidor */}
       <div className="w-full">
         <input
           type="text"
@@ -125,7 +116,6 @@ export function PessoaFisica({
         {errors.issuing_body && <p className="text-red-500 text-sm mt-1">{errors.issuing_body}</p>}
       </div>
 
-      {/* Gênero */}
       <DropdownCheckboxGender
         value={data.gender || ""}
         onChange={(value) => handleInputChange("gender", value)}
@@ -133,7 +123,6 @@ export function PessoaFisica({
       />
       {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
 
-      {/* Estado Civil */}
       <DropdownCheckboxEstadoCivil
         value={data.marital_status || ""}
         onChange={(value) => handleInputChange("marital_status", value)}
@@ -141,7 +130,6 @@ export function PessoaFisica({
       />
       {errors.marital_status && <p className="text-red-500 text-sm mt-1">{errors.marital_status}</p>}
 
-      {/* Botões de Ação */}
       <div className="flex justify-between mt-6">
         <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar

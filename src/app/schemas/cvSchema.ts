@@ -138,7 +138,7 @@ export const CvService = {
    * Obtém todos os currículos
    * @returns {Promise<Cv[]>} - Lista de currículos
    */
-  async getAllCvs(): Promise<Cv[]> {
+  async getAllCvs(page: number): Promise<Cv[]> {
     try {
       const response = await axios.get(API_URL);
       return response.data;
