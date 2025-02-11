@@ -37,86 +37,88 @@ export const addressSchema = z.object({
 // Tipo inferido automaticamente pelo Zod
 export type AddressInput = z.infer<typeof addressSchema>;
 
+
+//  MANTER AddressService
 /**
  *  Serviço de API para manipulação de endereços
  */
-const endpoint = "/address";
+// const endpoint = "/address";
 
-export const AddressService = {
-  /**
-   * Cria um novo endereço com validação
-   * @param {AddressInput} addressData - Dados do endereço
-   * @returns {Promise<AddressInput>} - Endereço criado
-   */
-  async createAddress(addressData: AddressInput): Promise<AddressOutput> {
-    try {
-      const validatedData = addressSchema.parse(addressData); // Validação com Zod antes de enviar
-      const response = await api.post(endpoint, validatedData);
-      return addressSchema.parse(response.data); // Validação da resposta
-    } catch (error) {
-      console.error("Erro ao criar endereço:", error);
-      throw new Error("Erro ao criar endereço.");
-    }
-  },
+// export const AddressService = {
+//   /**
+//    * Cria um novo endereço com validação
+//    * @param {AddressInput} addressData - Dados do endereço
+//    * @returns {Promise<AddressInput>} - Endereço criado
+//    */
+//   async createAddress(addressData: AddressInput): Promise<AddressOutput> {
+//     try {
+//       const validatedData = addressSchema.parse(addressData); // Validação com Zod antes de enviar
+//       const response = await api.post(endpoint, validatedData);
+//       return addressSchema.parse(response.data); // Validação da resposta
+//     } catch (error) {
+//       console.error("Erro ao criar endereço:", error);
+//       throw new Error("Erro ao criar endereço.");
+//     }
+//   },
 
-  /**
-   * Busca um endereço pelo ID
-   * @param {number} id - ID do endereço
-   * @returns {Promise<AddressOutput>} - Dados do endereço
-   */
-  async getAddressById(id: number): Promise<AddressOutput> {
-    try {
-      const response = await api.get(`${endpoint}/${id}`);
-      return addressSchema.parse(response.data); // Validação da resposta
-    } catch (error) {
-      console.error("Erro ao buscar endereço:", error);
-      throw new Error("Erro ao buscar endereço.");
-    }
-  },
+//   /**
+//    * Busca um endereço pelo ID
+//    * @param {number} id - ID do endereço
+//    * @returns {Promise<AddressOutput>} - Dados do endereço
+//    */
+//   async getAddressById(id: number): Promise<AddressOutput> {
+//     try {
+//       const response = await api.get(`${endpoint}/${id}`);
+//       return addressSchema.parse(response.data); // Validação da resposta
+//     } catch (error) {
+//       console.error("Erro ao buscar endereço:", error);
+//       throw new Error("Erro ao buscar endereço.");
+//     }
+//   },
 
-  /**
-   * 📜 Obtém todos os endereços cadastrados
-   * @returns {Promise<AddressInput[]>} - Lista de endereços
-   */
-  async getAllAddresses(): Promise<AddressOutput[]> {
-    try {
-      const response = await api.get(endpoint);
-      return z.array(addressSchema).parse(response.data); // Validação da lista de endereços
-    } catch (error) {
-      console.error("Erro ao buscar todos os endereços:", error);
-      throw new Error("Erro ao buscar todos os endereços.");
-    }
-  },
+//   /**
+//    * 📜 Obtém todos os endereços cadastrados
+//    * @returns {Promise<AddressInput[]>} - Lista de endereços
+//    */
+//   async getAllAddresses(): Promise<AddressOutput[]> {
+//     try {
+//       const response = await api.get(endpoint);
+//       return z.array(addressSchema).parse(response.data); // Validação da lista de endereços
+//     } catch (error) {
+//       console.error("Erro ao buscar todos os endereços:", error);
+//       throw new Error("Erro ao buscar todos os endereços.");
+//     }
+//   },
 
-  /**
-   * Atualiza um endereço existente
-   * @param {number} id - ID do endereço
-   * @param {Partial<AddressInput>} addressData - Dados do endereço a serem atualizados
-   * @returns {Promise<AddressInput>} - Endereço atualizado
-   */
-  async updateAddress(id: number, addressData: Partial<AddressInput>): Promise<AddressOutput> {
-    try {
-      const validatedData = addressSchema.partial().parse(addressData); // Validação parcial antes de enviar
-      const response = await api.put(`${endpoint}/${id}`, validatedData);
-      return addressSchema.parse(response.data); // Validação da resposta
-    } catch (error) {
-      console.error("Erro ao atualizar endereço:", error);
-      throw new Error("Erro ao atualizar endereço.");
-    }
-  },
+//   /**
+//    * Atualiza um endereço existente
+//    * @param {number} id - ID do endereço
+//    * @param {Partial<AddressInput>} addressData - Dados do endereço a serem atualizados
+//    * @returns {Promise<AddressInput>} - Endereço atualizado
+//    */
+//   async updateAddress(id: number, addressData: Partial<AddressInput>): Promise<AddressOutput> {
+//     try {
+//       const validatedData = addressSchema.partial().parse(addressData); // Validação parcial antes de enviar
+//       const response = await api.put(`${endpoint}/${id}`, validatedData);
+//       return addressSchema.parse(response.data); // Validação da resposta
+//     } catch (error) {
+//       console.error("Erro ao atualizar endereço:", error);
+//       throw new Error("Erro ao atualizar endereço.");
+//     }
+//   },
 
-  /**
-   * Exclui um endereço pelo ID
-   * @param {number} id - ID do endereço a ser removido
-   * @returns {Promise<{ success: boolean }>} - Confirmação da exclusão
-   */
-  async deleteAddress(id: number): Promise<{ success: boolean }> {
-    try {
-      await api.delete(`${endpoint}/${id}`);
-      return { success: true };
-    } catch (error) {
-      console.error("Erro ao deletar endereço:", error);
-      throw new Error("Erro ao deletar endereço.");
-    }
-  },
-};
+//   /**
+//    * Exclui um endereço pelo ID
+//    * @param {number} id - ID do endereço a ser removido
+//    * @returns {Promise<{ success: boolean }>} - Confirmação da exclusão
+//    */
+//   async deleteAddress(id: number): Promise<{ success: boolean }> {
+//     try {
+//       await api.delete(`${endpoint}/${id}`);
+//       return { success: true };
+//     } catch (error) {
+//       console.error("Erro ao deletar endereço:", error);
+//       throw new Error("Erro ao deletar endereço.");
+//     }
+//   },
+// };

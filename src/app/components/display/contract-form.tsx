@@ -14,9 +14,8 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
 
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const [pessoaFisica, setPessoaFisica] = useState(() => employeeData?.pessoaFisica || {});
+  const [pessoaFisica, setPessoaFisica] = useState(employeeData?.pessoaFisica || {});
   const [funcionario, setFuncionario] = useState(() => employeeData?.funcionario || {});
-  const [address, setAddress] = useState(() => employeeData?.address || {});
   const [contact, setContact] = useState(() => employeeData?.contact || {});
   const [bankAccount, setBankAccount] = useState(() => employeeData?.bank_account || {});
   const [clothing, setClothing] = useState(() => employeeData?.clothing || {});
@@ -32,11 +31,12 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
 
   const CurrentComponent = tabs[selectedTab]?.component as React.ElementType;
   const currentState = tabs[selectedTab]?.state;
+
   const handleInputChange = (data: Record<string, unknown>) => {
     const setCurrentState = tabs[selectedTab]?.setState;
 
     if (setCurrentState) {
-      setCurrentState((prev) => ({ ...prev, ...data }));
+      setCurrentState(...data);
     } else {
       console.error("Erro: Nenhum setState definido para a aba atual.");
     }
@@ -75,6 +75,7 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
                 isEditable={isEditable}
                 mode={mode}
                 onNext={() => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))}
+                employee
               />
             )}
 
