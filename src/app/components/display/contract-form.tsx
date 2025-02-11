@@ -9,7 +9,7 @@ import { Contact } from "../switch-tabs/Contact";
 import { Bank } from "../switch-tabs/bank";
 import { Clothing } from "../switch-tabs/clothing";
 import { ContractFormProps } from "@/app/types/employee";
-import { personSchema } from "@/app/schemas/personSchema";
+import { personModelSchema } from "@/app/schemas/personSchema";
 import { employeeSchema } from "@/app/schemas/employeeSchema";
 import { addressSchema } from "@/app/schemas/addressSchema";
 import { contactSchema } from "@/app/schemas/contactSchema";
@@ -21,15 +21,15 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
   const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const [pessoaFisica, setPessoaFisica] = useState(() => personModelSchema.parse(employeeData?.pessoaFisica || {}));
-  const [funcionario, setFuncionario] = useState(() => employeeSchema.parse(employeeData?.funcionario || {}));
-  const [address, setAddress] = useState(() => addressSchema.parse(employeeData?.address || {}));
-  const [contact, setContact] = useState(() => contactSchema.parse(employeeData?.contact || {}));
-  const [bankAccount, setBankAccount] = useState(() => bankAccountSchema.parse(employeeData?.bank_account || {}));
-  const [clothing, setClothing] = useState(() => clothingSchema.parse(employeeData?.clothing || {}));
+  const [pessoaFisica, setPessoaFisica] = useState(() => employeeData?.pessoaFisica || {});
+  const [funcionario, setFuncionario] = useState(() =>employeeData?.funcionario || {});
+  const [address, setAddress] = useState(() => employeeData?.address || {});
+  const [contact, setContact] = useState(() => employeeData?.contact || {});
+  const [bankAccount, setBankAccount] = useState(() => employeeData?.bank_account || {});
+  const [clothing, setClothing] = useState(() => employeeData?.clothing || {});
 
   const tabs = [
-    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personSchema },
+    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personModelSchema },
     { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario, schema: employeeSchema },
     { name: "ENDEREÇO", component: Address, state: address, setState: setAddress, schema: addressSchema },
     { name: "CONTATO", component: Contact, state: contact, setState: setContact, schema: contactSchema },
@@ -62,7 +62,7 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
     setLoading(true);
     try {
       const employeePayload = {
-        pessoaFisica: personSchema.parse(pessoaFisica),
+        pessoaFisica: personModelSchema.parse(pessoaFisica),
         funcionario: employeeSchema.parse(funcionario),
         address: addressSchema.parse(address),
         contact: contactSchema.parse(contact),

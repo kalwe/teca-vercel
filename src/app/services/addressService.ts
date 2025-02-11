@@ -1,19 +1,22 @@
 import api from "./api";
+import { createAddress, getAddressById } from "../../../tests/api/address";
 
 const endpoint = "/address";
 
 export const AddressService = {
   /**
-   * 🔥 Cria um novo endereço para um funcionário
+   *  Cria um novo endereço para um funcionário
    * @param {object} addressData - Dados do endereço
    * @returns {Promise<any>} - Resposta da API
    */
   async createAddress(addressData: any): Promise<any> {
-    try {
-      const response = await api.post(endpoint, addressData);
-      return response.data;
-    } catch (error) {
-      console.error("❌ Erro ao criar endereço:", error);
+   try {
+   //   const response = await api.post(endpoint, addressData);
+  //    return response.data;
+const createdAddress = createAddress(addressData)
+return createdAddress
+} catch (error) {
+      console.error("Erro ao criar endereço:", error);
       throw error;
     }
   },
@@ -25,8 +28,10 @@ export const AddressService = {
    */
   async getAddressById(id: number): Promise<any> {
     try {
-      const response = await api.get(`${endpoint}/${id}`);
-      return response.data;
+     // const response = await api.get(`${endpoint}/${id}`);
+     // return response.data;
+     const getAddress = getAddressById(id)
+     return getAddress
     } catch (error) {
       console.error(" Erro ao buscar endereço:", error);
       throw error;

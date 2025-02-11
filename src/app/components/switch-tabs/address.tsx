@@ -20,7 +20,7 @@ export function Address({
   // **Validação dos campos**
   useEffect(() => {
     try {
-      addressSchema.parse(data);
+      data
       setErrors({});
       setIsNextEnabled(true);
     } catch (error: any) {
@@ -41,10 +41,11 @@ export function Address({
   };
 
   // **Criar um novo endereço (POST)**
-  const createAddress = async () => {
+  const handleSave = async () => {
     try {
-      await AddressService.createAddress({ ...data, employee: employeeId });
-      alert("Endereço criado com sucesso!");
+      data.id = Math.random()
+      const createdAddress = await AddressService.createAddress({ ...data, employee: employeeId });
+      console.log(createdAddress)
       onNext();
     } catch (error) {
       alert("Erro ao criar endereço.");
@@ -54,10 +55,10 @@ export function Address({
   useEffect(() => {
     if (employeeId && Object.values(data).every((val) => !val)) {
       //  Apenas sobrescreve se os campos estiverem vazios
-      AddressService.getAddressById(employeeId)
+      AddressService.getAddressById(data.id)
         .then((addressData) => onChange(addressData))
         .catch((error) => console.error("Erro ao buscar endereço:", error));
-    }
+      }
   }, [employeeId]);
 
   return (
@@ -102,6 +103,30 @@ export function Address({
         />
         {errors.neighborhood && <p className="text-red-500 text-sm mt-1">{errors.neighborhood}</p>}
       </div>
+      {/* Cidade */}
+      <div className="w-full">
+        <input
+          type="text"
+          value={data.city || ""}
+          onChange={(e) => handleInputChange("city", e.target.value)}
+          placeholder="Digite a cidade"
+          className={`w-full bg-gray-700 text-white border ${errors.city ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
+          disabled={!isEditable}
+        />
+        {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+      </div>
+      {/* CEP */}
+      <div className="w-full">
+        <input
+          type="text"
+          value={data.zip_code || ""}
+          onChange={(e) => handleInputChange("zip_code", e.target.value)}
+          placeholder="Digite o CEP"
+          className={`w-full bg-gray-700 text-white border ${errors.zip_code ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
+          disabled={!isEditable}
+        />
+        {errors.zip_code && <p className="text-red-500 text-sm mt-1">{errors.zip_code}</p>}
+      </div>
 
       {/* Estado */}
       <div className="w-full">
@@ -126,7 +151,7 @@ export function Address({
         <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar
         </button>
-        <button onClick={createAddress} className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" disabled={!isNextEnabled}>
+        <button onClick={handleSave} className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" disabled={!isNextEnabled}>
           Próximo
         </button>
       </div>

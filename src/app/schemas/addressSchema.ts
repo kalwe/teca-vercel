@@ -38,13 +38,13 @@ export const addressSchema = z.object({
 export type AddressInput = z.infer<typeof addressSchema>;
 
 /**
- * 🔥 Serviço de API para manipulação de endereços
+ *  Serviço de API para manipulação de endereços
  */
 const endpoint = "/address";
 
 export const AddressService = {
   /**
-   * 🔥 Cria um novo endereço com validação
+   *  Cria um novo endereço com validação
    * @param {AddressInput} addressData - Dados do endereço
    * @returns {Promise<AddressInput>} - Endereço criado
    */

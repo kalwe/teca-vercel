@@ -1,4 +1,4 @@
-import { addressSchema } from '../../src/app/schemas/addressSchema.ts'
+import { addressSchema } from "@/app/schemas/addressSchema";
 
 // Define the AddressInput type based on the JSON schema
 type AddressInput = {
@@ -24,7 +24,7 @@ const addressList: AddressInput[] = [];
  * @returns The updated list of addresses.
  */
 // function createAddress(newAddress: AddressSchema): AddressSchema[] {
-function createAddress(newAddress: AddressInput): AddressInput[] {
+export function createAddress(newAddress: AddressInput): AddressInput[] {
     // Ensure new address follows the schema
     if (!newAddress.street ||
          !newAddress.city ||
@@ -51,7 +51,7 @@ function createAddress(newAddress: AddressInput): AddressInput[] {
  * @returns The address object if found, or null if not found.
  */
 // function getAddressById(id: number): AddressSchema | null {
-function getAddressById(id: number): AddressInput | null {
+export function getAddressById(id: number): AddressInput | null {
     return addressList.find(address => address.id === id) || null;
 }
 
@@ -60,7 +60,7 @@ function getAddressById(id: number): AddressInput | null {
  * @returns An array of all stored addresses.
  */
 // function getAllAddresses(): AddressSchema[] {
-function getAllAddresses(): AddressInput[] {
+export function getAllAddresses(): AddressInput[] {
     return addressList;
 }
 
@@ -71,7 +71,7 @@ function getAllAddresses(): AddressInput[] {
  * @returns The updated address object, or null if not found.
  */
 // function updateAddress(id: number, updatedData: Partial<AddressSchema>): AddressSchema | null {
-function updateAddress(id: number, updatedData: Partial<AddressInput>): AddressInput | null {
+export function updateAddress(id: number, updatedData: Partial<AddressInput>): AddressInput | null {
     // Find index of the address with the given ID
     const index = addressList.findIndex(address => address.id === id);
 
@@ -93,7 +93,7 @@ function updateAddress(id: number, updatedData: Partial<AddressInput>): AddressI
  * @param id - The ID of the address to delete.
  * @returns True if the address was deleted, false if not found.
  */
-function deleteAddress(id: number): boolean {
+ export function deleteAddress(id: number): boolean {
     // Find index of the address with the given ID
     const index = addressList.findIndex(address => address.id === id);
 
@@ -123,7 +123,7 @@ const validatedData = addressSchema.parse(newAddress)
 
 
 // CREATE
-console.log(createAddress(validatedData));
+//console.log(createAddress(validatedData));
 
 // GET BY ID
 const retrievedAddress = getAddressById(1);
