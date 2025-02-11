@@ -1,62 +1,70 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import DropdownCheckboxEstadoCivil from "../DropDown/dropdown-estadocivil";
-import DropdownCheckboxGender from "../DropDown/dropdown-gender";
-import { CpfMask } from "../masks/cpf";
-import { RgMask } from "../masks/rg";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useEffect, useState } from "react"
+import DropdownCheckboxMaritalStatus from "../DropDown/dropdown-marital-status"
+import DropdownCheckboxGender from "../DropDown/dropdown-gender"
+import { CpfMask } from "../masks/cpf"
+import { RgMask } from "../masks/rg"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 
-import { PersonProps, Person } from "@/app/types/person";
-import { personModelSchema } from "@/app/schemas/personSchema";
-import { EmployeeService } from "@/app/services/employeeService";
+import { PersonProps, PersonType } from "@/app/types/person"
+import { personSchema } from "@/app/schemas/personSchema"
+// import { employeeService } from "@/app/services/employeeService"
+import { createEmployeeMock } from "../../../../tests/api/employeeMock"
+
 
 export function PessoaFisica({
-  data = {} as Person,
+  data = {} as PersonType,
   onChange,
   isEditable = true,
   onNext,
   onPrev,
 }: PersonProps) {
-  const [isNextEnabled, setIsNextEnabled] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof Person, string | null>>>({});
+  const [isNextEnabled, setIsNextEnabled] = useState(false)
+  const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string | null>>>({})
 
-  useEffect(() => {
-    validateData(data);
-  }, [data]);
+  // useEffect(() => {
+  //   validateData(data)
+  // }, [data])
 
-  const validateData = (updatedData: Person) => {
+  const validateData = (updatedData: PersonType) => {
     try {
-      personModelSchema.parse(updatedData);
-      setErrors({});
-      setIsNextEnabled(true);
-    } catch (err: any) {
-      console.error("Erro de validação:", err.errors);
-      const newErrors: Record<string, string> = {};
-      err.errors?.forEach((e: any) => {
-        newErrors[e.path[0]] = e.message;
-      });
-      setErrors(newErrors);
-      setIsNextEnabled(false);
+      // const validatedData = personSchema.parse(updatedData)
+      personSchema.parse(updatedData) // TODO:
+      setErrors({})
+      setIsNextEnabled(true)
+    } catch (err) {
+      console.error("Erro de validação:", err.errors)
+      const newErrors: Record<string, string> = {}
+      err.errors?.forEach((e) => {
+        newErrors[e.path[0]] = e.message
+      })
+      setErrors(newErrors)
+      setIsNextEnabled(false)
     }
-  };
+  }
 
-  const handleInputChange = (field: keyof Person, value: string | Date | null) => {
+  const handleInputChange = (field: keyof PersonType, value: string | Date | null) => {
     const updatedData = { ...data, [field]: value };
     onChange(updatedData);
   };
 
+          // TODO: ln:99 data.date_of_birth ? new Date(data.date_of_birth) : null - i don`t got it
+
+
   const createEmployee = async () => {
     try {
-      await EmployeeService.createEmployee(data);
-      alert("Funcionário cadastrado com sucesso!");
-      onNext();
+      // const createdEmployee = await employeeService.createEmployee(data)
+      const createdMock = createEmployeeMock(data)
+      console.log(createdMock)
+      alert("Funcionário cadastrado com sucesso!")
+      onNext()
     } catch (error) {
-      console.error("Erro ao criar funcionário:", error);
-      alert("Erro ao criar funcionário.");
+      console.error("Erro ao criar funcionário:", error)
+      alert("Erro ao criar funcionário.")
     }
-  };
+  }
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-4 w-full">
@@ -123,7 +131,7 @@ export function PessoaFisica({
       />
       {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
 
-      <DropdownCheckboxEstadoCivil
+      <DropdownCheckboxMaritalStatus
         value={data.marital_status || ""}
         onChange={(value) => handleInputChange("marital_status", value)}
         disabled={!isEditable}
@@ -143,5 +151,5 @@ export function PessoaFisica({
         </button>
       </div>
     </div>
-  );
+  )
 }

@@ -1,32 +1,34 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { PessoaFisica } from "../switch-tabs/person";
-import { Funcionario } from "../switch-tabs/employee";
-import { Address } from "../switch-tabs/address";
-import { Contact } from "../switch-tabs/Contact";
-import { Bank } from "../switch-tabs/bank";
-import { Clothing } from "../switch-tabs/clothing";
-import { ContractFormProps } from "@/app/types/employee";
-import { personModelSchema } from "@/app/schemas/personSchema";
-import { employeeSchema } from "@/app/schemas/employeeSchema";
-import { addressSchema } from "@/app/schemas/addressSchema";
-import { contactSchema } from "@/app/schemas/contactSchema";
-import { bankAccountSchema } from "@/app/schemas/bankAccountSchema";
-import { clothingSchema } from "@/app/schemas/clothingSchema";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { PessoaFisica } from "../switch-tabs/person"
+import { Funcionario } from "../switch-tabs/employee"
+import { Address } from "../switch-tabs/address"
+import { Contact } from "../switch-tabs/Contact"
+import { Bank } from "../switch-tabs/bank"
+import { Clothing } from "../switch-tabs/clothing"
+import { ContractFormProps } from "@/app/types/employee"
+import { personSchema } from "@/app/schemas/personSchema"
+import { employeeSchema } from "@/app/schemas/employeeSchema"
+import { addressSchema } from "@/app/schemas/addressSchema"
+import { contactSchema } from "@/app/schemas/contactSchema"
+import { bankAccountSchema } from "@/app/schemas/bankAccountSchema"
+import { clothingSchema } from "@/app/schemas/clothingSchema"
 
+// TODO: onSave, onCancel why?
+// export default function ContractForm({ mode, employeeData, onSave, onCancel, isEditable }: ContractFormProps) {
 export default function ContractForm({ mode, employeeData, onSave, onCancel, isEditable }: ContractFormProps) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [selectedTab, setSelectedTab] = useState(0)
 
-  const [pessoaFisica, setPessoaFisica] = useState(() => employeeData?.pessoaFisica || {});
-  const [funcionario, setFuncionario] = useState(() =>employeeData?.funcionario || {});
-  const [address, setAddress] = useState(() => employeeData?.address || {});
-  const [contact, setContact] = useState(() => employeeData?.contact || {});
-  const [bankAccount, setBankAccount] = useState(() => employeeData?.bank_account || {});
-  const [clothing, setClothing] = useState(() => employeeData?.clothing || {});
+  const [pessoaFisica, setPessoaFisica] = useState(() => employeeData?.pessoaFisica || {})
+  const [funcionario, setFuncionario] = useState(() =>employeeData?.funcionario || {})
+  const [address, setAddress] = useState(() => employeeData?.address || {})
+  const [contact, setContact] = useState(() => employeeData?.contact || {})
+  const [bankAccount, setBankAccount] = useState(() => employeeData?.bank_account || {})
+  const [clothing, setClothing] = useState(() => employeeData?.clothing || {})
 
   const tabs = [
     { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personModelSchema },
@@ -44,61 +46,65 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
 
   const handleNext = () => {
     try {
-      currentState);
+      schema.parse(currentState);
       setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
     } catch (error: any) {
       alert("Corrija os erros antes de avançar.");
       console.error("Erro de validação:", error.errors);
     }
-  };
+  }
 
-  const handleInputChange = (updatedData: any) => {
+  // TODO: updatedData why use name with update?
+  const handleInputChange = (data) => {
     if (setState) {
-      setState((prev: any) => ({ ...prev, ...updatedData }));
+      setState((prev: any) => ({ ...prev, ...data })) // TODO:
     }
-  };
+  }
 
   const handleSave = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
+      // TODO: use employeeSchema
       const employeePayload = {
-        pessoaFisica: personModelSchema.parse(pessoaFisica),
+        pessoaFisica: personSchema.parse(pessoaFisica),
         funcionario: employeeSchema.parse(funcionario),
         address: addressSchema.parse(address),
         contact: contactSchema.parse(contact),
         bank_account: bankAccountSchema.parse(bankAccount),
         clothing: clothingSchema.parse(clothing),
         contract_date: new Date().toISOString().split("T")[0]
-      };
+      }
 
-      let response;
+      let response
       if (mode === "create") {
+        // TODO: use services
         response = await fetch("/api/employee", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(employeePayload)
-        });
+        })
       } else if (mode === "edit") {
+        // TODO: use services
         response = await fetch(`/api/employee/${employeeData?.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(employeePayload)
-        });
+        })
       }
 
       if (!response?.ok) {
-        throw new Error("Erro ao salvar funcionário.");
+        throw new Error("Erro ao salvar funcionário.")
       }
 
-      alert("Funcionário salvo com sucesso!");
-      router.push("/contract-display/employee");
+      alert("Funcionário salvo com sucesso!")
+      router.push("/contract-display/employee")
     } catch (error) {
-      console.error("Erro ao salvar funcionário:", error);
-      alert("Ocorreu um erro ao salvar. Tente novamente.");
+      console.error("Erro ao salvar funcionário:", error)
+      alert("Ocorreu um erro ao salvar. Tente novamente.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
@@ -143,5 +149,5 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
         </div>
       </div>
     </div>
-  );
+  )
 }

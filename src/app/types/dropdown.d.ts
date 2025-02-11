@@ -10,7 +10,7 @@ export interface DropDownBurgerProps {
   }
 
 
-  export interface DropdownCheckboxEstadoCivilProps {
+  export interface DropdownCheckboxMaritalStatusProps {
     value: string;
     onChange: (value: string) => void; // Callback to update value in parent
     disabled?: boolean; // Optional disabled property

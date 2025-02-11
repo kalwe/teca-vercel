@@ -14,7 +14,6 @@ export function Navigation() {
 
   const router = useRouter()
 
-
   return (
     <div>
       {/* Navbar */}
@@ -27,15 +26,12 @@ export function Navigation() {
           href="#"
           className="text-2xl font-bold tracking-wide text-white hover:text-gray-300 transition"
           onClick={() => router.push('/dashboard-display')}
-
         >
           SIGFLOR
         </a>
-
         {/* Navegação à Direita */}
         <div className="flex items-center gap-6">
           {/* Dropdown do Usuário */}
-
           {/* Botão Hamburger */}
           <button
             onClick={toggleMenu}
@@ -67,7 +63,6 @@ export function Navigation() {
 
       {/* Dropdown Menu para Mobile */}
       <DropDownBurger isOpen={isMenuOpen} />
-
     </div>
   );
 }

@@ -1,24 +1,26 @@
 
-import { z } from "zod";
+import { z } from "zod"
+import { GenderEnum } from "./enums/gender"
+import { MaritalStatusEnum } from "./enums/maritalStatus"
 
 // Enums para gênero e estado civil
-export enum GenderType {
-  male = 'Masculino',
-  female = 'Feminino',
-  other = 'Outro',
-  not_given = 'Não informado',
-}
+// export enum GenderType {
+//   male = 'Masculino',
+//   female = 'Feminino',
+//   other = 'Outro',
+//   not_given = 'Não informado',
+// }
 
-export enum MartialStatusType {
-  SINGLE = 'Solteiro',
-  MARRIED = 'Casado',
-  DIVORCED = 'Divorciado',
-  LIVING_TOGETHER = "Amasiado/Concubinado",
-  STABLE_UNION = "União Estável",
-  WIDOWER = "Viúvo"
-}
+// export enum maritalStatusType {
+//   SINGLE = 'Solteiro',
+//   MARRIED = 'Casado',
+//   DIVORCED = 'Divorciado',
+//   LIVING_TOGETHER = "Amasiado/Concubinado",
+//   STABLE_UNION = "União Estável",
+//   WIDOWER = "Viúvo"
+// }
 
-export const personModelSchema = z.object({
+export const personSchema = z.object({
   full_name: z
     .string()
     .max(255, "O nome completo não pode ter mais de 255 caracteres.")
@@ -43,6 +45,6 @@ export const personModelSchema = z.object({
     .string()
     .max(120, "O órgão emissor não pode ter mais de 120 caracteres.")
     .nonempty("O órgão emissor é obrigatório."),
-  gender: z.nativeEnum(GenderType),
-  marital_status: z.nativeEnum(MartialStatusType),
-});
+  gender: z.nativeEnum(GenderEnum),
+  marital_status: z.nativeEnum(MaritalStatusEnum),
+})

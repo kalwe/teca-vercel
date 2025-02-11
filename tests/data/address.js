@@ -1,5 +1,5 @@
 
-input = {
+input_json = {
     "version": null,
     "id": null,
     "street": "456 Elm St",
@@ -11,7 +11,7 @@ input = {
     "employee": null
 }
 
-output = {
+output_json = {
     "version": null,
     "id": 1,
     "created_at": "2025-02-11T02:50:51.799108",
@@ -27,7 +27,7 @@ output = {
     "employee": 202
 }
 
-deleted = {
+deleted_json = {
     "version": null,
     "id": 1,
     "is_active": false,

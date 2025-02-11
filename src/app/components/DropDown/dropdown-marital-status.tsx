@@ -1,26 +1,26 @@
-'use client';
-import { useEffect, useRef, useState } from "react";
-import { DropdownCheckboxEstadoCivilProps } from "@/app/types/dropdown";
-import { MartialStatusType } from "@/app/schemas/personSchema";
+'use client'
+import { useEffect, useRef, useState } from "react"
+import { DropdownCheckboxMaritalStatusProps } from "@/app/types/dropdown"
+import { MaritalStatusEnum } from "@/app/schemas/enums/maritalStatus"
 
 
-export function DropdownCheckboxEstadoCivil({
+export function DropdownCheckboxMaritalStatus({
   value = "", // Default to an empty string to ensure controlled behavior
   onChange,
   disabled = false, // Default disabled to false
-}: DropdownCheckboxEstadoCivilProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to control dropdown visibility
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const martialStatusOptions = Object.entries(MartialStatusType);
+}: DropdownCheckboxMaritalStatusProps) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false) // State to control dropdown visibility
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const maritalStatusOptions = Object.entries(MaritalStatusEnum)
 
 
   // Toggle dropdown visibility
   const toggleDropdown = (e: React.MouseEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!disabled) {
-      setIsDropdownOpen((prevState) => !prevState);
+      setIsDropdownOpen((prevState) => !prevState)
     }
-  };
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -29,15 +29,15 @@ export function DropdownCheckboxEstadoCivil({
         dropdownRef.current &&
         !dropdownRef.current.contains(e.target as Node)
       ) {
-        setIsDropdownOpen(false);
+        setIsDropdownOpen(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -76,7 +76,7 @@ export function DropdownCheckboxEstadoCivil({
           className="z-10 w-48 bg-white divide-y divide-gray-100 absolute rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         >
         <ul>
-  {martialStatusOptions.map(([key, value]) => (
+  {maritalStatusOptions.map(([key, value]) => (
     <li key={key}>
       <div className="flex items-center">
         <input
@@ -102,7 +102,7 @@ export function DropdownCheckboxEstadoCivil({
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default DropdownCheckboxEstadoCivil;
+export default DropdownCheckboxMaritalStatus

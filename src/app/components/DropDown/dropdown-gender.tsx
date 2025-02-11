@@ -1,7 +1,7 @@
-'use client';
+'use client'; // TODO:
 import { useEffect, useRef, useState } from "react";
 import { DropdownCheckboxGenderProps } from "@/app/types/dropdown";
-import { GenderType } from "@/app/schemas/personSchema";
+import { GenderEnum } from "@/app/schemas/enums/gender";
 
 export function DropdownCheckboxGender({
   value = "",
@@ -74,7 +74,7 @@ export function DropdownCheckboxGender({
         >
           <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
             {/* Map Enum for Options */}
-            {Object.entries(GenderType).map(([key, value]) => (
+            {Object.entries(GenderEnum).map(([key, value]) => (
   <li key={key}>
     <div className="flex items-center">
       <input

@@ -9,11 +9,11 @@ export default function Contract() {
   const router = useRouter();
 
   /**
-   * ✅ Função assíncrona para salvar os dados do contrato
+   * Função assíncrona para salvar os dados do contrato
    */
   const handleSave = async () => {
     try {
-      console.log("✅ Salvando contrato...");
+      console.log("Salvando contrato...");
 
       // Aqui você pode integrar com seu serviço de API
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -27,10 +27,10 @@ export default function Contract() {
   };
 
   /**
-   * ✅ Função para cancelar e redirecionar
+   * Função para cancelar e redirecionar
    */
   const handleCancel = () => {
-    console.log("❌ Cancelando...");
+    console.log("Cancelando...");
     router.push("/dashboard-display/");
   };
 
