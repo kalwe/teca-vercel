@@ -1,5 +1,5 @@
 import api from "./api"; // 🔥 Importa a instância do Axios configurada
-
+import { createBankAccount } from "../../../tests/api/bank";
 const endpoint = "/bank-account"; // 🔥 Define o endpoint base
 
 export const BankService = {
@@ -8,15 +8,16 @@ export const BankService = {
    * @param {object} bankData - Dados da conta bancária
    * @returns {Promise<any>} - Resposta da API
    */
-  async createBankAccount(bankData: any): Promise<any> {
-    try {
-      const response = await api.post(endpoint, bankData);
-      return response.data;
-    } catch (error) {
-      console.error("❌ Erro ao criar conta bancária:", error);
-      throw error;
-    }
-  },
+  async createBankAccount(addressData: any): Promise<any> {
+     try {
+       // const response = await api.post(endpoint, addressData);
+       const response = createBankAccount(addressData)
+       return response;
+     } catch (error) {
+       console.error("❌ Erro ao criar endereço:", error);
+       throw error;
+     }
+   },
 
   /**
    * 🔍 Busca uma conta bancária pelo ID

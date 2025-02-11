@@ -46,13 +46,19 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
 
   const handleNext = () => {
     try {
-      schema.parse(currentState);
-      setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
+        if (!currentState) {
+            throw new Error("Estado inválido ou não definido.");
+        }
+
+        // Se precisar validar os dados do estado antes de avançar, faça isso aqui
+        console.log("Estado atual:", currentState);
+
+        setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
     } catch (error: any) {
-      alert("Corrija os erros antes de avançar.");
-      console.error("Erro de validação:", error.errors);
+        alert("Corrija os erros antes de avançar.");
+        console.error("Erro de validação:", error);
     }
-  }
+};
 
   // TODO: updatedData why use name with update?
   const handleInputChange = (data) => {

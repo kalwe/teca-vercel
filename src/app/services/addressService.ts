@@ -1,3 +1,4 @@
+import { createAddress } from "../../../tests/api/address";
 import api from "./api";
 
 import { createAddressMock, getAddressByIdMock, getAllAddressesMock, updateAddressMock, deleteAddressMock } from "../../../tests/api/addressMock"

@@ -34,7 +34,7 @@ export function Bank({ data = {}, onChange, onNext, onPrev, employeeId, mode }: 
     onChange({ ...data, [field]: value });
   };
 
-  const createBankAccount = async () => {
+  const handleSave = async () => {
     try {
       await BankService.createBankAccount({ ...data, employee: employeeId });
       alert("Conta bancária criada com sucesso!");
@@ -156,7 +156,7 @@ export function Bank({ data = {}, onChange, onNext, onPrev, employeeId, mode }: 
           Voltar
         </button>
         <button
-          onClick={createBankAccount}
+          onClick={handleSave}
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           disabled={!isSaveEnabled}
         >

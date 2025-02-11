@@ -6,6 +6,7 @@ import type { AddressType, AddressProps } from "@/app/types/address";
 import { AddressService } from "@/app/services/addressService";
 import employeeData from "@/app/components/data/employeeData.json";
 
+
 export function Address({
   // TODO: why use json?
   data = employeeData.address || {}, //  Garante que `data` não seja undefined
@@ -71,10 +72,9 @@ export function Address({
       <div className="w-full">
         <input
           type="text"
-          value={data.street || ""}
-          name="street"
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Digite o logradouro"
+          value={data.number || ""}
+          onChange={(e) => handleInputChange("street", e.target.value)}
+          placeholder="Digite o logadouro"
           className={`w-full bg-gray-700 text-white border ${errors.street ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
           disabled={!isEditable}
         />
