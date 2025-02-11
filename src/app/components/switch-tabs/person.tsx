@@ -24,9 +24,9 @@ export function PessoaFisica({
   const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string | null>>>({})
 
-  // useEffect(() => {
-  //   validateData(data)
-  // }, [data])
+  useEffect(() => {
+    validateData(data)
+  }, [data])
 
   const validateData = (updatedData: PersonType) => {
     try {

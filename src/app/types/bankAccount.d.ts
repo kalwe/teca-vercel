@@ -3,16 +3,16 @@ export type BankAccountType = {
   agency: string
   account: string
   account_type: string
-  employee: number
+  employee?: number
 }
 
-export type ModeType = "edit" | "add" | "view" | "create" // Agora inclui "create"
+export type ModeType = "edit" | "add" | "view" | "create"
 
 export type BankProps = {
-  data: BankAccount
+  data: BankAccountType
   onChange: (updatedData: BankProps["data"]) => void
   onNext: () => void
   onPrev: () => void
-  mode: ModeType // Usa o tipo padronizado
+  mode: ModeType
   employee?: number
 }
