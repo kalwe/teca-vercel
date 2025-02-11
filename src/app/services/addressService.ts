@@ -10,8 +10,9 @@ export const AddressService = {
    */
   async createAddress(addressData: any): Promise<any> {
     try {
-      const response = await api.post(endpoint, addressData);
-      return response.data;
+      // const response = await api.post(endpoint, addressData);
+      const response = createAddress(addressData)
+      return response;
     } catch (error) {
       console.error("❌ Erro ao criar endereço:", error);
       throw error;

@@ -9,7 +9,7 @@ import { Contact } from "../switch-tabs/Contact";
 import { Bank } from "../switch-tabs/bank";
 import { Clothing } from "../switch-tabs/clothing";
 import { ContractFormProps } from "@/app/types/employee";
-import { personSchema } from "@/app/schemas/personSchema";
+import { personModelSchema } from "@/app/schemas/personSchema";
 import { employeeSchema } from "@/app/schemas/employeeSchema";
 import { addressSchema } from "@/app/schemas/addressSchema";
 import { contactSchema } from "@/app/schemas/contactSchema";
@@ -22,13 +22,14 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
   const [selectedTab, setSelectedTab] = useState(0);
 
   const [pessoaFisica, setPessoaFisica] = useState(() => employeeData?.pessoaFisica || {});
-  const [funcionario, setFuncionario] = useState(() => employeeData?.funcionario || {});
+  const [funcionario, setFuncionario] = useState(() =>employeeData?.funcionario || {});
   const [address, setAddress] = useState(() => employeeData?.address || {});
   const [contact, setContact] = useState(() => employeeData?.contact || {});
+  const [bankAccount, setBankAccount] = useState(() => employeeData?.bank_account || {});
   const [clothing, setClothing] = useState(() => employeeData?.clothing || {});
 
   const tabs = [
-    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personSchema },
+    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personModelSchema },
     { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario, schema: employeeSchema },
     { name: "ENDEREÇO", component: Address, state: address, setState: setAddress, schema: addressSchema },
     { name: "CONTATO", component: Contact, state: contact, setState: setContact, schema: contactSchema },
@@ -61,12 +62,12 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
     setLoading(true);
     try {
       const employeePayload = {
-        pessoaFisica: pessoaFisica),
-        funcionario: funcionario),
-        address: address),
-        contact: contact),
-        bank_account: bankAccount),
-        clothing: clothing),
+        pessoaFisica: personModelSchema.parse(pessoaFisica),
+        funcionario: employeeSchema.parse(funcionario),
+        address: addressSchema.parse(address),
+        contact: contactSchema.parse(contact),
+        bank_account: bankAccountSchema.parse(bankAccount),
+        clothing: clothingSchema.parse(clothing),
         contract_date: new Date().toISOString().split("T")[0]
       };
 

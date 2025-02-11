@@ -1,4 +1,4 @@
-import { addressSchema } from '../../src/app/schemas/addressSchema.ts'
+import { addressSchema } from "@/app/schemas/addressSchema";
 
 // Define the AddressInput type based on the JSON schema
 type AddressInput = {
@@ -123,7 +123,7 @@ const validatedData = addressSchema.parse(newAddress)
 
 
 // CREATE
-console.log(createAddress(validatedData));
+//console.log(createAddress(validatedData));
 
 // GET BY ID
 const retrievedAddress = getAddressById(1);
