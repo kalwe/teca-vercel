@@ -72,9 +72,9 @@ export const ClothingService = {
   /**
    * 🗑️ Exclui um vestuário pelo ID
    * @param {number} id - ID do vestuário a ser removido
-   * @returns {Promise<any>} - Confirmação da exclusão
+   * @returns //{Promise<any>} - Confirmação da exclusão
    */
-  async deleteClothing(id: number): Promise<any> {
+  async deleteClothing(id: number) {
     try {
       const response = await api.delete(`${endpoint}/${id}`);
       return response.data;

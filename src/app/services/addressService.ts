@@ -23,14 +23,18 @@ export const AddressService = {
     }
   },
 
-  async getAddressById(id: number): Promise<any> {
+  async getAddressById(addressData: AddressType) {
     try {
-      const response = await api.get(`${endpoint}/${id}`)
-      return response.data
-      // const getByIdMock = getAddressByIdMock
-      // return getByIdMock
+      const response = await api.get(endpoint, addressData)
+      if (response.status == 201)
+        return response.data
+
+      // TODO: validar se for erro
+
+      // const createdMock = getAddressByIdMock(addressData)
+      // return createdMock
     } catch (error) {
-      console.error("Erro ao buscar endereço:", error)
+      console.error("Erro ao criar endereço:", error)
       throw error
     }
   },

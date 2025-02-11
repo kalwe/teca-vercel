@@ -1,3 +1,4 @@
+import { getEmployeeByIdMock } from "../../../tests/api/employeeMock";
 import api from "./api"; // Importa a instância do Axios configurada
 
 export const EmployeeService = {
@@ -24,15 +25,21 @@ export const EmployeeService = {
   /**
    * Busca um funcionário por ID
    * @param {number} id - ID do funcionário
-   * @returns {Promise} - Dados do funcionário
+
    */
-  getEmployeeById: async (id: number) => {
+  async getEmployeeById(EmployeeData: EmployeeType) {
     try {
-      const response = await api.get(`/employee/${id}`);
-      return response.data;
+      const response = await api.get(endpoint, EmployeeData)
+      if (response.status == 201)
+        return response.data
+
+      // TODO: validar se for erro
+
+      // const createdMock = getEmployeeByIdMock(EmployeeData)
+      // return createdMock
     } catch (error) {
-      console.error("Erro ao buscar funcionário:", error);
-      throw error;
+      console.error("Erro ao criar endereço:", error)
+      throw error
     }
   },
 
@@ -56,7 +63,7 @@ export const EmployeeService = {
    * @param {object} employeeData - Novos dados do funcionário
    * @returns {Promise} - Dados atualizados
    */
-  updateEmployee: async (id: number, employeeData: any) => {
+  updateEmployee: async (id: number, employeeData) => {
     try {
       const response = await api.put(`/employee/${id}`, employeeData);
       return response.data;

@@ -2,26 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import axios from "axios";
 import ContractForm from "@/app/components/display/contract-form";
 import { useEmployeeContext } from "@/app/context/EmployeeContext";
 import { EmployeeService } from "@/app/services/employeeService";
 import { Employee } from "@/app/types/employee";
-import "../style.css";
 import { Navigation } from "@/app/components/navigation/navigation";
-
-// Definição do endpoint da API (ajuste conforme necessário)
-const API_URL = "https://api.example.com/employees";
 
 export default function EmployeeDetailPage() {
   const { employees, updateEmployee } = useEmployeeContext();
   const [formData, setFormData] = useState<Employee | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
-  const params = useParams();
+  const { id } = useParams(); // Captura o ID da URL
 
   useEffect(() => {
-    const employeeId = Number(params.id);
+    const employeeId = Number(id);
 
     if (isNaN(employeeId)) {
       alert("ID inválido. Redirecionando...");
@@ -53,22 +48,22 @@ export default function EmployeeDetailPage() {
     };
 
     fetchEmployee();
-  }, [params.id, employees, router]);
+  }, [id, employees, router]);
 
   const handleSave = async (updatedData: Employee) => {
     setLoading(true);
     try {
       // Atualiza funcionário via API
-      const response = await axios.patch(`${API_URL}/${updatedData.id}`, updatedData);
+      const updatedEmployee = await EmployeeService.updateEmployee(updatedData.id, updatedData);
 
       // Atualiza o contexto com os novos dados
-      updateEmployee(updatedData.id, response.data);
+      updateEmployee(updatedData.id, updatedEmployee);
 
       alert("Funcionário atualizado com sucesso.");
       router.push("/contract-display/employee");
-    } catch (error: any) {
-      console.error("Erro ao atualizar funcionário:", error.response?.data || error.message);
-      alert(error.response?.data?.message || "Erro ao atualizar funcionário. Tente novamente.");
+    } catch (error) {
+      console.error("Erro ao atualizar funcionário:", error);
+      alert("Erro ao atualizar funcionário. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -89,13 +84,15 @@ export default function EmployeeDetailPage() {
   return (
     <div className="mx-auto mt-10">
       <Navigation />
-      <ContractForm
-        mode="edit"
-        employeeData={formData}
-        onSave={handleSave}
-        onCancel={handleCancel}
-        isEditable={false}
-      />
+      {formData && (
+        <ContractForm
+          mode="edit"
+          employeeData={formData}
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isEditable={true}
+        />
+      )}
     </div>
   );
 }

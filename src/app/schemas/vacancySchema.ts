@@ -98,16 +98,21 @@ export const VacancyService = {
    * 📜 Obtém todas as vagas
    * @returns {Promise<Vacancy[]>} - Lista de vagas validadas
    */
-  async getAllVacancies(): Promise<Vacancy[]> {
+  async getAllVacancies(addressData: AddressType) {
     try {
-      const response = await api.get(endpoint);
-      return z.array(vacancySchema).parse(response.data);
+      const response = await api.post(endpoint, addressData)
+      if (response.status == 201)
+        return response.data
+
+      // TODO: validar se for erro
+
+      // const createdMock = createAddressMock(addressData)
+      // return createdMock
     } catch (error) {
-      console.error("❌ Erro ao buscar todas as vagas:", error);
-      throw new Error("Erro ao buscar todas as vagas.");
+      console.error("Erro ao criar endereço:", error)
+      throw error
     }
   },
-
   /**
    * 🔄 Atualiza uma vaga existente com validação
    * @param {number} id - ID da vaga

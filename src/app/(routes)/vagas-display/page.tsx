@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import VagasForm from "@/app/components/display/vagas-form";
+import VagasForm from "@/app/components/display/registered-vacancies";
 import { Navigation } from "@/app/components/navigation/navigation";
 import { vacancySchema } from "@/app/schemas/vacancySchema";
 import { z } from "zod";
@@ -29,7 +29,11 @@ export default function Contract() {
   );
 
   return (
-    <div>
+    <div
+    style={{
+      background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
+  }}
+    >
       {/* Componente de navegação */}
       <Navigation />
 

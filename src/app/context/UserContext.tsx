@@ -43,7 +43,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const validatedUsers = userOutputSchema.array().parse(response.data);
         setUsers(validatedUsers);
       } catch (error) {
-        console.error("⚠ Erro ao buscar usuários do backend:", error);
+        console.error(error);
       } finally {
         setLoading(false);
       }

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useState, useContext, useEffect } from "react";
-import { LoginData, User, AuthContextType, AuthResponse } from "@/app/types/authType";
+import { LoginData, User, AuthContextType } from "@/app/types/authType";
 import { AuthService } from "@/app/services/not-use/authService";
 
 // ✅ Criando o contexto de autenticação

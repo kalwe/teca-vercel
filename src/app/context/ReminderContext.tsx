@@ -39,7 +39,7 @@ export const ReminderProvider: React.FC<{ children: ReactNode }> = ({ children }
         const storedReminders = localStorage.getItem('reminders')
         if (storedReminders) {
             const parsedReminders = JSON.parse(storedReminders)
-            const sanitizedReminders = parsedReminders.map((reminder: any) => sanitizeReminder(reminder))
+            const sanitizedReminders = parsedReminders.map((reminder) => sanitizeReminder(reminder))
             setReminders(sanitizedReminders)
         }
     }, [])

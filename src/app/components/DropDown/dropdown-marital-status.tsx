@@ -1,47 +1,50 @@
-'use client'
-import { useEffect, useRef, useState } from "react"
-import { DropdownCheckboxMaritalStatusProps } from "@/app/types/dropdown"
-import { MaritalStatusEnum } from "@/app/schemas/enums/maritalStatus"
-
+"use client";
+import { useEffect, useRef, useState } from "react";
+import { DropdownCheckboxMaritalStatusProps } from "@/app/types/dropdown";
+import { MaritalStatusEnum } from "@/app/schemas/enums/maritalStatus";
 
 export function DropdownCheckboxMaritalStatus({
-  value = "", // Default to an empty string to ensure controlled behavior
+  value = "", // Define um valor inicial vazio
   onChange,
-  disabled = false, // Default disabled to false
+  disabled = false,
 }: DropdownCheckboxMaritalStatusProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false) // State to control dropdown visibility
-  const dropdownRef = useRef<HTMLDivElement | null>(null)
-  const maritalStatusOptions = Object.entries(MaritalStatusEnum)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(value); // Estado local para armazenar seleção
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const maritalStatusOptions = Object.entries(MaritalStatusEnum);
 
-
-  // Toggle dropdown visibility
+  // Alternar visibilidade do dropdown
   const toggleDropdown = (e: React.MouseEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!disabled) {
-      setIsDropdownOpen((prevState) => !prevState)
+      setIsDropdownOpen((prevState) => !prevState);
     }
-  }
+  };
 
-  // Close dropdown when clicking outside
+  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setIsDropdownOpen(false)
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Atualiza seleção de estado civil
+  const handleSelection = (selectedValue: string) => {
+    setSelectedStatus(selectedValue); // Atualiza estado local
+    onChange(selectedValue); // Passa o valor para o componente pai
+    setIsDropdownOpen(false); // Fecha o dropdown
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Button to toggle the dropdown */}
+      {/* Botão para abrir dropdown */}
       <button
         id="dropdownCheckboxButton"
         onClick={toggleDropdown}
@@ -49,9 +52,9 @@ export function DropdownCheckboxMaritalStatus({
           disabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         type="button"
-        disabled={disabled} // Disable button when `disabled` is true
+        disabled={disabled} // Botão desativado se `disabled` for true
       >
-        {value || "Estado Civil"}
+        {selectedStatus || "Estado Civil"}
         <svg
           className="w-2.5 h-2.5 ms-3"
           aria-hidden="true"
@@ -75,34 +78,34 @@ export function DropdownCheckboxMaritalStatus({
           id="dropdownDefaultCheckbox"
           className="z-10 w-48 bg-white divide-y divide-gray-100 absolute rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         >
-        <ul>
-  {maritalStatusOptions.map(([key, value]) => (
-    <li key={key}>
-      <div className="flex items-center">
-        <input
-          id={`checkbox-item-${key}`}
-          type="checkbox"
-          value={value}
-          checked={value === value} // Verifica se o valor está selecionado
-          onChange={() => onChange(value === value ? "" : value)} // Alterna o estado
-          disabled={disabled} // Controla a desativação
-          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-        />
-        <label
-          htmlFor={`checkbox-item-${key}`}
-          className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-        >
-          {value}
-        </label>
-      </div>
-    </li>
-  ))}
-</ul>
-
+          <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
+            {/* Opções de Estado Civil */}
+            {maritalStatusOptions.map(([key, statusValue]) => (
+              <li key={key}>
+                <div className="flex items-center">
+                  <input
+                    id={`radio-item-${key}`}
+                    type="radio" // Usa radio para garantir seleção única
+                    value={statusValue}
+                    checked={selectedStatus === statusValue} // Apenas uma opção marcada
+                    onChange={() => handleSelection(statusValue)} // Atualiza seleção
+                    disabled={disabled}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                  />
+                  <label
+                    htmlFor={`radio-item-${key}`}
+                    className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >
+                    {statusValue}
+                  </label>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default DropdownCheckboxMaritalStatus
+export default DropdownCheckboxMaritalStatus;

@@ -1,17 +1,19 @@
-'use client'; // TODO:
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { DropdownCheckboxGenderProps } from "@/app/types/dropdown";
 import { GenderEnum } from "@/app/schemas/enums/gender";
 
 export function DropdownCheckboxGender({
-  value = "",
+  value = "", // Define o estado inicial como vazio
   onChange,
-  disabled = false, // Default is false
+  disabled = false,
 }: DropdownCheckboxGenderProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to control dropdown visibility
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedGender, setSelectedGender] = useState(value); // Estado local para armazenar seleção
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Toggle dropdown visibility
+  // Abrir/fechar dropdown
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!disabled) {
@@ -19,13 +21,10 @@ export function DropdownCheckboxGender({
     }
   };
 
-  // Close dropdown when clicking outside
+  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
@@ -36,9 +35,16 @@ export function DropdownCheckboxGender({
     };
   }, []);
 
+  // Atualiza a seleção
+  const handleSelection = (selectedValue: string) => {
+    setSelectedGender(selectedValue); // Atualiza estado local
+    onChange(selectedValue); // Passa o valor para o componente pai
+    setIsDropdownOpen(false); // Fecha o dropdown
+  };
+
   return (
     <div ref={dropdownRef} className="relative">
-      {/* Button to toggle dropdown */}
+      {/* Botão para abrir dropdown */}
       <button
         id="dropdownCheckboxButton"
         onClick={toggleDropdown}
@@ -46,9 +52,9 @@ export function DropdownCheckboxGender({
           disabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         type="button"
-        disabled={disabled} // Disable the button if `disabled` is true
+        disabled={disabled}
       >
-        {value || "Gênero"}
+        {selectedGender || "Gênero"}
         <svg
           className="w-2.5 h-2.5 ms-3"
           aria-hidden="true"
@@ -73,29 +79,28 @@ export function DropdownCheckboxGender({
           className="z-10 w-48 bg-white divide-y divide-gray-100 absolute rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         >
           <ul className="p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200">
-            {/* Map Enum for Options */}
-            {Object.entries(GenderEnum).map(([key, value]) => (
-  <li key={key}>
-    <div className="flex items-center">
-      <input
-        id={`checkbox-item-${key}`}
-        type="radio" // Use radio for exclusive selection
-        value={value}
-        checked={value === value} // Controlled by parent
-        onChange={() => onChange(value)} // Update parent state
-        disabled={disabled} // Disable input if `disabled` is true
-        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-      />
-      <label
-        htmlFor={`checkbox-item-${key}`}
-        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-      >
-        {value}
-      </label>
-    </div>
-  </li>
-))}
-
+            {/* Opções de Gênero */}
+            {Object.entries(GenderEnum).map(([key, genderValue]) => (
+              <li key={key}>
+                <div className="flex items-center">
+                  <input
+                    id={`radio-item-${key}`}
+                    type="radio" // Radio para garantir seleção única
+                    value={genderValue}
+                    checked={selectedGender === genderValue} // Apenas uma opção marcada
+                    onChange={() => handleSelection(genderValue)} // Atualiza seleção
+                    disabled={disabled}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                  />
+                  <label
+                    htmlFor={`radio-item-${key}`}
+                    className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >
+                    {genderValue}
+                  </label>
+                </div>
+              </li>
+            ))}
           </ul>
         </div>
       )}

@@ -4,18 +4,18 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { CvService } from "../schemas/cvSchema"
 
 type CvContextData = {
-  cvs: any[] // Usando 'any' para acomodar os dados do cvSchema
+  cvs: [] // Usando '' para acomodar os dados do cvSchema
   loading: boolean
   error: string | null
-  addCv: (cv: any) => Promise<void>
-  updateCv: (id: number, cv: Partial<any>) => Promise<void>
+  addCv: (cv) => Promise<void>
+  updateCv: (id: number, cv: Partial<>) => Promise<void>
   deleteCv: (id: number) => Promise<void>
 }
 
 const CvContext = createContext<CvContextData | undefined>(undefined)
 
 export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cvs, setCvs] = useState<any[]>([])
+  const [cvs, setCvs] = useState<[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,7 +39,7 @@ export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   }, [])
 
   // Adicionar um novo currículo
-  const addCv = useCallback(async (cv: any) => {
+  const addCv = useCallback(async (cv) => {
     setLoading(true)
     setError(null)
     try {
@@ -54,7 +54,7 @@ export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   }, [])
 
   // Atualizar um currículo existente
-  const updateCv = useCallback(async (id: number, updatedCv: Partial<any>) => {
+  const updateCv = useCallback(async (id: number, updatedCv: Partial) => {
     if (!id) {
       console.error("Erro: ID do currículo é obrigatório.")
       return

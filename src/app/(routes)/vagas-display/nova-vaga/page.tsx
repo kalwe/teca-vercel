@@ -2,16 +2,16 @@
 
 import React, { useState } from 'react';
 import { z } from 'zod';
-import NovaVagaForm from '@/app/components/display/novaVaga-form';
+import NovaVagaForm from '@/app/components/display/newVacancy-form';
 import { Navigation } from '@/app/components/navigation/navigation';
-import { vacancySchema, VacancyContextProps } from '@/app/schemas/vacancySchema'; // Assumindo que você tenha um schema para nova vaga
+import { vacancySchema} from '@/app/schemas/vacancySchema'; // Assumindo que você tenha um schema para nova vaga
 
 function NovaVaga() {
   const [errors, setErrors] = useState<Record<string, string>>({}); // Armazenar os erros de validação
   const [loading, setLoading] = useState(false); // Controlar o estado de carregamento
 
   // Função para lidar com o envio do formulário
-  const handleSave = async (formData: any) => {
+  const handleSave = async (formData) => {
     setLoading(true);
     try {
       // Validar os dados usando Zod
@@ -40,7 +40,11 @@ function NovaVaga() {
   };
 
   return (
-    <div>
+    <div
+    style={{
+      background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
+  }}
+    >
       <Navigation />
       <NovaVagaForm onSave={handleSave} errors={errors} loading={loading} />
     </div>

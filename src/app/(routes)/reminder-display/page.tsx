@@ -18,9 +18,7 @@ export default function Reminder() {
     description: "",
   });
 
-  /**
-   * 🔥 Função para salvar o lembrete
-   */
+
   const handleSave = async (data: ReminderInput) => {
     try {
       const sanitizedData = sanitizeReminder(data);
@@ -33,7 +31,11 @@ export default function Reminder() {
   };
 
   return (
-    <div>
+    <div
+    style={{
+      background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
+  }}
+    >
       <Navigation />
 
       {/* ✅ Passando corretamente as propriedades para ReminderForm */}

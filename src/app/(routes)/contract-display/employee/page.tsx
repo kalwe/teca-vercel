@@ -1,10 +1,8 @@
 "use client"
 
-import HoursBank from '@/app/components/display/hoursbank-form';
 import '../style.css'
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
-import { DropDownBurger } from '@/app/components/DropDown/dropdown-burger';
+
 import { Navigation } from '@/app/components/navigation/navigation';
 import Employees from '@/app/components/display/registered-employees';
 

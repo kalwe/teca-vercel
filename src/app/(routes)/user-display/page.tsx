@@ -3,65 +3,24 @@
 import UserCreationForm from "@/app/components/display/user-form";
 import "./style.css";
 import { useRouter } from "next/navigation";
-import { Navigation } from "@/app/components/navigation/navigation";
-import { useState } from "react";
-import { z } from "zod";
-import { userInputSchema } from "@/app/schemas/userSchema"; // ✅ Importando o schema correto
 
-// 🔹 Define o tipo baseado no `userInputSchema`
-type UserInput = z.infer<typeof userInputSchema>;
+import { Navigation } from "@/app/components/navigation/navigation";
 
 export default function Contract() {
-  const router = useRouter();
-
-  // ✅ Estado inicial baseado no schema do Zod
-  const [userData, setUserData] = useState<UserInput>(() =>
-    userInputSchema.parse({ name: "", email: "", password: "" }) // ✅ Evita erro e garante objeto válido
-  );
-
-  // ✅ Função para salvar, validando antes com Zod
-  const handleSave = async (): Promise<void> => {
-    const result = userInputSchema.safeParse(userData);
-
-    if (!result.success) {
-      console.error("⚠ Erros de validação:", result.error.format());
-
-      // 🔹 Extrai mensagens de erro para exibição
-      const errorMessages = Object.values(result.error.format())
-        .flat()
-        .filter(Boolean)
-        .join("\n");
-
-      alert(`⚠ Erro nos dados:\n${errorMessages}`);
-      return;
-    }
-
-    try {
-      console.log("✅ Usuário validado e salvo:", result.data);
-      alert("✅ Usuário criado com sucesso!");
-      router.push("/dashboard-display/");
-    } catch (error) {
-      console.error("❌ Erro ao salvar usuário:", error);
-      alert("❌ Ocorreu um erro ao salvar. Tente novamente.");
-    }
-  };
-
-  // ✅ Função para cancelar
-  const handleCancel = () => {
-    router.push("/dashboard-display/");
-  };
-
+const router = useRouter("")
   return (
-    <div>
+    <div
+    style={{
+      background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
+  }}
+    >
       <Navigation />
 
       <UserCreationForm
-        mode="create" // ✅ Agora `mode` é aceito
-        userData={userData}
-        setUserData={setUserData}
+        mode="create" //  Agora `mode` é aceito
+
         isEditable={true}
-        onSave={handleSave} // ✅ Retorna `Promise<void>`
-        onCancel={handleCancel}
+
       />
 
       {/* Botão "Voltar" */}

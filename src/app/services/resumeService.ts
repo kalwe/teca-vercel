@@ -55,30 +55,41 @@ export const fetchResumeById = async (resumeId: string) => {
  * @param resumeData - Object containing the updated resume details.
  * @returns Promise resolving with the updated resume data.
  */
-export const updateResume = async (
-  resumeId: string,
-  resumeData: { candidateName?: string; skills?: string[]; experience?: string }
-) => {
+export const updateResume = async (endpoint: string, addressData) => {
   try {
-    const response = await apiClient.put(`/resumes/${resumeId}`, resumeData);
-    return response.data;
+    const response = await api.put(endpoint, addressData);
+    if (response.status === 201) {
+      return response.data;
+    }
+
+    // TODO: validar se for erro
+    throw new Error("Erro ao atualizar o currículo");
+
   } catch (error) {
-    console.error("Error updating resume:", error);
+    console.error("Erro ao atualizar currículo:", error);
     throw error;
   }
 };
+
+
 
 /**
  * Delete a resume by ID.
  * @param resumeId - The ID of the resume to delete.
  * @returns Promise resolving when the resume is successfully deleted.
  */
-export const deleteResume = async (resumeId: string) => {
+export const deleteResume = async (endpoint: string, addressData) => {
   try {
-    const response = await apiClient.delete(`/resumes/${resumeId}`);
-    return response.data;
+    const response = await api.delete(endpoint, addressData);
+    if (response.status === 201) {
+      return response.data;
+    }
+
+    // TODO: validar se for erro
+    throw new Error("Erro ao deletar curriculo");
+
   } catch (error) {
-    console.error("Error deleting resume:", error);
+    console.error("Erro ao deletar currículo:", error);
     throw error;
   }
 };

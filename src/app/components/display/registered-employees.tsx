@@ -15,14 +15,19 @@ function Employees() {
   const lastEmployeeRef = useRef<HTMLTableRowElement | null>(null);
   const router = useRouter();
 
+  /**
+   * 🚀 Carrega os funcionários automaticamente ao abrir a página
+   */
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         const employeeList = await EmployeeService.getAllEmployees(page);
+        if (!Array.isArray(employeeList)) throw new Error("Dados inválidos recebidos.");
+
         setEmployees((prev) => [...prev, ...employeeList]);
       } catch (error) {
-        console.error("Erro ao carregar funcionários:", error);
-        setError("Erro ao carregar funcionários. Tente novamente.");
+        console.error("❌ Erro ao carregar funcionários:", error);
+        setError("Erro ao carregar funcionários.");
       } finally {
         setLoading(false);
       }
@@ -31,10 +36,16 @@ function Employees() {
     fetchEmployees();
   }, [page]);
 
+  /**
+   * 🚀 Incrementa a página para buscar mais funcionários quando necessário
+   */
   const fetchMoreEmployees = useCallback(() => {
     setPage((prevPage) => prevPage + 1);
   }, []);
 
+  /**
+   * 🚀 Configura o IntersectionObserver para paginação infinita
+   */
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
 
@@ -50,14 +61,9 @@ function Employees() {
     if (lastEmployeeRef.current) observerRef.current.observe(lastEmployeeRef.current);
   }, [fetchMoreEmployees]);
 
-  const handleRowClick = (employeeId: number) => {
-    router.push(`/contract-display/${employeeId}`);
-  };
-
-  const handleAddEmployee = () => {
-    router.push("/contract-display/");
-  };
-
+  /**
+   * 🚀 Atualiza o status do funcionário (Ativar/Desativar)
+   */
   const toggleEmployeeStatus = async (employeeId: number, isActive: boolean) => {
     try {
       const updatedEmployee = await EmployeeService.updateEmployee(employeeId, {
@@ -69,9 +75,13 @@ function Employees() {
       );
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
+      setError("Erro ao atualizar status do funcionário.");
     }
   };
 
+  /**
+   * 🚀 Filtragem de funcionários conforme o termo digitado
+   */
   const filteredEmployees = useMemo(() => {
     if (!searchTerm) return employees;
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -88,21 +98,23 @@ function Employees() {
     <div
       className="flex items-center justify-center min-h-screen p-4"
       style={{
-        background: "linear-gradient(to bottom right,rgb(11, 20, 11),rgb(79, 116, 82))",
+        background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
       }}
     >
       <div className="w-full max-w-7xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
+          {/* Título e Botão Adicionar Funcionário */}
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-extrabold text-white">Funcionários</h1>
             <button
-              onClick={handleAddEmployee}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-200"
+              onClick={() => router.push("/contract-display/")}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all transform hover:scale-105"
             >
               Adicionar Funcionário
             </button>
           </div>
 
+          {/* Campo de Busca */}
           <div className="mb-6">
             <input
               type="text"
@@ -117,6 +129,7 @@ function Employees() {
 
           {loading && <div className="p-6 text-center text-gray-300">Carregando funcionários...</div>}
 
+          {/* Tabela de Funcionários */}
           <div className="overflow-y-auto border-t border-gray-600" style={{ maxHeight: "400px" }}>
             <table className="w-full table-auto border-collapse border border-gray-700 text-gray-300 rounded-lg">
               <thead className="bg-gray-900">
@@ -138,7 +151,7 @@ function Employees() {
                       className={`hover:bg-gray-700 transition duration-200 cursor-pointer ${
                         !employee.active ? "bg-gray-700 text-gray-400" : ""
                       }`}
-                      onClick={() => handleRowClick(employee.id)}
+                      onClick={() => router.push(`/contract-display/${employee.id}`)}
                       ref={index === filteredEmployees.length - 1 ? lastEmployeeRef : null}
                     >
                       <td className="px-4 py-2 border border-gray-700">{index + 1}</td>
@@ -157,7 +170,7 @@ function Employees() {
                       <td className="px-4 py-2 border border-gray-700">
                         {employee.active ? "Ativo" : "Inativo"}
                       </td>
-                      <td className="px-4 py-2 border border-gray-700 flex space-x-2">
+                      <td className="px-4 py-2 border border-gray-700">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

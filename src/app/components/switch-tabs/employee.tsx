@@ -20,16 +20,16 @@ export function Funcionario({
   onNext: () => void;
   onPrev: () => void;
 }) {
-  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
   const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
 
-  // Validação instantânea ao modificar os campos
-  const handleInputChange = <K extends keyof Employee>(field: K, value: Employee[K]) => {
+  // Função de validação e atualização do estado
+  const handleInputChange = (field: keyof Employee, value: unknown) => {
     const updatedData = { ...data, [field]: value };
 
     try {
       employeeSchema.parse(updatedData); // Valida os dados
-      setErrors({}); // Limpa os erros ao preencher corretamente
+      setErrors({}); // Limpa erros ao preencher corretamente
       setIsNextEnabled(true);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -45,41 +45,27 @@ export function Funcionario({
     onChange(updatedData);
   };
 
+  // Função para converter datas para o formato aceito pelo input[type="date"]
+  const formatDateForInput = (dateString?: string) => {
+    if (!dateString) return "";
+    const parsedDate = Date.parse(dateString);
+    return !isNaN(parsedDate) ? new Date(parsedDate).toISOString().split("T")[0] : "";
+  };
 
-  // Salva os dados do funcionário
-  const createEmployee = async () => {
+  // Salva os dados do funcionário e avança
+  const handleSave = async () => {
     try {
-      employeeSchema.parse(data); // Valida antes de salvar
-
-      const formattedData: Employee = {
-        ...data,
-        function: {
-          id: data.function?.id ? String(data.function.id) : "",
-          name: data.function?.name,
-        },
-        contract_date: data.contract_date || null,
-        removal_date: data.removal_date || null,
-      };
-
-      await EmployeeService.createEmployee(formattedData);
-      alert("Funcionário cadastrado com sucesso!");
+      const createdEmployee = await EmployeeService.createEmployee(data);
+      console.log(createdEmployee);
       onNext();
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Partial<Record<keyof Employee, string>> = {};
-        error.errors.forEach((e) => {
-          newErrors[e.path[0] as keyof Employee] = e.message;
-        });
-        setErrors(newErrors);
-      } else {
-        console.error("Erro ao criar funcionário:", error);
-        alert("Erro ao criar funcionário.");
-      }
+      alert("Erro ao cadastrar funcionário. Verifique os campos.");
+      console.error(error);
     }
   };
 
   return (
-    <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-6 w-full">
+    <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Funcionário</h2>
 
       {[
@@ -92,7 +78,7 @@ export function Funcionario({
           <input
             type={field.type}
             name={field.name}
-            value={data[field.name] ? new Date(data[field.name]).toISOString().split("T")[0] : ""}
+            value={formatDateForInput(data[field.name] as string)}
             onChange={(e) => handleInputChange(field.name as keyof Employee, e.target.value)}
             placeholder={field.placeholder}
             className={`w-full bg-gray-700 text-white border ${
@@ -109,7 +95,9 @@ export function Funcionario({
         <label className="block text-gray-400 mb-2">Função</label>
         <DropdownCheckboxFuncao
           value={data.function?.id || ""}
-          onChange={(value: string) => handleInputChange("function", { id: Number(value) || null })}
+          onChange={(value: string) =>
+            handleInputChange("function", { id: Number(value) || null, name: data.function?.name })
+          }
           disabled={!isEditable}
         />
         {errors.function && <p className="text-red-500 text-sm mt-1">{errors.function}</p>}
@@ -119,7 +107,7 @@ export function Funcionario({
       <div className="w-full flex items-center">
         <input
           type="checkbox"
-          checked={data.supervisor || false}
+          checked={!!data.supervisor}
           onChange={(e) => handleInputChange("supervisor", e.target.checked)}
           className="mr-2"
           disabled={!isEditable}
@@ -130,7 +118,7 @@ export function Funcionario({
       <div className="w-full flex items-center">
         <input
           type="checkbox"
-          checked={data.manager || false}
+          checked={!!data.manager}
           onChange={(e) => handleInputChange("manager", e.target.checked)}
           className="mr-2"
           disabled={!isEditable}
@@ -144,7 +132,7 @@ export function Funcionario({
           Voltar
         </button>
         <button
-          onClick={createEmployee}
+          onClick={handleSave}
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           disabled={!isNextEnabled}
         >

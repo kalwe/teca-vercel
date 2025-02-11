@@ -11,12 +11,13 @@ import { ContractFormProps } from "@/app/types/employee";
 
 export default function ContractForm({ mode, employeeData, isEditable }: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [address, setAddress] = useState(employeeData?.address || {});
-  const [pessoaFisica, setPessoaFisica] = useState(employeeData?.pessoaFisica || {});
-  const [funcionario, setFuncionario] = useState(employeeData?.funcionario || {});
-  const [contact, setContact] = useState(employeeData?.contact || {});
-  const [bankAccount, setBankAccount] = useState(employeeData?.bank_account || {});
-  const [clothing, setClothing] = useState(employeeData?.clothing || {});
+
+  const [pessoaFisica, setPessoaFisica] = useState(employeeData?.pessoaFisica ?? {});
+  const [funcionario, setFuncionario] = useState(employeeData?.funcionario ?? {});
+  const [address, setAddress] = useState(employeeData?.address ?? {});
+  const [contact, setContact] = useState(employeeData?.contact ?? {});
+  const [bankAccount, setBankAccount] = useState(employeeData?.bank_account ?? {});
+  const [clothing, setClothing] = useState(employeeData?.clothing ?? {});
 
   const tabs = [
     { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica },
@@ -24,21 +25,39 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
     { name: "ENDEREÇO", component: Address, state: address, setState: setAddress },
     { name: "CONTATO", component: Contact, state: contact, setState: setContact },
     { name: "DADOS BANCÁRIOS", component: Bank, state: bankAccount, setState: setBankAccount },
-    { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing }
+    { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing },
   ];
 
   const CurrentComponent = tabs[selectedTab]?.component as React.ElementType;
   const currentState = tabs[selectedTab]?.state;
 
   const handleInputChange = (data: Record<string, unknown>) => {
-    const setCurrentState = tabs[selectedTab]?.setState;
-
-    if (setCurrentState) {
-      setCurrentState((prev) => ({ ...prev, ...data })); // ✅ Agora está correto
-    } else {
-      console.error("Erro: Nenhum setState definido para a aba atual.");
+    switch (selectedTab) {
+      case 0:
+        setPessoaFisica((prev) => ({ ...prev, ...data }));
+        break;
+      case 1:
+        setFuncionario((prev) => ({ ...prev, ...data }));
+        break;
+      case 2:
+        setAddress((prev) => ({ ...prev, ...data }));
+        break;
+      case 3:
+        setContact((prev) => ({ ...prev, ...data }));
+        break;
+      case 4:
+        setBankAccount((prev) => ({ ...prev, ...data }));
+        break;
+      case 5:
+        setClothing((prev) => ({ ...prev, ...data }));
+        break;
+      default:
+        console.error("Erro: Aba inválida selecionada.");
     }
   };
+
+  const handleNextTab = () => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
+  const handlePrevTab = () => setSelectedTab((prev) => Math.max(prev - 1, 0));
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
@@ -71,7 +90,8 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
                 onChange={handleInputChange}
                 isEditable={isEditable}
                 mode={mode}
-                onNext={() => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))}
+                onNext={handleNextTab}
+                onPrev={handlePrevTab}
               />
             )}
           </div>
