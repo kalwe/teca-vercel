@@ -62,10 +62,13 @@ export default function Home() {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-[#4CAF50]">
         <div className="flex items-center space-x-2 animate-bounce">
-          <span className="text-white text-4xl font-bold">C</span>
-          <span className="text-white text-4xl font-bold">O</span>
+          <span className="text-white text-4xl font-bold">S</span>
           <span className="text-white text-4xl font-bold">I</span>
+          <span className="text-white text-4xl font-bold">G</span>
           <span className="text-white text-4xl font-bold">F</span>
+          <span className="text-white text-4xl font-bold">L</span>
+          <span className="text-white text-4xl font-bold">O</span>
+          <span className="text-white text-4xl font-bold">R</span>
         </div>
       </div>
     );

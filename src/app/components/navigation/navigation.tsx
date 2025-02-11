@@ -29,7 +29,7 @@ export function Navigation() {
           onClick={() => router.push('/dashboard-display')}
 
         >
-          COIF
+          SIGFLOR
         </a>
 
         {/* Navegação à Direita */}

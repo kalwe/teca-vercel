@@ -52,12 +52,15 @@ export const userDeletedSchema = baseSchema.extend({
 });
 
 // 🔹 Tipagem correta para o formulário
+export type UserData = z.infer<typeof userInputSchema>;
+
 export type UserFormProps = {
   mode: "create" | "edit";
-  userData?: z.infer<typeof userInputSchema>;
-  setUserData: React.Dispatch<React.SetStateAction<z.infer<typeof userInputSchema>>>;
+  userData?: UserData | null;
+  setUserData: React.Dispatch<React.SetStateAction<UserData | null>>;
   isEditable: boolean;
-  onSave: (data: z.infer<typeof userInputSchema>) => Promise<void>;
+  loading: boolean; // ✅ Ensure the component supports a loading state
+  onSave: (data: UserData) => Promise<void>;
   onCancel: () => void;
 };
 

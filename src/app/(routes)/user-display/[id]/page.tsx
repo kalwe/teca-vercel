@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import axios from "axios";
 import UserForm from "@/app/components/display/user-form";
 import { useUserContext } from "@/app/context/UserContext";
-import { userInputSchema } from "@/app/schemas/userSchema"; // ✅ Agora usa apenas `UserInput`
+import { userInputSchema } from "@/app/schemas/userSchema";
 import { Navigation } from "@/app/components/navigation/navigation";
 import { z } from "zod";
 
-// 🔹 Define o tipo correto baseado no `userInputSchema`
+// Define o tipo baseado no `userInputSchema`
 type UserInput = z.infer<typeof userInputSchema>;
+
+// Definição do endpoint da API (ajuste conforme necessário)
+const API_URL = "https://api.example.com/users";
 
 export default function UserDetailPage() {
   const { updateUser } = useUserContext();
@@ -22,17 +26,17 @@ export default function UserDetailPage() {
     const userId = Number(params.id);
 
     if (isNaN(userId)) {
-      alert("❌ ID inválido! Redirecionando...");
+      alert("ID inválido. Redirecionando...");
       router.replace("/user-display/user-list");
       return;
     }
 
-    // 🔹 Criar um usuário vazio para cadastro
+    // Criar um usuário vazio para edição/cadastro
     const newUser: UserInput = {
+      id: userId,
       name: "",
       email: "",
       password: "",
-      id: 0
     };
 
     setFormData(newUser);
@@ -42,16 +46,20 @@ export default function UserDetailPage() {
   const handleSave = async (updatedData: UserInput) => {
     setLoading(true);
     try {
-      // 🔹 Valida os dados antes de enviar
+      // Validação dos dados antes de enviar
       const userInputData = userInputSchema.parse(updatedData);
 
-      await updateUser(Number(params.id), userInputData);
+      // Atualiza usuário via API
+      const response = await axios.patch(`${API_URL}/${updatedData.id}`, userInputData);
 
-      alert("✅ Usuário cadastrado com sucesso!");
+      // Atualiza o contexto com os novos dados
+      updateUser(updatedData.id, response.data);
+
+      alert("Usuário atualizado com sucesso.");
       router.push("/user-display/user-list");
-    } catch (error) {
-      console.error("❌ Erro ao cadastrar usuário:", error);
-      alert("Erro ao cadastrar usuário! Tente novamente.");
+    } catch (error: any) {
+      console.error("Erro ao atualizar usuário:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Erro ao atualizar usuário. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -65,7 +73,7 @@ export default function UserDetailPage() {
     return (
       <div className="flex justify-center items-center h-screen">
         <p className="text-center text-white text-lg font-semibold">
-          🔄 Carregando os dados do usuário...
+          Carregando os dados do usuário...
         </p>
       </div>
     );
@@ -76,16 +84,16 @@ export default function UserDetailPage() {
       <Navigation />
       {formData ? (
         <UserForm
-          mode="create"
-          userData={formData} // ✅ `userData` agora é apenas `UserInput`
+          mode="edit"
+          userData={formData}
           onSave={handleSave}
           onCancel={handleCancel}
           loading={loading}
-          setUserData={setFormData} // ✅ Agora corretamente tipado
+          setUserData={setFormData}
           isEditable={true}
         />
       ) : (
-        <p className="text-center text-red-500 text-lg">⚠ Erro ao carregar formulário de cadastro.</p>
+        <p className="text-center text-red-500 text-lg">Erro ao carregar formulário de cadastro.</p>
       )}
     </div>
   );
