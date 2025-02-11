@@ -1,7 +1,7 @@
-import api from "../api";
-import { Vacancy } from "../../types/vacancyType";
+import api from "../api"
+import { Vacancy } from "../../types/vacancyType"
 
-const endpoint = "/vacancy";
+const endpoint = "/vacancy"
 
 export const VacancyService = {
   /**
@@ -11,11 +11,11 @@ export const VacancyService = {
    */
   async createVacancy(vacancyData: Vacancy): Promise<Vacancy> {
     try {
-      const response = await api.post(endpoint, vacancyData);
-      return response.data;
+      const response = await api.post(endpoint, vacancyData)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao criar vaga:", error);
-      throw error;
+      console.error("❌ Erro ao criar vaga:", error)
+      throw error
     }
   },
 
@@ -26,11 +26,11 @@ export const VacancyService = {
    */
   async getVacancyById(id: number): Promise<Vacancy> {
     try {
-      const response = await api.get(`${endpoint}/${id}`);
-      return response.data;
+      const response = await api.get(`${endpoint}/${id}`)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao buscar vaga:", error);
-      throw error;
+      console.error("❌ Erro ao buscar vaga:", error)
+      throw error
     }
   },
 
@@ -40,11 +40,11 @@ export const VacancyService = {
    */
   async getAllVacancies(): Promise<Vacancy[]> {
     try {
-      const response = await api.get(endpoint);
-      return response.data;
+      const response = await api.get(endpoint)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao buscar todas as vagas:", error);
-      throw error;
+      console.error("❌ Erro ao buscar todas as vagas:", error)
+      throw error
     }
   },
 
@@ -56,11 +56,11 @@ export const VacancyService = {
    */
   async updateVacancy(id: number, vacancyData: Vacancy): Promise<Vacancy> {
     try {
-      const response = await api.put(`${endpoint}/${id}`, vacancyData);
-      return response.data;
+      const response = await api.put(`${endpoint}/${id}`, vacancyData)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao atualizar vaga:", error);
-      throw error;
+      console.error("❌ Erro ao atualizar vaga:", error)
+      throw error
     }
   },
 
@@ -71,11 +71,11 @@ export const VacancyService = {
    */
   async deleteVacancy(id: number): Promise<any> {
     try {
-      const response = await api.delete(`${endpoint}/${id}`);
-      return response.data;
+      const response = await api.delete(`${endpoint}/${id}`)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao deletar vaga:", error);
-      throw error;
+      console.error("❌ Erro ao deletar vaga:", error)
+      throw error
     }
   },
-};
+}
