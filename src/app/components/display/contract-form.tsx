@@ -31,16 +31,16 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
   const [clothing, setClothing] = useState(() => employeeData?.clothing || {})
 
   const tabs = [
-    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personModelSchema },
+    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personSchema },
     { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario, schema: employeeSchema },
     { name: "ENDEREÇO", component: Address, state: address, setState: setAddress, schema: addressSchema },
     { name: "CONTATO", component: Contact, state: contact, setState: setContact, schema: contactSchema },
     { name: "DADOS BANCÁRIOS", component: Bank, state: bankAccount, setState: setBankAccount, schema: bankAccountSchema },
     { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing, schema: clothingSchema }
   ];
-
   const CurrentComponent = tabs[selectedTab]?.component as React.ElementType;
   const currentState = tabs[selectedTab]?.state;
+/*
   const setState = tabs[selectedTab]?.setState;
   const schema = tabs[selectedTab]?.schema;
 
@@ -61,7 +61,7 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
 };
 
   // TODO: updatedData why use name with update?
-  const handleInputChange = (data) => {
+  const handleInputChange = (data: {}) => {
     if (setState) {
       setState((prev: any) => ({ ...prev, ...data })) // TODO:
     }
@@ -111,7 +111,7 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
       setLoading(false)
     }
   }
-
+*/
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-5xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
@@ -138,19 +138,15 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
             {CurrentComponent && (
               <CurrentComponent
                 data={currentState}
-                onChange={handleInputChange}
+
                 isEditable={isEditable}
                 mode={mode}
-                onNext={handleNext}
+
                 onPrev={() => setSelectedTab((prev) => Math.max(prev - 1, 0))}
               />
             )}
 
-            {selectedTab === tabs.length - 1 && (
-              <button onClick={handleSave} className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50" disabled={loading}>
-                {loading ? "Salvando..." : "Finalizar e Enviar"}
-              </button>
-            )}
+
           </div>
         </div>
       </div>
