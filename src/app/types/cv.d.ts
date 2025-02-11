@@ -1,6 +1,4 @@
-import { Cv } from "./cv";
-
-export type Cv = {
+export type CvType = {
     id: number; // Unique identifier for the CV
     full_name: string; // Candidate's full name
     email: string; // Candidate's email
@@ -18,8 +16,8 @@ export type Cv = {
 
   export interface CvFormProps {
     mode: "edit" | "create";
-    curriculoData?: Cv;
-    onSave: (updatedData: Cv) => Promise<void>; // Callback para salvar
+    curriculoData?: CvType;
+    onSave: (updatedData: CvType) => Promise<void>; // Callback para salvar
     onCancel: () => void; // Callback para cancelar
     loading: boolean; // Indica estado de carregamento
   }

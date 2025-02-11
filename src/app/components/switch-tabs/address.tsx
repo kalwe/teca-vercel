@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { AddressType, AddressProps } from "@/app/types/address";
-// import { addressSchema } from "@/app/schemas/addressSchema";
+import { addressSchema } from "@/app/schemas/addressSchema";
 import { AddressService } from "@/app/services/addressService";
 import employeeData from "@/app/components/data/employeeData.json";
 
@@ -18,24 +18,6 @@ export function Address({
 }: AddressProps) {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [errors, setErrors] = useState<{ [key in keyof AddressType]?: string }>({});
-
-  // **Validação dos campos**
-  useEffect(() => {
-    try {
-      setErrors({});
-      setIsNextEnabled(true);
-    } catch (error) {
-      console.error("Erro de validação:", error.errors); //  Log para depuração
-      const validationErrors: { [key in keyof AddressType]?: string } = {};
-      if (error.errors) {
-        error.errors.forEach((e) => {
-          validationErrors[e.path[0] as keyof AddressType] = e.message;
-        });
-      }
-      setErrors(validationErrors);
-      setIsNextEnabled(false);
-    }
-  }, [data]);
 
   const handleInputChange = (e) => {
     console.log(e)
@@ -54,16 +36,16 @@ export function Address({
     }
   };
 
-  useEffect(() => {
-    if (employee && Object.values(data).every((val) => !val)) {
-      //  Apenas sobrescreve se os campos estiverem vazios
-      // TODO: what hell getAddressById where
-      AddressService.getAddressById(employeed)
-        // TODO: wada FUCK use then?!??!
-        .then((addressData) => onChange(addressData))
-        .catch((error) => console.error("Erro ao buscar endereço:", error));
-      }
-  }, [employee]);
+  // useEffect(() => {
+  //   if (employee && Object.values(data).every((val) => !val)) {
+  //     //  Apenas sobrescreve se os campos estiverem vazios
+  //     // TODO: what hell getAddressById where
+  //     AddressService.getAddressById(employeed)
+  //       // TODO: wada FUCK use then?!??!
+  //       .then((addressData) => onChange(addressData))
+  //       .catch((error) => console.error("Erro ao buscar endereço:", error));
+  //     }
+  // }, [employee]);
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">

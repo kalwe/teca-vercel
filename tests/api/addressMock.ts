@@ -3,14 +3,14 @@
 
 // Define the AddressTypeMock type based on the JSON schema
 export type AddressTypeMock = {
-    id?: number | null
+    id?: number
     street: string
     number: string
     neighborhood: string
     city: string
     zip_code: string
     state: string
-    employee?: number | null
+    employee?: number
 }
 
 // Address storage array
