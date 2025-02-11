@@ -3,6 +3,7 @@ export type ClothingType = {
     pants_size: string
     shoe_size: string
     employee: number
+    employee?:number
 }
 
 export type ClothingProps = {

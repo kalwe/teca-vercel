@@ -81,20 +81,34 @@ export function PessoaFisica({
         />
         {errors.full_name && <p className="text-red-500 text-sm mt-1">{errors.full_name}</p>}
       </div>
+      <div className="w-full">
+        <input
+          type="text"
+          value={data.tax_id || ""}
+          onChange={(e) => handleInputChange("tax_id", e.target.value)}
+          placeholder="Digite o CPF xxxxxx-xx"
+          className={`w-full bg-gray-700 text-white border ${
+            errors.tax_id ? "border-red-500" : "border-gray-600"
+          } rounded-lg py-2 px-3`}
+          disabled={!isEditable}
+        />
+        {errors.tax_id && <p className="text-red-500 text-sm mt-1">{errors.tax_id}</p>}
+      </div>
 
-      <CpfMask
-        value={data.tax_id || ""}
-        onChange={(cpfValue) => handleInputChange("tax_id", cpfValue)}
-        disabled={!isEditable}
-      />
-      {errors.tax_id && <p className="text-red-500 text-sm mt-1">{errors.tax_id}</p>}
+      <div className="w-full">
+        <input
+          type="text"
+          value={data.national_id || ""}
+          onChange={(e) => handleInputChange("national_id", e.target.value)}
+          placeholder="Digite o RG"
+          className={`w-full bg-gray-700 text-white border ${
+            errors.national_id ? "border-red-500" : "border-gray-600"
+          } rounded-lg py-2 px-3`}
+          disabled={!isEditable}
+        />
+        {errors.national_id && <p className="text-red-500 text-sm mt-1">{errors.national_id}</p>}
+      </div>
 
-      <RgMask
-        value={data.national_id || ""}
-        onChange={(e: { target: { value: string | Date | null } }) => handleInputChange("national_id", e.target.value)}
-        disabled={!isEditable}
-      />
-      {errors.national_id && <p className="text-red-500 text-sm mt-1">{errors.national_id}</p>}
 
       <div className="w-full">
         <DatePicker
