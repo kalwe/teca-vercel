@@ -8,12 +8,7 @@ import { Contact } from "../switch-tabs/Contact";
 import { Bank } from "../switch-tabs/bank";
 import { Clothing } from "../switch-tabs/clothing";
 import { ContractFormProps } from "@/app/types/employee";
-import { personSchema } from "@/app/schemas/personSchema";
-import { employeeSchema } from "@/app/schemas/employeeSchema";
-import { addressSchema } from "@/app/schemas/addressSchema";
-import { contactSchema } from "@/app/schemas/contactSchema";
-import { bankAccountSchema } from "@/app/schemas/bankAccountSchema";
-import { clothingSchema } from "@/app/schemas/clothingSchema";
+
 
 export default function ContractForm({ mode, employeeData, isEditable }: ContractFormProps) {
 
@@ -27,12 +22,12 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
   const [clothing, setClothing] = useState(() => employeeData?.clothing || {});
 
   const tabs = [
-    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personSchema },
-    { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario, schema: employeeSchema },
-    { name: "ENDEREÇO", component: Address, state: address, setState: setAddress, schema: addressSchema },
-    { name: "CONTATO", component: Contact, state: contact, setState: setContact, schema: contactSchema },
-    { name: "DADOS BANCÁRIOS", component: Bank, state: bankAccount, setState: setBankAccount, schema: bankAccountSchema },
-    { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing, schema: clothingSchema }
+    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica},
+    { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario},
+    { name: "ENDEREÇO", component: Address, state: address, setState: setAddress},
+    { name: "CONTATO", component: Contact, state: contact, setState: setContact},
+    { name: "DADOS BANCÁRIOS", component: Bank, state: bankAccount, setState: setBankAccount},
+    { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing}
   ];
 
   const CurrentComponent = tabs[selectedTab]?.component as React.ElementType;

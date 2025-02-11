@@ -8,10 +8,10 @@ export const BankService = {
    * @param {object} bankData - Dados da conta bancária
    * @returns {Promise<any>} - Resposta da API
    */
-  async createBankAccount(addressData: any): Promise<any> {
+  async createBankAccount(bankAccountData: any): Promise<any> {
      try {
-       // const response = await api.post(endpoint, addressData);
-       const response = createBankAccount(addressData)
+       // const response = await api.post(endpoint, bankAccountData);
+       const response = createBankAccount(bankAccountData)
        return response;
      } catch (error) {
        console.error("❌ Erro ao criar endereço:", error);

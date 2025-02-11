@@ -2,37 +2,11 @@
 
 import ContractForm from "@/app/components/display/contract-form";
 import "./style.css";
-import { useRouter } from "next/navigation";
+
 import { Navigation } from "@/app/components/navigation/navigation";
 
 export default function Contract() {
-  const router = useRouter();
 
-  /**
-   * Função assíncrona para salvar os dados do contrato
-   */
-  const handleSave = async () => {
-    try {
-      console.log("Salvando contrato...");
-
-      // Aqui você pode integrar com seu serviço de API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      alert("Contrato salvo com sucesso!");
-      router.push("/dashboard-display/");
-    } catch (error) {
-      console.error("⚠ Erro ao salvar contrato:", error);
-      alert("Erro ao salvar o contrato.");
-    }
-  };
-
-  /**
-   * Função para cancelar e redirecionar
-   */
-  const handleCancel = () => {
-    console.log("Cancelando...");
-    router.push("/dashboard-display/");
-  };
 
   return (
     <div>
