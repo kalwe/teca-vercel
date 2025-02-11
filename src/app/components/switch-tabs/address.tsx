@@ -20,7 +20,6 @@ export function Address({
   // **Validação dos campos**
   useEffect(() => {
     try {
-      addressSchema.parse(data);
       setErrors({});
       setIsNextEnabled(true);
     } catch (error: any) {
@@ -37,12 +36,13 @@ export function Address({
   }, [data]);
 
   const handleInputChange = (field: keyof AddressType, value: string) => {
-    onChange({ ...data, [field]: value });
+    onChange({ ...g, [field]: value });
   };
 
   // **Criar um novo endereço (POST)**
   const createAddress = async () => {
     try {
+      data.id = Math.random()
       await AddressService.createAddress({ ...data, employee: employeeId });
       alert("Endereço criado com sucesso!");
       onNext();
@@ -66,6 +66,7 @@ export function Address({
 
       {/* Logradouro */}
       <div className="w-full">
+        <
         <input
           type="text"
           value={data.street || ""}

@@ -21,12 +21,11 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
   const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const [pessoaFisica, setPessoaFisica] = useState(() => personModelSchema.parse(employeeData?.pessoaFisica || {}));
-  const [funcionario, setFuncionario] = useState(() => employeeSchema.parse(employeeData?.funcionario || {}));
-  const [address, setAddress] = useState(() => addressSchema.parse(employeeData?.address || {}));
-  const [contact, setContact] = useState(() => contactSchema.parse(employeeData?.contact || {}));
-  const [bankAccount, setBankAccount] = useState(() => bankAccountSchema.parse(employeeData?.bank_account || {}));
-  const [clothing, setClothing] = useState(() => clothingSchema.parse(employeeData?.clothing || {}));
+  const [pessoaFisica, setPessoaFisica] = useState(() => employeeData?.pessoaFisica || {});
+  const [funcionario, setFuncionario] = useState(() => employeeData?.funcionario || {});
+  const [address, setAddress] = useState(() => employeeData?.address || {});
+  const [contact, setContact] = useState(() => employeeData?.contact || {});
+  const [clothing, setClothing] = useState(() => employeeData?.clothing || {});
 
   const tabs = [
     { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personSchema },
@@ -44,7 +43,7 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
 
   const handleNext = () => {
     try {
-      schema.parse(currentState);
+      currentState);
       setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
     } catch (error: any) {
       alert("Corrija os erros antes de avançar.");
@@ -62,12 +61,12 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
     setLoading(true);
     try {
       const employeePayload = {
-        pessoaFisica: personSchema.parse(pessoaFisica),
-        funcionario: employeeSchema.parse(funcionario),
-        address: addressSchema.parse(address),
-        contact: contactSchema.parse(contact),
-        bank_account: bankAccountSchema.parse(bankAccount),
-        clothing: clothingSchema.parse(clothing),
+        pessoaFisica: pessoaFisica),
+        funcionario: funcionario),
+        address: address),
+        contact: contact),
+        bank_account: bankAccount),
+        clothing: clothing),
         contract_date: new Date().toISOString().split("T")[0]
       };
 
