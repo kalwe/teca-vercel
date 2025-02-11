@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import "react-datepicker/dist/react-datepicker.css";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useReminderContext } from "@/app/context/ReminderContext";
 import { reminderSchema, ReminderInput, sanitizeReminder, ReminderService, ReminderFormProps } from "@/app/schemas/reminderSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const ReminderForm: React.FC<ReminderFormProps> = ({
     mode,
@@ -17,8 +18,8 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
 }) => {
     const { addReminder } = useReminderContext();
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
-    // 🔹 Configuração do formulário com validação via Zod
     const {
         register,
         handleSubmit,
@@ -26,7 +27,7 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
         formState: { errors },
     } = useForm<ReminderInput>({
         resolver: zodResolver(reminderSchema),
-        defaultValues: {
+        defaultValues: reminderData || {
             date: "",
             time: "00:00",
             reason: "",
@@ -34,31 +35,41 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
         },
     });
 
-    /**
-     * 🔹 Submissão do formulário com validação e sanitização
-     */
-    const onSubmit = async (data: ReminderInput) => {
-        try {
-            const sanitizedData = sanitizeReminder(data);
-            const createdReminder = await ReminderService.createReminder(sanitizedData); // ✅ Envio validado e sanitizado
-            addReminder(createdReminder);
-            router.push("/dashboard-display/");
-        } catch (error) {
-            console.error("❌ Erro ao criar lembrete:", error);
-        }
-    };
-
-    /**
-     * 🔹 Manipulação da entrada de data no formato `dd/mm/aaaa`
-     */
     const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+        let value = e.target.value.replace(/\D/g, "");
 
         if (value.length > 2) value = value.slice(0, 2) + "/" + value.slice(2);
         if (value.length > 5) value = value.slice(0, 5) + "/" + value.slice(5, 9);
         if (value.length > 10) value = value.slice(0, 10);
 
         setValue("date", value, { shouldValidate: true });
+    };
+
+    /**
+     * 🚀 Função para Criar ou Atualizar um Lembrete (POST ou PUT)
+     */
+    const onSubmit = async (data: ReminderInput) => {
+        try {
+            setLoading(true);
+            const sanitizedData = sanitizeReminder(data);
+
+            let savedReminder;
+            if (mode === "create") {
+                savedReminder = await ReminderService.createReminder(sanitizedData);
+                addReminder(savedReminder);
+            } else {
+                savedReminder = await ReminderService.updateReminder(reminderData?.id, sanitizedData);
+            }
+
+            alert("✅ Lembrete salvo com sucesso!");
+            onSave?.(savedReminder);
+            router.push("/dashboard-display/");
+        } catch (error) {
+            console.error("❌ Erro ao criar lembrete:", error);
+            alert("Erro ao criar lembrete. Tente novamente.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -69,7 +80,9 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
             }}
         >
             <div className="w-full max-w-3xl p-6 bg-gray-800 shadow-md rounded-lg border border-gray-700">
-                <h1 className="text-2xl font-bold text-white mb-6">Lembretes</h1>
+                <h1 className="text-2xl font-bold text-white mb-6">
+                    {mode === "edit" ? "Editar Lembrete" : "Novo Lembrete"}
+                </h1>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Campo de Data */}
                     <div>
@@ -140,13 +153,24 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
                         {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                     </div>
 
-                    {/* Botão de Salvar */}
-                    <div className="flex justify-end">
+                    {/* Botões de Ação */}
+                    <div className="flex justify-between">
+                        <button
+                            type="button"
+                            className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-500 transition-transform transform hover:scale-105"
+                            onClick={() => {
+                                onCancel?.();
+                                router.push("/dashboard-display/");
+                            }}
+                        >
+                            Cancelar
+                        </button>
                         <button
                             type="submit"
-                            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500 transition-transform transform hover:scale-105"
+                            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500 transition-transform transform hover:scale-105 disabled:opacity-50"
+                            disabled={loading}
                         >
-                            Salvar Lembrete
+                            {loading ? "Salvando..." : "Salvar Lembrete"}
                         </button>
                     </div>
                 </form>

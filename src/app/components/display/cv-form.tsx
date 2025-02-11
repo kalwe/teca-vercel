@@ -3,8 +3,7 @@
 import "react-datepicker/dist/react-datepicker.css";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { cvSchema, CvService } from "@/app/schemas/cvSchema"; // Importando cvSchema para validação
-
+import { cvSchema, CvService } from "@/app/schemas/cvSchema";
 
 import DropdownCheckboxRegional from "../DropDown/dropdown-regional";
 import DropdownCheckboxSchool from "../DropDown/dropdown-school";
@@ -13,46 +12,43 @@ import { CpfMask } from "../masks/cpf";
 import CepMask from "../masks/cep";
 import BirthDayMask from "../masks/birthday";
 import { PhoneMask } from "../masks/phone";
-import {z} from 'zod'
+import { z } from "zod";
 import { CvFormProps } from "@/app/schemas/cvSchema";
 
 function CvForm({ mode, curriculoData }: CvFormProps) {
   const router = useRouter();
 
-  // Estado do formulário
   const [formData, setFormData] = useState<z.infer<typeof cvSchema>>(
     curriculoData ? cvSchema.parse(curriculoData) : cvSchema.parse({})
   );
 
-  const [positions, setPositions] = useState<string[]>([]); // Estado para armazenar opções do dropdown
+  const [positions, setPositions] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // 🔥 Busca cargos da API ao montar o componente
   useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const data = await CvService.getAllCvs(); // Buscar cargos com CvService, ajustado para um exemplo real
-        setPositions(data.map((item) => item.position)); // Ajustar para o tipo correto
+        const data = await CvService.getAllCvs(1); // Adiciona `page = 1`
+        setPositions(data.map((item) => item.position));
       } catch (error) {
         console.error("Erro ao buscar cargos:", error);
       }
     };
+
     fetchPositions();
   }, []);
 
-  // Atualiza formData se curriculoData mudar
+
   useEffect(() => {
     if (curriculoData) setFormData(cvSchema.parse(curriculoData));
   }, [curriculoData]);
 
-  // Atualiza valores do formulário de forma otimizada
   const handleChange = useCallback((key: keyof z.infer<typeof cvSchema>, value: any) => {
     setFormData((prev: any) => ({ ...prev, [key]: value }));
   }, []);
 
-  // Upload de arquivo PDF
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
       const uploadedFile = event.target.files[0];
@@ -65,16 +61,45 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
     }
   };
 
-  // Valida o formulário
+  /**
+   * Função para Criar ou Atualizar um Currículo (POST ou PUT)
+   */
+  const handleSave = async () => {
+    if (!validateForm()) {
+      alert("Erro na validação. Verifique os campos.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (mode === "create") {
+        await CvService.createCv(formData);
+      } else {
+        await CvService.updateCv(formData.id, formData);
+      }
+
+      alert("✅ Currículo salvo com sucesso!");
+      router.push("/curriculo-display/visualize-cv");
+    } catch (error) {
+      console.error("❌ Erro ao salvar currículo:", error);
+      alert("Erro ao salvar o currículo. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * 🔹 Valida os dados do formulário antes do envio
+   */
   const validateForm = useCallback((): boolean => {
     try {
-      cvSchema.parse(formData); // Valida o formData com o cvSchema
+      cvSchema.parse(formData);
       setErrors({});
       return true;
     } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
-        err.errors.forEach((error: { path: string | any[]; message: string; }) => {
+        err.errors.forEach((error: { path: string | any[]; message: string }) => {
           if (error.path.length > 0) {
             fieldErrors[error.path[0] as string] = error.message;
           }
@@ -85,30 +110,6 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
     }
   }, [formData]);
 
-  // Salva os dados (POST ou PUT)
-  const handleSave = async () => {
-    if (!validateForm()) {
-      alert("Erro na validação. Verifique os campos.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (mode === "create") {
-        await CvService.createCv(formData); // POST na API
-      } else {
-        await CvService.updateCv(formData.id, formData); // PUT na API
-      }
-      alert("Currículo salvo com sucesso!");
-      router.push("/curriculo-display/visualize-cv");
-    } catch (error) {
-      console.error("Erro ao salvar:", error);
-      alert("Erro ao salvar o currículo. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="w-full max-w-4xl p-6 bg-gray-800 shadow-md rounded-lg border">
@@ -116,7 +117,6 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
           {mode === "edit" ? "Editar Currículo" : "Novo Currículo"}
         </h1>
         <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-          {/* PDF Upload */}
           <div>
             <label
               htmlFor="file-upload"
@@ -133,7 +133,6 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Campos de Input */}
             {[
               { key: "full_name", placeholder: "Nome Completo", type: "text" },
               { key: "email", placeholder: "E-mail", type: "email" },
@@ -150,16 +149,32 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
               </div>
             ))}
 
-            {/* Componentes de Máscara */}
             <BirthDayMask value={formData.date_of_birth} onChange={(value) => handleChange("date_of_birth", value)} />
             <CepMask value={formData.zip_code} onChange={(value) => handleChange("zip_code", value)} />
             <CpfMask value={formData.tax_id} onChange={(value) => handleChange("tax_id", value)} />
             <PhoneMask value={formData.phone} onChange={(value) => handleChange("phone", value)} />
 
-            {/* Dropdowns puxando da API */}
             <DropdownCheckboxPosition value={formData.position} onChange={(value) => handleChange("position", value)} options={positions} />
             <DropdownCheckboxRegional value={formData.region} onChange={(value) => handleChange("region", value)} />
             <DropdownCheckboxSchool value={formData.scholarity} onChange={(value) => handleChange("scholarity", value)} />
+          </div>
+
+          <div className="flex justify-end space-x-4">
+            <button
+              type="button"
+              onClick={() => router.push("/curriculo-display/visualize-cv")}
+              className="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              onClick={handleSave}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 disabled:opacity-50"
+              disabled={loading}
+            >
+              {loading ? "Salvando..." : "Salvar Currículo"}
+            </button>
           </div>
         </form>
       </div>

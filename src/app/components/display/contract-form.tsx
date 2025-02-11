@@ -21,15 +21,13 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
   const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
 
-  // Estados individuais por aba (com valores iniciais seguros)
-  const [pessoaFisica, setPessoaFisica] = useState(() => personSchema.parse(employeeData?.pessoaFisica || {}));
+  const [pessoaFisica, setPessoaFisica] = useState(() => personModelSchema.parse(employeeData?.pessoaFisica || {}));
   const [funcionario, setFuncionario] = useState(() => employeeSchema.parse(employeeData?.funcionario || {}));
   const [address, setAddress] = useState(() => addressSchema.parse(employeeData?.address || {}));
   const [contact, setContact] = useState(() => contactSchema.parse(employeeData?.contact || {}));
   const [bankAccount, setBankAccount] = useState(() => bankAccountSchema.parse(employeeData?.bank_account || {}));
   const [clothing, setClothing] = useState(() => clothingSchema.parse(employeeData?.clothing || {}));
 
-  // Tabs
   const tabs = [
     { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica, schema: personSchema },
     { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario, schema: employeeSchema },
@@ -39,14 +37,14 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
     { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing, schema: clothingSchema }
   ];
 
-  const CurrentComponent = tabs[selectedTab]?.component;
+  const CurrentComponent = tabs[selectedTab]?.component as React.ElementType;
+  const currentState = tabs[selectedTab]?.state;
   const setState = tabs[selectedTab]?.setState;
   const schema = tabs[selectedTab]?.schema;
 
-  // Atualiza os dados ao trocar de aba, validando antes
   const handleNext = () => {
     try {
-      schema.parse(tabs[selectedTab].state); // 🔥 Valida os dados da aba atual antes de continuar
+      schema.parse(currentState);
       setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
     } catch (error: any) {
       alert("Corrija os erros antes de avançar.");
@@ -54,16 +52,15 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
     }
   };
 
-  // Atualiza os estados conforme os dados mudam
   const handleInputChange = (updatedData: any) => {
-    setState((prev: any) => ({ ...prev, ...updatedData }));
+    if (setState) {
+      setState((prev: any) => ({ ...prev, ...updatedData }));
+    }
   };
 
-  // Envio final dos dados ao backend
   const handleSave = async () => {
     setLoading(true);
     try {
-      // Monta e sanitiza os dados antes do envio
       const employeePayload = {
         pessoaFisica: personSchema.parse(pessoaFisica),
         funcionario: employeeSchema.parse(funcionario),
@@ -93,10 +90,10 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
         throw new Error("Erro ao salvar funcionário.");
       }
 
-      alert("✅ Funcionário salvo com sucesso!");
+      alert("Funcionário salvo com sucesso!");
       router.push("/contract-display/employee");
     } catch (error) {
-      console.error("❌ Erro ao salvar funcionário:", error);
+      console.error("Erro ao salvar funcionário:", error);
       alert("Ocorreu um erro ao salvar. Tente novamente.");
     } finally {
       setLoading(false);
@@ -107,7 +104,6 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-5xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="flex flex-col md:flex-row">
-          {/* Tabs Navigation */}
           <div className="w-full md:w-1/4 bg-gray-900 text-white">
             <div className="flex flex-col space-y-2 p-4">
               {tabs.map((tab, index) => (
@@ -126,18 +122,18 @@ export default function ContractForm({ mode, employeeData, onSave, onCancel, isE
             </div>
           </div>
 
-          {/* Tab Content */}
           <div className="w-full md:w-3/4 p-6">
-            <CurrentComponent
-              data={tabs[selectedTab].state}
-              onChange={handleInputChange}
-              isEditable={isEditable}
-              mode={mode}
-              onNext={handleNext}
-              onPrev={() => setSelectedTab((prev) => Math.max(prev - 1, 0))}
-            />
+            {CurrentComponent && (
+              <CurrentComponent
+                data={currentState}
+                onChange={handleInputChange}
+                isEditable={isEditable}
+                mode={mode}
+                onNext={handleNext}
+                onPrev={() => setSelectedTab((prev) => Math.max(prev - 1, 0))}
+              />
+            )}
 
-            {/* Botão de salvar somente na última aba */}
             {selectedTab === tabs.length - 1 && (
               <button onClick={handleSave} className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50" disabled={loading}>
                 {loading ? "Salvando..." : "Finalizar e Enviar"}

@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import axios from "axios";
 import CvForm from "@/app/components/display/cv-form";
 import { useCvContext } from "@/app/context/CurriculoContext";
-import { CvService } from "@/app/services/cvService";
-import { Cv } from "@/app/types/cv"; // ✅ Certificando-se da importação correta
-import { CvFormProps } from "@/app/types/cv"; // ✅ Garantir que a tipagem correta seja usada
-
+import { CvService, Cv, ScholarityType } from "@/app/schemas/cvSchema";
 import "../style.css";
 import { Navigation } from "@/app/components/navigation/navigation";
 
+// Definição do endpoint da API (ajuste conforme necessário)
+const API_URL = "https://api.example.com/cvs";
+
 export default function CurriculoDetailPage() {
-  const { cvs, updateCv } = useCvContext(); // ✅ Certificar-se do nome correto no contexto
-  const [formData, setFormData] = useState<Cv | null>(null); // ✅ Tipagem correta
+  const { cvs, updateCv } = useCvContext();
+  const [formData, setFormData] = useState<Cv | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const params = useParams();
@@ -22,7 +23,7 @@ export default function CurriculoDetailPage() {
     const curriculoId = Number(params.id);
 
     if (isNaN(curriculoId)) {
-      alert("❌ ID inválido! Redirecionando...");
+      alert("ID inválido. Redirecionando...");
       router.replace("/curriculo-display/visualize-cv");
       return;
     }
@@ -38,12 +39,12 @@ export default function CurriculoDetailPage() {
         if (curriculo) {
           setFormData(curriculo);
         } else {
-          alert("⚠ Currículo não encontrado! Redirecionando...");
+          alert("Currículo não encontrado. Redirecionando...");
           router.replace("/curriculo-display/visualize-cv");
         }
       } catch (error) {
         console.error("Erro ao buscar currículo:", error);
-        alert("❌ Erro ao carregar currículo! Tente novamente.");
+        alert("Erro ao carregar currículo. Tente novamente.");
         router.replace("/curriculo-display/visualize-cv");
       }
     };
@@ -54,14 +55,27 @@ export default function CurriculoDetailPage() {
   const handleSave = async (updatedData: Cv) => {
     setLoading(true);
     try {
-      const updatedCv = await CvService.updateCv(updatedData.id, updatedData);
-      updateCv(updatedCv.id, updatedCv);
+      // Garante que o scholarity é um valor válido do enum
+      const validScholarity = Object.values(ScholarityType).includes(updatedData.scholarity as ScholarityType)
+        ? (updatedData.scholarity as ScholarityType)
+        : ScholarityType.SECONDARY;
 
-      alert("✅ Currículo atualizado com sucesso!");
+      const formattedData = {
+        ...updatedData,
+        scholarity: validScholarity,
+      };
+
+      // Atualiza currículo via API
+      const response = await axios.patch(`${API_URL}/${updatedData.id}`, formattedData);
+
+      // Atualiza o contexto com os novos dados
+      updateCv(updatedData.id, response.data);
+
+      alert("Currículo atualizado com sucesso.");
       router.push("/curriculo-display/visualize-cv");
-    } catch (error) {
-      console.error("Erro ao atualizar currículo:", error);
-      alert("❌ Erro ao atualizar currículo! Tente novamente.");
+    } catch (error: any) {
+      console.error("Erro ao atualizar currículo:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Erro ao atualizar currículo. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -75,7 +89,7 @@ export default function CurriculoDetailPage() {
     return (
       <div className="flex justify-center items-center h-screen">
         <p className="text-center text-white text-lg font-semibold">
-          🔄 Carregando os dados do currículo...
+          Carregando os dados do currículo...
         </p>
       </div>
     );
@@ -85,12 +99,12 @@ export default function CurriculoDetailPage() {
     <div className="mx-auto mt-10">
       <Navigation />
       <CvForm
-  mode="edit"
-  curriculoData={formData} // ✅ Certifique-se que `formData` é do tipo `Cv`
-  onSave={handleSave} // ✅ Agora `onSave` está corretamente passado
-  onCancel={handleCancel}
-  loading={loading}
-/>
+        mode="edit"
+        curriculoData={formData}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        loading={loading}
+      />
     </div>
   );
 }

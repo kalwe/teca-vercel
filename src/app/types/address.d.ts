@@ -13,4 +13,5 @@ export type AddressProps = {
   isEditable: boolean;
   onNext: () => void;
   onPrev: () => void;
+  employeeId?: any;
 }

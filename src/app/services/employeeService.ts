@@ -35,7 +35,7 @@ export const EmployeeService = {
    * Busca todos os funcionários cadastrados
    * @returns {Promise} - Lista de funcionários
    */
-  getAllEmployees: async () => {
+  getAllEmployees: async (page: number) => {
     try {
       const response = await api.get("/employee");
       return response.data;

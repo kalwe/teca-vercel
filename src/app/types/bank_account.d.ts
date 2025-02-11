@@ -17,4 +17,5 @@ export type BankProps = {
   onNext: () => void;
   onPrev: () => void;
   mode: ModeType; // ✅ Usa o tipo padronizado
+  employeeId?: any
 };

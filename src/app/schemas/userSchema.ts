@@ -2,14 +2,14 @@ import { z } from "zod";
 import axios from "axios";
 
 // 🔹 URL base da API (substitua pelo seu endpoint real)
-const API_URL = "https://api.example.com/users"; // 🚀 Altere conforme necessário
+const API_URL = "https://api.example.com/users";
 
 // 🔹 Base Schema (simula BaseModel do Pydantic)
 export const baseSchema = z.object({
-  id: z.number().int().positive().optional().default(0), // 🔥 Garante que `id` seja um número válido ou 0
+  id: z.number().int().positive().optional().default(0),
 });
 
-// 🔹 Email validation mixin (sanitizado)
+// 🔹 Email validation mixin
 export const emailMixinSchema = z.object({
   email: z
     .string()
@@ -27,11 +27,11 @@ export const userBaseSchema = baseSchema.extend({
     .min(5, "O nome deve ter pelo menos 5 caracteres.")
     .max(80, "O nome não pode ter mais de 80 caracteres."),
   roles: z
-    .array(z.string().trim().toLowerCase()) // 🔥 Garante que os papéis sejam strings limpas
+    .array(z.string().trim().toLowerCase())
     .optional(),
 });
 
-// 🔹 Schema para criação de usuário (inclui email e senha) 🚀
+// 🔹 Schema para criação de usuário (inclui email e senha)
 export const userInputSchema = userBaseSchema
   .merge(emailMixinSchema)
   .extend({
@@ -39,30 +39,33 @@ export const userInputSchema = userBaseSchema
   })
   .strict();
 
-// 🔹 Schema para retorno de usuário (sem senha) 🚀
+// 🔹 Schema para retorno de usuário (sem senha)
 export const userOutputSchema = userBaseSchema
   .merge(emailMixinSchema)
   .extend({
-    active: z.boolean().default(true), // ✅ Define um valor padrão para evitar erro
+    active: z.boolean().default(true),
   });
 
-// 🔹 Schema para usuários excluídos (Soft Delete) 🚀
+// 🔹 Schema para usuários excluídos (Soft Delete)
 export const userDeletedSchema = baseSchema.extend({
-  deleted_at: z.union([z.string(), z.null()]).optional(), // 🔥 Permite `null`
+  deleted_at: z.union([z.string(), z.null()]).optional(),
 });
+
+// 🔹 Tipagem correta para o formulário
+export type UserData = z.infer<typeof userInputSchema>;
 
 export type UserFormProps = {
   mode: "create" | "edit";
-  userData: z.infer<typeof userInputSchema>; // ✅ Agora o tipo é inferido corretamente
-  setUserData: React.Dispatch<React.SetStateAction<z.infer<typeof userInputSchema>>>;
+  userData?: UserData | null;
+  setUserData: React.Dispatch<React.SetStateAction<UserData | null>>;
   isEditable: boolean;
-  onSave: (data: z.infer<typeof userInputSchema>) => Promise<void>;
+  loading: boolean; // ✅ Ensure the component supports a loading state
+  onSave: (data: UserData) => Promise<void>;
   onCancel: () => void;
 };
 
-
 // =================================================
-// 🔹 API Service utilizando `axios` (CRUD completo) 🚀
+// 🔹 API Service utilizando `axios` (CRUD completo)
 // =================================================
 
 export const UserService = {
@@ -70,30 +73,31 @@ export const UserService = {
   async createUser(userData: z.infer<typeof userInputSchema>) {
     const validatedData = userInputSchema.parse(userData);
     const response = await axios.post(`${API_URL}`, validatedData);
-    return userOutputSchema.parse(response.data); // Validação da resposta
+    return userOutputSchema.parse(response.data);
   },
 
   // 🔹 Buscar todos os usuários (GET)
-  async getUsers() {
+  async getUsers(page: number) {
     const response = await axios.get(API_URL);
-    return z.array(userOutputSchema).parse(response.data); // Validação da resposta
+    return z.array(userOutputSchema).parse(response.data);
   },
 
   // 🔹 Buscar usuário por ID (GET)
   async getUserById(userId: number) {
     const response = await axios.get(`${API_URL}/${userId}`);
-    return userOutputSchema.parse(response.data); // Validação da resposta
+    return userOutputSchema.parse(response.data);
   },
 
   // 🔹 Atualizar usuário (PUT)
   async updateUser(userId: number, userData: Partial<z.infer<typeof userInputSchema>>) {
-    const response = await axios.put(`${API_URL}/${userId}`, userData);
-    return userOutputSchema.parse(response.data); // Validação da resposta
+    const validatedData = userInputSchema.partial().parse(userData);
+    const response = await axios.put(`${API_URL}/${userId}`, validatedData);
+    return userOutputSchema.parse(response.data);
   },
 
   // 🔹 Excluir usuário (DELETE)
   async deleteUser(userId: number) {
-    await axios.delete(`${API_URL}/${userId}`);
-    return { success: true, message: "Usuário excluído com sucesso!" };
+    const response = await axios.delete(`${API_URL}/${userId}`);
+    return response.status === 200;
   },
 };

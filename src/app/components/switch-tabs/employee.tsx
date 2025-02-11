@@ -7,7 +7,7 @@ import { EmployeeService } from "@/app/services/employeeService";
 import DropdownCheckboxFuncao from "../DropDown/dropdown-role";
 
 export function Funcionario({
-  data,
+  data = {} as Employee,
   onChange,
   isEditable,
   onNext,
@@ -22,13 +22,13 @@ export function Funcionario({
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [errors, setErrors] = useState<Record<string, string | null>>({});
 
-  // 🔍 Validação do formulário
   useEffect(() => {
     const validationResult = employeeSchema.safeParse(data);
     if (validationResult.success) {
       setErrors({});
       setIsNextEnabled(true);
     } else {
+      console.error("Erro de validação:", validationResult.error.errors);
       const validationErrors: Record<string, string> = {};
       validationResult.error.errors.forEach((e) => {
         validationErrors[e.path[0]] = e.message;
@@ -38,15 +38,12 @@ export function Funcionario({
     }
   }, [data]);
 
-  // 📌 Atualiza os campos corretamente
   const handleInputChange = (field: keyof Employee, value: any) => {
     onChange({ ...data, [field]: value });
   };
 
-  // **Criar funcionário via EmployeeService**
   const createEmployee = async () => {
     try {
-      // 🔍 Valida os dados antes do envio
       const validationResult = employeeSchema.safeParse(data);
       if (!validationResult.success) {
         console.error("Erro de validação Zod:", validationResult.error.format());
@@ -58,7 +55,7 @@ export function Funcionario({
         ...data,
         function: {
           id: data.function?.id ? String(data.function.id) : "",
-          name: data.function?.name
+          name: data.function?.name,
         },
         contract_date: data.contract_date || null,
         removal_date: data.removal_date || null,
@@ -75,7 +72,6 @@ export function Funcionario({
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-6 w-full">
-      {/* Matrícula */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Matrícula</label>
         <input
@@ -91,7 +87,6 @@ export function Funcionario({
         {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
       </div>
 
-      {/* Data de Admissão */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Admissão</label>
         <input
@@ -106,7 +101,6 @@ export function Funcionario({
         {errors.contract_date && <p className="text-red-500 text-sm mt-1">{errors.contract_date}</p>}
       </div>
 
-      {/* Data de Remoção */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Remoção</label>
         <input
@@ -121,7 +115,6 @@ export function Funcionario({
         {errors.removal_date && <p className="text-red-500 text-sm mt-1">{errors.removal_date}</p>}
       </div>
 
-      {/* Função (Dropdown) */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Função</label>
         <DropdownCheckboxFuncao
@@ -132,7 +125,6 @@ export function Funcionario({
         {errors.function && <p className="text-red-500 text-sm mt-1">{errors.function}</p>}
       </div>
 
-      {/* Encarregado (Supervisor) */}
       <div className="w-full flex items-center">
         <input
           type="checkbox"
@@ -144,7 +136,6 @@ export function Funcionario({
         <label className="text-gray-400">Encarregado</label>
       </div>
 
-      {/* Gerente */}
       <div className="w-full flex items-center">
         <input
           type="checkbox"
@@ -156,7 +147,6 @@ export function Funcionario({
         <label className="text-gray-400">Gerente</label>
       </div>
 
-      {/* Botões de Ação */}
       <div className="flex justify-between mt-6">
         <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar

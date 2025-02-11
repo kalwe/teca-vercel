@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import type { ContactProps, ContactType } from "@/app/types/contact";
 import { contactSchema } from "@/app/schemas/contactSchema";
-import { ContactService } from "@/app/services/contactService"; // 🔥 Agora usando ContactService
-import contactData from "@/app/components/data/employeeData.json"; // 🔥 Usa JSON como fallback
+import { ContactService } from "@/app/services/contactService";
+import contactData from "@/app/components/data/employeeData.json";
 
 export function Contact({
-  data = contactData.contact, // 🔥 Fallback para JSON
+  data = {},
   onChange,
   isEditable,
   onNext,
@@ -20,16 +20,16 @@ export function Contact({
     website: null,
   });
 
-  // Validação dinâmica dos campos
   useEffect(() => {
     try {
       contactSchema.parse(data);
       setErrors({});
       setIsNextEnabled(true);
     } catch (err: any) {
+      console.error("Erro de validação:", err.errors);
       const newErrors: Partial<Record<keyof ContactType, string | null>> = {};
       err.errors?.forEach((e: any) => {
-        const field = e.path[0] as keyof ContactType; // 🔥 Corrige erro de indexação
+        const field = e.path[0] as keyof ContactType;
         newErrors[field] = e.message;
       });
       setErrors(newErrors);
@@ -42,7 +42,6 @@ export function Contact({
     onChange(updatedData);
   };
 
-  // **Criar contato (POST)**
   const createContact = async () => {
     try {
       await ContactService.createContact(data);
@@ -56,7 +55,6 @@ export function Contact({
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-8 w-[100%]">
-      {/* Telefone */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Telefone</label>
         <input
@@ -74,7 +72,6 @@ export function Contact({
         )}
       </div>
 
-      {/* E-mail */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">E-mail</label>
         <input
@@ -90,7 +87,6 @@ export function Contact({
         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
       </div>
 
-      {/* Website */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Website</label>
         <input
@@ -106,7 +102,6 @@ export function Contact({
         {errors.website && <p className="text-red-500 text-sm mt-1">{errors.website}</p>}
       </div>
 
-      {/* Botões de Ação */}
       <div className="flex justify-between mt-6">
         <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar

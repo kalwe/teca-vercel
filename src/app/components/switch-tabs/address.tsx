@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import type { AddressType, AddressProps } from "@/app/types/address";
 import { addressSchema } from "@/app/schemas/addressSchema";
 import { AddressService } from "@/app/services/addressService";
-import employeeData from "@/app/components/data/employeeData.json"; // 🔥 Importando JSON inicial
+import employeeData from "@/app/components/data/employeeData.json";
 
 export function Address({
-  data = employeeData.address, // 🔥 Carrega dados do JSON se não houver dados
+  data = employeeData.address || {}, //  Garante que `data` não seja undefined
   onChange,
   isEditable,
   onNext,
   onPrev,
-  employeeId, // ID do funcionário para vincular endereço
+  employeeId,
 }: AddressProps) {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [errors, setErrors] = useState<{ [key in keyof AddressType]?: string }>({});
@@ -24,6 +24,7 @@ export function Address({
       setErrors({});
       setIsNextEnabled(true);
     } catch (error: any) {
+      console.error("Erro de validação:", error.errors); //  Log para depuração
       const validationErrors: { [key in keyof AddressType]?: string } = {};
       if (error.errors) {
         error.errors.forEach((e: any) => {
@@ -51,7 +52,8 @@ export function Address({
   };
 
   useEffect(() => {
-    if (employeeId) {
+    if (employeeId && Object.values(data).every((val) => !val)) {
+      //  Apenas sobrescreve se os campos estiverem vazios
       AddressService.getAddressById(employeeId)
         .then((addressData) => onChange(addressData))
         .catch((error) => console.error("Erro ao buscar endereço:", error));

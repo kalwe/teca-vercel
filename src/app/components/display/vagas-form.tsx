@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
+import { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,7 @@ const VagasForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) =>
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const datePickerRef = useRef<DatePicker | null>(null);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   /**
    * 🔹 Busca todas as vagas no backend ao carregar o componente
@@ -62,6 +63,36 @@ const VagasForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) =>
 
   const changePage = () => {
     router.push("vagas-display/nova-vaga");
+  };
+
+  /**
+   * 🚀 Função para Criar Vaga (POST)
+   */
+  const handleSave = async () => {
+    if (loading) return;
+
+    try {
+      setLoading(true);
+
+      // Valida os dados antes de enviar para o backend
+      const validatedData = vacancySchema.parse(vacancyData);
+
+      // Chama a API para criar a vaga
+      const newVacancy = await VacancyService.createVacancy(validatedData);
+
+      console.log("✅ Vaga criada com sucesso!", newVacancy);
+
+      // Atualiza o contexto com a nova vaga
+      setVacancies((prev) => [...prev, newVacancy]);
+
+      // Redireciona para a página de listagem de vagas
+      router.push("/vagas-display/");
+    } catch (error) {
+      console.error("❌ Erro ao criar vaga:", error);
+      alert("Erro ao criar vaga. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -122,7 +153,7 @@ const VagasForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) =>
 
           <div className="overflow-y-auto rounded-lg" style={{ maxHeight: "300px" }}>
             {vacancies.length > 0 ? (
-              vacancies.map((vacancy: { position: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; quantity: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, index: Key | null | undefined) => (
+              vacancies.map((vacancy, index) => (
                 <div
                   key={index}
                   onClick={() => router.push(`/vagas-display/nova-vaga?index=${index}`)}
@@ -137,6 +168,14 @@ const VagasForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) =>
             )}
           </div>
         </div>
+
+        <button
+          onClick={handleSave}
+          className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-transform transform hover:scale-105 disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? "Salvando..." : "Salvar Nova Vaga"}
+        </button>
       </div>
     </div>
   );

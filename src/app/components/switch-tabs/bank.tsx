@@ -5,7 +5,7 @@ import { BankService } from "@/app/services/bankService";
 import { bankAccountSchema } from "@/app/schemas/bankAccountSchema";
 import type { BankProps, BankAccountType } from "@/app/types/bank_account";
 
-export function Bank({ data, onChange, onNext, onPrev, employeeId, mode }: BankProps) {
+export function Bank({ data = {}, onChange, onNext, onPrev, employeeId, mode }: BankProps) {
   const [isSaveEnabled, setIsSaveEnabled] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof BankAccountType, string | null>>>({
     bank: null,
@@ -14,13 +14,13 @@ export function Bank({ data, onChange, onNext, onPrev, employeeId, mode }: BankP
     account_type: null,
   });
 
-  // 🔍 Validação dos campos ao modificar `data`
   useEffect(() => {
     try {
       bankAccountSchema.parse(data);
       setErrors({});
       setIsSaveEnabled(true);
     } catch (err: any) {
+      console.error("Erro de validação:", err.errors);
       const newErrors: Partial<Record<keyof BankAccountType, string | null>> = {};
       err.errors?.forEach((e: any) => {
         newErrors[e.path[0] as keyof BankAccountType] = e.message;
@@ -30,13 +30,10 @@ export function Bank({ data, onChange, onNext, onPrev, employeeId, mode }: BankP
     }
   }, [data]);
 
-  // 🔄 Atualiza estado do formulário
   const handleInputChange = (field: keyof BankAccountType, value: string) => {
-    const updatedData = { ...data, [field]: value };
-    onChange(updatedData);
+    onChange({ ...data, [field]: value });
   };
 
-  // 🚀 Criar conta bancária (POST)
   const createBankAccount = async () => {
     try {
       await BankService.createBankAccount({ ...data, employee: employeeId });
@@ -47,11 +44,18 @@ export function Bank({ data, onChange, onNext, onPrev, employeeId, mode }: BankP
     }
   };
 
+  useEffect(() => {
+    if (employeeId && Object.values(data).every((val) => !val)) {
+      BankService.getBankAccountById(employeeId)
+        .then((bankData) => onChange(bankData))
+        .catch((error) => console.error("Erro ao buscar conta bancária:", error));
+    }
+  }, [employeeId]);
+
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-6 w-full">
       <h2 className="text-white text-xl font-bold">Dados Bancários</h2>
 
-      {/* Banco */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Banco</label>
         <select
@@ -99,7 +103,6 @@ export function Bank({ data, onChange, onNext, onPrev, employeeId, mode }: BankP
         {errors.bank && <p className="text-red-500 text-sm mt-1">{errors.bank}</p>}
       </div>
 
-      {/* Agência */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Agência</label>
         <input
@@ -115,7 +118,6 @@ export function Bank({ data, onChange, onNext, onPrev, employeeId, mode }: BankP
         {errors.agency && <p className="text-red-500 text-sm mt-1">{errors.agency}</p>}
       </div>
 
-      {/* Conta */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Conta</label>
         <input
@@ -131,7 +133,6 @@ export function Bank({ data, onChange, onNext, onPrev, employeeId, mode }: BankP
         {errors.account && <p className="text-red-500 text-sm mt-1">{errors.account}</p>}
       </div>
 
-      {/* Tipo de Conta */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Tipo de Conta</label>
         <select
@@ -150,7 +151,6 @@ export function Bank({ data, onChange, onNext, onPrev, employeeId, mode }: BankP
         {errors.account_type && <p className="text-red-500 text-sm mt-1">{errors.account_type}</p>}
       </div>
 
-      {/* Botões de ação */}
       <div className="flex justify-between mt-6">
         <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar

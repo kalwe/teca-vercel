@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { clothingSchema } from "@/app/schemas/clothingSchema";
 import { ClothingProps } from "@/app/types/clothing";
-import { ClothingService } from "@/app/services/clothingService"; // 🔥 Importa o service
+import { ClothingService } from "@/app/services/clothingService";
 
-export function Clothing({ data, onChange, mode, employeeId }: ClothingProps) {
+export function Clothing({ data = {}, onChange, mode, employeeId }: ClothingProps) {
   const [errors, setErrors] = useState({
     shirt_size: null,
     pants_size: null,
@@ -14,13 +14,13 @@ export function Clothing({ data, onChange, mode, employeeId }: ClothingProps) {
 
   const [isSaveEnabled, setIsSaveEnabled] = useState(false);
 
-  // ✅ Validação e habilitação do botão "Salvar"
   useEffect(() => {
     try {
       clothingSchema.parse(data);
       setErrors({ shirt_size: null, pants_size: null, shoe_size: null });
       setIsSaveEnabled(true);
     } catch (err: any) {
+      console.error("Erro de validação:", err.errors);
       const newErrors = { shirt_size: null, pants_size: null, shoe_size: null };
       err.errors?.forEach((e: any) => {
         if (e.path.includes("shirt_size")) newErrors.shirt_size = e.message;
@@ -32,12 +32,10 @@ export function Clothing({ data, onChange, mode, employeeId }: ClothingProps) {
     }
   }, [data]);
 
-  // 🔄 Atualiza os campos no formulário
   const handleInputChange = (field: keyof ClothingProps["data"], value: string) => {
     onChange({ ...data, [field]: value });
   };
 
-  // 🔥 Criar vestuário via API
   const handleSave = async () => {
     try {
       const newClothing = { ...data, employee: employeeId };
@@ -51,7 +49,6 @@ export function Clothing({ data, onChange, mode, employeeId }: ClothingProps) {
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-8 w-[100%]">
-      {/* Tamanho da Camisa */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Tamanho da Camisa</label>
         <input
@@ -67,7 +64,6 @@ export function Clothing({ data, onChange, mode, employeeId }: ClothingProps) {
         {errors.shirt_size && <p className="text-red-500 text-sm mt-1">{errors.shirt_size}</p>}
       </div>
 
-      {/* Tamanho da Calça */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Tamanho da Calça</label>
         <input
@@ -83,7 +79,6 @@ export function Clothing({ data, onChange, mode, employeeId }: ClothingProps) {
         {errors.pants_size && <p className="text-red-500 text-sm mt-1">{errors.pants_size}</p>}
       </div>
 
-      {/* Tamanho do Calçado */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Tamanho do Calçado</label>
         <input
@@ -99,7 +94,6 @@ export function Clothing({ data, onChange, mode, employeeId }: ClothingProps) {
         {errors.shoe_size && <p className="text-red-500 text-sm mt-1">{errors.shoe_size}</p>}
       </div>
 
-      {/* Botão de Salvar */}
       <button
         onClick={handleSave}
         className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
