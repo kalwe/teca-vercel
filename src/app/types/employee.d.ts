@@ -45,7 +45,9 @@ export interface ContractFormProps {
   onCancel: () => void
   isEditable: boolean
 }
-onSave()
+
+const dataEmployee: EmployeeType = EmployeeSchema.parser(data)
+onSave(dataEmployee)
   .then(data => { print(data)})
   .catch(err => console.log(err))
 
