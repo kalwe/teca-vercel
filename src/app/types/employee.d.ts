@@ -38,24 +38,16 @@ export interface EmployeeProps {
   onPrev: () => void
 }
 
-export interface EmployeeRelated {
-  employee: Employee // Reference to the associated employee
-}
-
-export interface EmployeeRelationDetails {
-  employeeId: string // ID of the related employee
-  description: string // Description of the relationship
-  relatedEntity: string // Type of related entity (e.g., Address, Contact, etc.)
-}
-
 export interface ContractFormProps {
   mode: "edit" | "create"
-  employeeData?: Employee | null
-  onSave: (updatedData: Employee) => Promise<void>
+  employeeData?: EmployeeType | null
+  onSave: (updatedData: EmployeeType) => Promise<void>
   onCancel: () => void
   isEditable: boolean
 }
-
+onSave()
+  .then(data => { print(data)})
+  .catch(err => console.log(err))
 
 // Masks
 

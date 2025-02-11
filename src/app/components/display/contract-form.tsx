@@ -19,9 +19,8 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
 
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const [pessoaFisica, setPessoaFisica] = useState(() => employeeData?.pessoaFisica || {});
+  const [pessoaFisica, setPessoaFisica] = useState(employeeData?.pessoaFisica || {});
   const [funcionario, setFuncionario] = useState(() => employeeData?.funcionario || {});
-  const [address, setAddress] = useState(() => employeeData?.address || {});
   const [contact, setContact] = useState(() => employeeData?.contact || {});
   const [bankAccount, setBankAccount] = useState(() => employeeData?.bank_account || {});
   const [clothing, setClothing] = useState(() => employeeData?.clothing || {});
@@ -42,7 +41,7 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
     const setCurrentState = tabs[selectedTab]?.setState;
 
     if (setCurrentState) {
-      setCurrentState((prev) => ({ ...prev, ...data }));
+      setCurrentState(...data);
     } else {
       console.error("Erro: Nenhum setState definido para a aba atual.");
     }
