@@ -15,39 +15,39 @@ export function Address({
   employee,
 }: AddressProps) {
 
-const [isNextEnabled, setIsNextEnabled] = useState(false);
-const [errors, setErrors] = useState<Partial<Record<keyof AddressType, string>>>({});
+  const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof AddressType, string>>>({});
 
-const handleInputChange = useCallback(
-  (e) => {
-    const { name, value } = e.target;
-    const updatedData = { ...data, [name]: value };
+  const handleInputChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      const updatedData = { ...data, [name]: value };
 
-    onChange(updatedData); // Atualiza os dados no componente pai
+      onChange(updatedData); // Atualiza os dados no componente pai
 
-    try {
-      addressSchema.parse(updatedData); // Validação com Zod
-      setErrors({});
-      setIsNextEnabled(true);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors = error.errors.reduce((acc, curr) => {
-          acc[curr.path[0] as keyof AddressType] = curr.message;
-          return acc;
-        }, {} as Partial<Record<keyof AddressType, string>>);
+      try {
+        addressSchema.parse(updatedData); // Validação com Zod
+        setErrors({});
+        setIsNextEnabled(true);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const newErrors = error.errors.reduce((acc, curr) => {
+            acc[curr.path[0] as keyof AddressType] = curr.message;
+            return acc;
+          }, {} as Partial<Record<keyof AddressType, string>>);
 
-        setErrors(newErrors);
-        setIsNextEnabled(false);
+          setErrors(newErrors);
+          setIsNextEnabled(false);
+        }
       }
-    }
-  },
-  [data, onChange]
-);
+    },
+    [data, onChange]
+  );
 
 
   const handleSave = async () => {
     try {
-      addressSchema.parse(data); // Valida antes de salvar
+      const validatedData = addressSchema.parse(data); // Valida antes de salvar
       const createdAddress = await AddressService.createAddress({ ...data, employee });
       console.log(createdAddress);
       onNext();

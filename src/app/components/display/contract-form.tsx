@@ -37,6 +37,7 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
 
   const CurrentComponent = tabs[selectedTab]?.component as React.ElementType;
   const currentState = tabs[selectedTab]?.state;
+
   const handleInputChange = (data: Record<string, unknown>) => {
     const setCurrentState = tabs[selectedTab]?.setState;
 
@@ -80,6 +81,7 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
                 isEditable={isEditable}
                 mode={mode}
                 onNext={() => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))}
+                employee
               />
             )}
 
