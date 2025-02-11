@@ -1,3 +1,4 @@
+import { createAddress } from "../../../tests/api/address";
 import api from "./api";
 
 const endpoint = "/address";

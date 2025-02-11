@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import type { AddressType, AddressProps } from "@/app/types/address";
-import { addressSchema } from "@/app/schemas/addressSchema";
+
 import { AddressService } from "@/app/services/addressService";
 import employeeData from "@/app/components/data/employeeData.json";
+
 
 export function Address({
   data = employeeData.address || {}, //  Garante que `data` não seja undefined
@@ -67,12 +68,11 @@ export function Address({
 
       {/* Logradouro */}
       <div className="w-full">
-        <
         <input
           type="text"
-          value={data.street || ""}
+          value={data.number || ""}
           onChange={(e) => handleInputChange("street", e.target.value)}
-          placeholder="Digite o logradouro"
+          placeholder="Digite o logadouro"
           className={`w-full bg-gray-700 text-white border ${errors.street ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
           disabled={!isEditable}
         />
