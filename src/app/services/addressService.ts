@@ -1,4 +1,5 @@
 import api from "./api"
+import { AddressType } from "../types/address"
 
 // import { createAddressMock, getAddressByIdMock, getAllAddressesMock, updateAddressMock, deleteAddressMock } from "../../../tests/api/addressMock"
 
@@ -6,7 +7,7 @@ const endpoint = "/address"
 
 export const AddressService = {
 
-   async createAddress(addressData: AddressSchema) {
+   async createAddress(addressData: AddressType) {
     try {
       const response = await api.post(endpoint, addressData)
       if (response.status == 201)

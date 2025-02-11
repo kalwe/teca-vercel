@@ -8,13 +8,19 @@ export const ClothingService = {
    * @param {object} clothingData - Dados do vestuário
    * @returns {Promise<any>} - Resposta da API
    */
-  async createClothing(clothingData: any): Promise<any> {
+  async createClothing(ClothingData: ClothingType) {
     try {
-      const response = await api.post(endpoint, clothingData);
-      return response.data;
+      const response = await api.post(endpoint, ClothingData)
+      if (response.status == 201)
+        return response.data
+
+      // TODO: validar se for erro
+
+      // const createdMock = createClothingMock(ClothingData)
+      // return createdMock
     } catch (error) {
-      console.error("❌ Erro ao criar vestuário:", error);
-      throw error;
+      console.error("Erro ao cadastrar vestuário:", error)
+      throw error
     }
   },
 

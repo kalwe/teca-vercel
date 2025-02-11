@@ -8,7 +8,7 @@ body {
 /* Pseudo-elemento para o fundo */
 body::before {
   content: "";
-  background-image: url('./assets/eucalipto.png'); /* Caminho da imagem */
+
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -22,5 +22,3 @@ body::before {
   filter: blur(8px); /* Aplica o blur somente ao background */
   z-index: -1; /* Coloca atrás do conteúdo */
 }
-
-

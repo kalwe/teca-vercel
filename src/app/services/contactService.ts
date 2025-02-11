@@ -6,16 +6,21 @@ export const ContactService = {
    * @param {object} contactData - Dados do contato
    * @returns {Promise} - Resposta da API
    */
-  createContact: async (contactData: any) => {
+  async createContact(ContactData: ContactType) {
     try {
-      const response = await api.post("/contact", contactData);
-      return response.data;
+      const response = await api.post(endpoint, ContactData)
+      if (response.status == 201)
+        return response.data
+
+      // TODO: validar se for erro
+
+      // const createdMock = createContactMock(ContactData)
+      // return createdMock
     } catch (error) {
-      console.error("Erro ao criar contato:", error);
-      throw error;
+      console.error("Erro ao criar endereço:", error)
+      throw error
     }
   },
-
   /**
    * Busca um contato por ID
    * @param {number} id - ID do contato

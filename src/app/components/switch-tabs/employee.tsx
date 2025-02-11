@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { employeeSchema } from "@/app/schemas/employeeSchema";
 import { Employee } from "@/app/types/employee";
 import { EmployeeService } from "@/app/services/employeeService";
 import DropdownCheckboxFuncao from "../DropDown/dropdown-role";
+import { z } from "zod";
 
 export function Funcionario({
   data = {} as Employee,
@@ -19,37 +20,36 @@ export function Funcionario({
   onNext: () => void;
   onPrev: () => void;
 }) {
+  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
   const [isNextEnabled, setIsNextEnabled] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string | null>>({});
 
-  useEffect(() => {
-    const validationResult = employeeSchema.safeParse(data);
-    if (validationResult.success) {
-      setErrors({});
+  // Validação instantânea ao modificar os campos
+  const handleInputChange = <K extends keyof Employee>(field: K, value: Employee[K]) => {
+    const updatedData = { ...data, [field]: value };
+
+    try {
+      employeeSchema.parse(updatedData); // Valida os dados
+      setErrors({}); // Limpa os erros ao preencher corretamente
       setIsNextEnabled(true);
-    } else {
-      console.error("Erro de validação:", validationResult.error.errors);
-      const validationErrors: Record<string, string> = {};
-      validationResult.error.errors.forEach((e) => {
-        validationErrors[e.path[0]] = e.message;
-      });
-      setErrors(validationErrors);
-      setIsNextEnabled(false);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Partial<Record<keyof Employee, string>> = {};
+        error.errors.forEach((e) => {
+          newErrors[e.path[0] as keyof Employee] = e.message;
+        });
+        setErrors(newErrors);
+        setIsNextEnabled(false);
+      }
     }
-  }, [data]);
 
-  const handleInputChange = (field: keyof Employee, value: any) => {
-    onChange({ ...data, [field]: value });
+    onChange(updatedData);
   };
 
+
+  // Salva os dados do funcionário
   const createEmployee = async () => {
     try {
-      const validationResult = employeeSchema.safeParse(data);
-      if (!validationResult.success) {
-        console.error("Erro de validação Zod:", validationResult.error.format());
-        alert("Erro na validação dos dados. Veja o console.");
-        return;
-      }
+      employeeSchema.parse(data); // Valida antes de salvar
 
       const formattedData: Employee = {
         ...data,
@@ -65,56 +65,46 @@ export function Funcionario({
       alert("Funcionário cadastrado com sucesso!");
       onNext();
     } catch (error) {
-      console.error("Erro ao criar funcionário:", error);
-      alert("Erro ao criar funcionário.");
+      if (error instanceof z.ZodError) {
+        const newErrors: Partial<Record<keyof Employee, string>> = {};
+        error.errors.forEach((e) => {
+          newErrors[e.path[0] as keyof Employee] = e.message;
+        });
+        setErrors(newErrors);
+      } else {
+        console.error("Erro ao criar funcionário:", error);
+        alert("Erro ao criar funcionário.");
+      }
     }
   };
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-6 w-full">
-      <div className="w-full">
-        <label className="block text-gray-400 mb-2">Matrícula</label>
-        <input
-          type="text"
-          value={data.registration || ""}
-          onChange={(e) => handleInputChange("registration", e.target.value)}
-          placeholder="Digite a matrícula"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.registration ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
-      </div>
+      <h2 className="text-white text-xl font-bold">Funcionário</h2>
 
-      <div className="w-full">
-        <label className="block text-gray-400 mb-2">Data de Admissão</label>
-        <input
-          type="date"
-          value={data.contract_date ? new Date(data.contract_date).toISOString().split("T")[0] : ""}
-          onChange={(e) => handleInputChange("contract_date", e.target.value)}
-          className={`w-full bg-gray-700 text-white border ${
-            errors.contract_date ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.contract_date && <p className="text-red-500 text-sm mt-1">{errors.contract_date}</p>}
-      </div>
+      {[
+        { name: "registration", label: "Matrícula", placeholder: "Digite a matrícula", type: "text" },
+        { name: "contract_date", label: "Data de Admissão", placeholder: "", type: "date" },
+        { name: "removal_date", label: "Data de Remoção", placeholder: "", type: "date" },
+      ].map((field) => (
+        <div key={field.name} className="w-full">
+          <label className="block text-gray-400 mb-2">{field.label}</label>
+          <input
+            type={field.type}
+            name={field.name}
+            value={data[field.name] ? new Date(data[field.name]).toISOString().split("T")[0] : ""}
+            onChange={(e) => handleInputChange(field.name as keyof Employee, e.target.value)}
+            placeholder={field.placeholder}
+            className={`w-full bg-gray-700 text-white border ${
+              errors[field.name] ? "border-red-500" : "border-gray-600"
+            } rounded-lg py-2 px-3`}
+            disabled={!isEditable}
+          />
+          {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
+        </div>
+      ))}
 
-      <div className="w-full">
-        <label className="block text-gray-400 mb-2">Data de Remoção</label>
-        <input
-          type="date"
-          value={data.removal_date ? new Date(data.removal_date).toISOString().split("T")[0] : ""}
-          onChange={(e) => handleInputChange("removal_date", e.target.value)}
-          className={`w-full bg-gray-700 text-white border ${
-            errors.removal_date ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.removal_date && <p className="text-red-500 text-sm mt-1">{errors.removal_date}</p>}
-      </div>
-
+      {/* Dropdown de Função */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Função</label>
         <DropdownCheckboxFuncao
@@ -125,6 +115,7 @@ export function Funcionario({
         {errors.function && <p className="text-red-500 text-sm mt-1">{errors.function}</p>}
       </div>
 
+      {/* Checkboxes */}
       <div className="w-full flex items-center">
         <input
           type="checkbox"
@@ -147,6 +138,7 @@ export function Funcionario({
         <label className="text-gray-400">Gerente</label>
       </div>
 
+      {/* Botões */}
       <div className="flex justify-between mt-6">
         <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar

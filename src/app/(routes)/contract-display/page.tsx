@@ -7,16 +7,18 @@ import { Navigation } from "@/app/components/navigation/navigation";
 
 export default function Contract() {
 
-
   return (
-    <div>
+    <div
+    style={{
+      background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
+  }}
+>
       <Navigation />
 
       {/* Renderiza o formulário com as propriedades obrigatórias */}
       <ContractForm
         mode="create"
-        onSave={handleSave}
-        onCancel={handleCancel}
+
         isEditable={true}
       />
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState} from "react"
 import type { AddressType, AddressProps } from "@/app/types/address"
 import { AddressService } from "@/app/services/addressService"
 import { addressSchema } from "@/app/schemas/addressSchema"
@@ -15,41 +15,33 @@ export function Address({
   employee,
 }: AddressProps) {
 
-  const [address, setAddress] = useState(employeeData?.address || {});
   const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof AddressType, string>>>({})
 
-  const handleInputChange = useCallback(
-    (e) => {
-      const { name, value } = e.target
-      const updatedData = { ...data, [name]: value }
+  const handleInputChange = (field: string, value: string) => {
+    const updatedData = { ...data, [field]: value };
 
-      onChange(updatedData) // Atualiza os dados no componente pai
-
-      try {
-        addressSchema.parse(updatedData) // Validação com Zod
-        setErrors({})
-        setIsNextEnabled(true)
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          const newErrors = error.errors.reduce((acc, curr) => {
-            acc[curr.path[0] as keyof AddressType] = curr.message
-            return acc
-          }, {} as Partial<Record<keyof AddressType, string>>)
-
-          setErrors(newErrors)
-          setIsNextEnabled(false)
-        }
+    try {
+      addressSchema.parse(updatedData); // Valida os dados
+      setErrors({}); // Limpa os erros ao preencher corretamente
+      setIsNextEnabled(true);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        error.errors.forEach((e) => {
+          newErrors[e.path[0]] = e.message;
+        });
+        setErrors(newErrors);
+        setIsNextEnabled(false);
       }
-    },
-    [data, onChange]
-  )
+    }
 
+    onChange(updatedData);
+  };
 
   const handleSave = async () => {
     try {
-      const validatedData = addressSchema.parse(data) // Valida antes de salvar
-      const createdAddress = await AddressService.createAddress({ ...validatedData, employee })
+      const createdAddress = await AddressService.createAddress({ ...data, employee })
       console.log(createdAddress)
       onNext()
     } catch (error) {
@@ -74,7 +66,7 @@ export function Address({
             type="text"
             name={field.name}
             value={data[field.name] || ""}
-            onChange={handleInputChange(e)}
+            onChange={(e) => handleInputChange(e.target.name, e.target.value)}
             placeholder={field.placeholder}
             className={`w-full bg-gray-700 text-white border ${
               errors[field.name] ? "border-red-500" : "border-gray-600"
@@ -90,7 +82,7 @@ export function Address({
         <select
           name="state"
           value={data.state || ""}
-          onChange={handleInputChange}
+          onChange={(e) => handleInputChange("state", e.target.value)}
           className={`w-full bg-gray-700 text-white border ${
             errors.state ? "border-red-500" : "border-gray-600"
           } rounded-lg py-2 px-3`}

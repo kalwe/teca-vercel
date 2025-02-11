@@ -6,16 +6,21 @@ export const EmployeeService = {
    * @param {object} employeeData - Dados do funcionário
    * @returns {Promise} - Resposta da API
    */
-  createEmployee: async (employeeData: any) => {
+  async createEmployee(EmployeeData: EmployeeType) {
     try {
-      const response = await api.post("/employee", employeeData);
-      return response.data;
+      const response = await api.post(endpoint, EmployeeData)
+      if (response.status == 201)
+        return response.data
+
+      // TODO: validar se for erro
+
+      // const createdMock = createEmployeeMock(EmployeeData)
+      // return createdMock
     } catch (error) {
-      console.error("Erro ao criar funcionário:", error);
-      throw error;
+      console.error("Erro ao criar endereço:", error)
+      throw error
     }
   },
-
   /**
    * Busca um funcionário por ID
    * @param {number} id - ID do funcionário
