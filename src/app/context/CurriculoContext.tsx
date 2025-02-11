@@ -1,8 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react"
-import { cvSchema } from "../schemas/cvSchema" // Importando diretamente o cvSchema
-import { CvService } from "../services/cvService"
+import { CvService } from "../schemas/cvSchema"
 
 type CvContextData = {
   cvs: any[] // Usando 'any' para acomodar os dados do cvSchema

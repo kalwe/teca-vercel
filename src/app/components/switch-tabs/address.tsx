@@ -1,126 +1,98 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { AddressType, AddressProps } from "@/app/types/address";
-import { addressSchema } from "@/app/schemas/addressSchema";
 import { AddressService } from "@/app/services/addressService";
-import employeeData from "@/app/components/data/employeeData.json";
-
+import { addressSchema } from "@/app/schemas/addressSchema"
+import { z } from "zod";
 
 export function Address({
-  // TODO: why use json?
-  data = employeeData.address || {}, //  Garante que `data` não seja undefined
+  data = {},
   onChange,
   isEditable,
   onNext,
   onPrev,
   employee,
 }: AddressProps) {
-  const [isNextEnabled, setIsNextEnabled] = useState(false);
-  const [errors, setErrors] = useState<{ [key in keyof AddressType]?: string }>({});
 
-  const handleInputChange = (e) => {
-    console.log(e)
-    const { name, value } = e.target
-    onChange({ ...data, [name]: value });
-  };
+const [isNextEnabled, setIsNextEnabled] = useState(false);
+const [errors, setErrors] = useState<Partial<Record<keyof AddressType, string>>>({});
 
-  // **Criar um novo endereço (POST)**
+const handleInputChange = useCallback(
+  (e) => {
+    const { name, value } = e.target;
+    const updatedData = { ...data, [name]: value };
+
+    onChange(updatedData); // Atualiza os dados no componente pai
+
+    try {
+      addressSchema.parse(updatedData); // Validação com Zod
+      setErrors({});
+      setIsNextEnabled(true);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = error.errors.reduce((acc, curr) => {
+          acc[curr.path[0] as keyof AddressType] = curr.message;
+          return acc;
+        }, {} as Partial<Record<keyof AddressType, string>>);
+
+        setErrors(newErrors);
+        setIsNextEnabled(false);
+      }
+    }
+  },
+  [data, onChange]
+);
+
+
   const handleSave = async () => {
     try {
-      const createdAddress = await AddressService.createAddress({ ...data, employee: employee });
-      console.log(createdAddress)
+      addressSchema.parse(data); // Valida antes de salvar
+      const createdAddress = await AddressService.createAddress({ ...data, employee });
+      console.log(createdAddress);
       onNext();
     } catch (error) {
-      alert("Erro ao criar endereço.", error);
+      alert("Erro ao criar endereço. Verifique os campos.");
+      console.error(error);
     }
   };
-
-  // useEffect(() => {
-  //   if (employee && Object.values(data).every((val) => !val)) {
-  //     //  Apenas sobrescreve se os campos estiverem vazios
-  //     // TODO: what hell getAddressById where
-  //     AddressService.getAddressById(employeed)
-  //       // TODO: wada FUCK use then?!??!
-  //       .then((addressData) => onChange(addressData))
-  //       .catch((error) => console.error("Erro ao buscar endereço:", error));
-  //     }
-  // }, [employee]);
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Endereço</h2>
-      {/* Logradouro */}
-      <div className="w-full">
-        <input
-          type="text"
-          value={data.number || ""}
-          onChange={(e) => handleInputChange("street", e.target.value)}
-          placeholder="Digite o logadouro"
-          className={`w-full bg-gray-700 text-white border ${errors.street ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.street && <p className="text-red-500 text-sm mt-1">{errors.street}</p>}
-      </div>
-      {/* Número */}
-      <div className="w-full">
-        <input
-          type="text"
-          value={data.number || ""}
-          name="number"
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Digite o número"
-          className={`w-full bg-gray-700 text-white border ${errors.number ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.number && <p className="text-red-500 text-sm mt-1">{errors.number}</p>}
-      </div>
-      {/* Bairro */}
-      <div className="w-full">
-        <input
-          type="text"
-          value={data.neighborhood || ""}
-          name="neighborhood"
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Digite o bairro"
-          className={`w-full bg-gray-700 text-white border ${errors.neighborhood ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.neighborhood && <p className="text-red-500 text-sm mt-1">{errors.neighborhood}</p>}
-      </div>
-      {/* Cidade */}
-      <div className="w-full">
-        <input
-          type="text"
-          value={data.city || ""}
-          name="city"
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Digite a cidade"
-          className={`w-full bg-gray-700 text-white border ${errors.city ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
-      </div>
-      {/* CEP */}
-      <div className="w-full">
-        <input
-          type="text"
-          value={data.zip_code || ""}
-          name="zip_code"
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Digite o CEP"
-          className={`w-full bg-gray-700 text-white border ${errors.zip_code ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.zip_code && <p className="text-red-500 text-sm mt-1">{errors.zip_code}</p>}
-      </div>
-      {/* Estado */}
+
+      {[
+        { name: "street", placeholder: "Digite o logradouro", label: "Logradouro" },
+        { name: "number", placeholder: "Digite o número", label: "Número" },
+        { name: "neighborhood", placeholder: "Digite o bairro", label: "Bairro" },
+        { name: "city", placeholder: "Digite a cidade", label: "Cidade" },
+        { name: "zip_code", placeholder: "Digite o CEP", label: "CEP" },
+      ].map((field) => (
+        <div key={field.name} className="w-full">
+          <input
+            type="text"
+            name={field.name}
+            value={data[field.name] || ""}
+            onChange={handleInputChange}
+            placeholder={field.placeholder}
+            className={`w-full bg-gray-700 text-white border ${
+              errors[field.name] ? "border-red-500" : "border-gray-600"
+            } rounded-lg py-2 px-3`}
+            disabled={!isEditable}
+          />
+          {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
+        </div>
+      ))}
+
+      {/* Estado (Dropdown) */}
       <div className="w-full">
         <select
-          value={data.state || ""}
           name="state"
-          onChange={(e) => handleInputChange(e)}
-          className={`w-full bg-gray-700 text-white border ${errors.state ? "border-red-500" : "border-gray-600"} rounded-lg py-2 px-3`}
+          value={data.state || ""}
+          onChange={handleInputChange}
+          className={`w-full bg-gray-700 text-white border ${
+            errors.state ? "border-red-500" : "border-gray-600"
+          } rounded-lg py-2 px-3`}
           disabled={!isEditable}
         >
           <option value="">Selecione o estado</option>
@@ -132,12 +104,17 @@ export function Address({
         </select>
         {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state}</p>}
       </div>
+
       {/* Botões */}
       <div className="flex justify-between mt-6">
         <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar
         </button>
-        <button onClick={handleSave} className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" disabled={!isNextEnabled}>
+        <button
+          onClick={handleSave}
+          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          disabled={!isNextEnabled}
+        >
           Próximo
         </button>
       </div>
