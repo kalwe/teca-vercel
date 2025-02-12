@@ -34,7 +34,7 @@ export const AddressService = {
       // const createdMock = getAddressByIdMock(addressData)
       // return createdMock
     } catch (error) {
-      console.error("Erro ao criar endereço:", error)
+      console.error("Erro ao pegar endereço:", error)
       throw error
     }
   },

@@ -19,7 +19,7 @@ export function Address({
   const [errors, setErrors] = useState<Partial<Record<keyof AddressType, string>>>({})
 
   const handleInputChange = (field: string, value: string) => {
-    const updatedData = { ...data, [field]: value };
+  const updatedData = { ...data, [field]: value };
 
     try {
       addressSchema.parse(updatedData); // Valida os dados

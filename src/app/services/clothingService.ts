@@ -59,7 +59,7 @@ export const ClothingService = {
    * @param {object} clothingData - Novos dados do vestuário
    * @returns {Promise<any>} - Dados atualizados
    */
-  async updateClothing(id: number, clothingData: any): Promise<any> {
+  async updateClothing(id: number, clothingData){
     try {
       const response = await api.put(`${endpoint}/${id}`, clothingData);
       return response.data;
@@ -79,7 +79,7 @@ export const ClothingService = {
       const response = await api.delete(`${endpoint}/${id}`);
       return response.data;
     } catch (error) {
-      console.error("❌ Erro ao deletar vestuário:", error);
+      console.error(" Erro ao deletar vestuário:", error);
       throw error;
     }
   },
