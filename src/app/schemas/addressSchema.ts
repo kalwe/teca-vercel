@@ -1,7 +1,7 @@
 "use client"; // TODO: you sure this is a 'use client', i think is do on server side
 
 import { z } from "zod";
-import api from "../services/api"; // Importação do serviço de API
+// import api from "../services/api"; // Importação do serviço de API
 
 /**
  * Esquema de validação para Endereço
