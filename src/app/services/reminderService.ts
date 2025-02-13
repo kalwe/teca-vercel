@@ -1,7 +1,7 @@
 
 import { reminderSchema } from "../schemas/reminderSchema";
 import  {z} from 'zod'
-import {axios} from 'axios'
+import axios from 'axios'
 
 const API_URL = "https://api.example.com/reminders";
 

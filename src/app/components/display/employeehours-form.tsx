@@ -24,7 +24,7 @@ function EmployeeHours() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [employeeName, setEmployeeName] = useState("");
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,7 +102,7 @@ function EmployeeHours() {
           },
         ],
       });
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || "Erro ao carregar dados.");
     } finally {
       setLoading(false);

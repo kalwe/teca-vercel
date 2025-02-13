@@ -19,7 +19,7 @@ export function VisualizeCV() {
   const lastCvRef = useRef<HTMLDivElement | null>(null);
 
   /**
-   * 🚀 Carrega os currículos automaticamente ao abrir a página
+   *  Carrega os currículos automaticamente ao abrir a página
    */
   useEffect(() => {
     const fetchCvs = async () => {
@@ -41,14 +41,14 @@ export function VisualizeCV() {
   }, [page]);
 
   /**
-   * 🚀 Incrementa a página para buscar mais currículos quando necessário
+   *  Incrementa a página para buscar mais currículos quando necessário
    */
-  const fetchMoreCvs = useCallback(() => {
-    setPage((prevPage) => prevPage + 1);
+  const fetchMoreCvs = useCallback(() => { // TODO: PRA QUE useCallback ?!?!?!
+    setPage((prevPage) => prevPage + 1); // TODO: como isso funciona?
   }, []);
 
   /**
-   * 🚀 Configura o IntersectionObserver para paginação infinita
+   *  Configura o IntersectionObserver para paginação infinita
    */
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
@@ -66,21 +66,21 @@ export function VisualizeCV() {
   }, [fetchMoreCvs]);
 
   /**
-   * 🚀 Navega para editar o currículo
+   *  Navega para editar o currículo
    */
   const navigateToEdit = (id: number) => {
     router.push(`/curriculo-display/${id}`);
   };
 
   /**
-   * 🚀 Navega para adicionar um novo currículo
+   *  Navega para adicionar um novo currículo
    */
   const navigateToAdd = () => {
     router.push("/curriculo-display/");
   };
 
   /**
-   * 🚀 Filtragem de currículos conforme o termo digitado
+   *  Filtragem de currículos conforme o termo digitado
    */
   const filteredCvs = useMemo(() => {
     if (!searchTerm) return cvs;

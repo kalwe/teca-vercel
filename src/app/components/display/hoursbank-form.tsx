@@ -1,32 +1,64 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
+// Interface do Funcionário
 interface Employee {
   id: string;
   name: string;
-  weeklyHours?: number; // Placeholder for API integration
+  weeklyHours?: number;
 }
 
+// Função para buscar funcionários da API real
+const fetchEmployeesFromAPI = async (searchTerm = ''): Promise<Employee[]> => {
+  try {
+    const response = await fetch( // FIXME: use o axios, ja temos EmployeeService.getAll
+      // FIXME: crate .env and add NEXT_PUBLIC_API_URL="http://api...""
+      `${process.env.NEXT_PUBLIC_API_URL}/employees?search=${searchTerm}` // FIXME: param searchTerm don`t exists
+    );
+    if (!response.ok) throw new Error('Erro ao buscar funcionários');
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao carregar funcionários:', error);
+    return [];
+  }
+};
+
 function HoursBank() {
-  const [employees, setEmployees] = useState<Employee[]>([]); // State for employees
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // Example to load initial employees (replace this with actual API or data context logic)
-    const storedEmployees = JSON.parse(localStorage.getItem('employees') || '[]');
-    setEmployees(storedEmployees);
+    const fetchEmployees = async () => {
+      const allEmployees = await fetchEmployeesFromAPI();
+      setEmployees(allEmployees);
+      setFilteredEmployees(allEmployees);
+      setLoading(false);
+    };
+
+    fetchEmployees();
   }, []);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
+  // Função para filtrar os funcionários conforme a busca do usuário
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => { // TODO: qual necessidade de useCallback() ?!?
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
 
-  const filteredEmployees = employees.filter((employee) =>
-    employee.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    if (value.trim() === '') {
+      setFilteredEmployees(employees);
+    } else {
+      setFilteredEmployees(
+        employees.filter((employee) =>
+          employee.name.toLowerCase().includes(value)
+        )
+      );
+    }
+  }, [employees]);
 
   const changePage = (id: string) => {
     router.push(`/hoursbank-display/employee/${id}`);
@@ -34,14 +66,13 @@ function HoursBank() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-900"
-    style={{
-      background: "linear-gradient(to bottom right,rgb(11, 20, 11),rgb(79, 116, 82))"
-    }}
-    >
+      style={{
+        background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))"
+      }}>
       <div className="w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border relative flex flex-col gap-6">
         <h1 className="text-4xl font-extrabold text-white text-center">Banco de Horas</h1>
 
-        {/* Search Bar */}
+        {/* Barra de Pesquisa */}
         <div className="flex justify-center">
           <div className="relative w-full max-w-md">
             <input
@@ -68,34 +99,35 @@ function HoursBank() {
           </div>
         </div>
 
-        {/* Employees List */}
+        {/* Lista de Funcionários */}
         <div className="p-4 bg-gray-700 rounded-lg shadow-inner">
           <div className="flex justify-between items-center border-b border-gray-600 pb-4">
             <h2 className="text-gray-300 font-semibold">Funcionário</h2>
             <h2 className="text-gray-300 font-semibold">Horas semanais</h2>
           </div>
 
-          <div
-            className="overflow-y-auto mt-4"
-            style={{ maxHeight: '300px' }}
-          >
-            {filteredEmployees.length > 0 ? (
-              filteredEmployees.map((employee) => (
-                <div
-                  key={employee.id}
-                  className="flex justify-between items-center py-3 px-4 bg-gray-800 rounded-md mb-2 cursor-pointer hover:bg-gray-700 transition-all duration-200"
-                  onClick={() => changePage(employee.id)}
-                >
-                  <span className="text-white">{employee.name}</span>
-                  <span className="text-white">
-                    {employee.weeklyHours !== undefined ? `${employee.weeklyHours} hrs` : 'N/A'}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-300 text-center">Nenhum funcionário encontrado.</p>
-            )}
-          </div>
+          {loading ? (
+            <p className="text-gray-300 text-center mt-4">Carregando funcionários...</p>
+          ) : (
+            <div className="overflow-y-auto mt-4" style={{ maxHeight: '300px' }}>
+              {filteredEmployees.length > 0 ? (
+                filteredEmployees.map((employee) => (
+                  <div
+                    key={employee.id}
+                    className="flex justify-between items-center py-3 px-4 bg-gray-800 rounded-md mb-2 cursor-pointer hover:bg-gray-700 transition-all duration-200"
+                    onClick={() => changePage(employee.id)}
+                  >
+                    <span className="text-white">{employee.name}</span>
+                    <span className="text-white">
+                      {employee.weeklyHours !== undefined ? `${employee.weeklyHours} hrs` : 'N/A'}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-300 text-center">Nenhum funcionário encontrado.</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -24,8 +24,8 @@ const VagasForm: React.FC = () => {
       }
     };
 
-    fetchVacancies();
-  }, [setVacancies]);
+    fetchVacancies(); // TODO: o method fetchedVacancies eh async
+  }, [setVacancies]); // TODO: pq passar o setVacancies ?!?
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600">

@@ -58,7 +58,7 @@ export const AddressService = {
     }
   },
 
-  async deleteAddress(id: number): Promise<any> {
+  async deleteAddress(id: number): Promise {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
       return response.data
