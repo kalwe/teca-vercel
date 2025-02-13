@@ -98,7 +98,7 @@ export const VacancyService = {
    * 📜 Obtém todas as vagas
    * @returns {Promise<Vacancy[]>} - Lista de vagas validadas
    */
-  async getAllVacancies(addressData: AddressType) {
+  async getAllVacancies(addressData: AddressType) { // FIXME: porque voce passa "addressData: AddressType" sendo que para buscar todas vagas so precisa chaamar o endpoint sem passar nada, ele vai apenas retornar as vagas
     try {
       const response = await api.post(endpoint, addressData)
       if (response.status == 201)

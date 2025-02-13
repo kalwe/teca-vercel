@@ -27,10 +27,10 @@ export const EmployeeService = {
    * @param {number} id - ID do funcionário
 
    */
-  async getEmployeeById(EmployeeData: EmployeeType) {
+  async getEmployeeById(EmployeeData: EmployeeType) { // FIXME: como voce vai buscar um employee pelo id se passa um "EmployeeType"  e nao adiciona no enpoint?
     try {
       const response = await api.get(endpoint, EmployeeData)
-      if (response.status == 201)
+      if (response.status == 201) // FIXME: o codigo 201 serve apenas para criar, os outros sao 200
         return response.data
 
       // TODO: validar se for erro

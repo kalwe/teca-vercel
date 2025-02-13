@@ -23,10 +23,10 @@ export const AddressService = {
     }
   },
 
-  async getAddressById(addressData: AddressType) {
+  async getAddressById(addressData: AddressType) { // FIXME: como vai buscar um address pelo id se nao passa o id e sim um AddressType e nem junta no enpoint
     try {
       const response = await api.get(endpoint, addressData)
-      if (response.status == 201)
+      if (response.status == 201) // FIXME: codgio 201 e apenas para criar demais sao 200
         return response.data
 
       // TODO: validar se for erro

@@ -74,14 +74,15 @@ export const updateResume = async (endpoint: string, addressData) => {
 
 
 /**
- * Delete a resume by ID.
+ * Delete a resume by ID. // FIXME: como voce vai deletar um resume pelo ID se nos params voce passa um addresData que ate pode vir um id ali, porem voce nao junta com o endpoint na chama do axios "api.delete(endpoint, addressData)", mas tudo bem pq nao usa esse metodo deleteResume em lugar nehum...
  * @param resumeId - The ID of the resume to delete.
  * @returns Promise resolving when the resume is successfully deleted.
  */
+
 export const deleteResume = async (endpoint: string, addressData) => {
   try {
     const response = await api.delete(endpoint, addressData);
-    if (response.status === 201) {
+    if (response.status === 201) { // FIXME: o codigo de retorno 201 significa  que o item foi criado na api, o codigo para deletar "NO_CONTENT = 204"
       return response.data;
     }
 
