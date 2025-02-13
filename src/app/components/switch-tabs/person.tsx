@@ -74,7 +74,7 @@ export function PessoaFisica({
       <h2 className="text-white text-xl font-bold">Pessoa Física</h2>
 
       {[
-        { name: "full_name", label: "Nome Completo", placeholder: "Digite o nome completo" },
+        { name: data.tax_id, label: "Nome Completo", placeholder: "Digite o nome completo" },
         { name: "tax_id", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
         { name: "national_id", label: "RG", placeholder: "Digite o RG" },
         { name: "issuing_body", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },

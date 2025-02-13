@@ -39,7 +39,7 @@ export const AddressService = {
     }
   },
 
-  async getAllAddresses(): Promise<any[]> {
+  async getAllAddresses(): Promise[] {
     try {
       const response = await api.get(endpoint)
       return response.data
@@ -51,7 +51,7 @@ export const AddressService = {
     }
   },
 
-  async updateAddress(id: number, addressData: any): Promise<any> {
+  async updateAddress(id: number, addressData): Promise {
     try {
       const response = await api.put(`${endpoint}/${id}`, addressData)
       return response.data
@@ -63,7 +63,7 @@ export const AddressService = {
     }
   },
 
-  async deleteAddress(id: number): Promise<any> {
+  async deleteAddress(id: number): Promise {
     try {
       // const response = await api.delete(`${endpoint}/${id}`)
       // return response.data
