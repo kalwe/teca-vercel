@@ -30,28 +30,23 @@ export const AddressService = {
         return response.data
 
       // TODO: validar se for erro
-
-      // const createdMock = getAddressByIdMock(addressData)
-      // return createdMock
     } catch (error) {
-      console.error("Erro ao criar endereço:", error)
+      console.error("Erro ao pegar endereço:", error)
       throw error
     }
   },
 
-  async getAllAddresses(): Promise<any[]> {
+  async getAllAddresses(): Promise<any[]> { // TODO: muito importante verificar se pega o retorno da primisse ao chamar esse metodo
     try {
       const response = await api.get(endpoint)
       return response.data
-      // const getAllMock = getAllAddressesMock()
-      // return getAllMock
     } catch (error) {
       console.error("Erro ao buscar todos os endereços:", error)
       throw error
     }
   },
 
-  async updateAddress(id: number, addressData: any): Promise<any> {
+  async updateAddress(id: number, addressData: any): Promise<any> { // TODO: remove "addressData: any" and use "addressData: AddressType"
     try {
       const response = await api.put(`${endpoint}/${id}`, addressData)
       return response.data
@@ -65,10 +60,8 @@ export const AddressService = {
 
   async deleteAddress(id: number): Promise<any> {
     try {
-      // const response = await api.delete(`${endpoint}/${id}`)
-      // return response.data
-      const deletedMock = deleteAddressMock(id)
-      return deletedMock
+      const response = await api.delete(`${endpoint}/${id}`)
+      return response.data
     } catch (error) {
       console.error("Erro ao deletar endereço:", error)
       throw error

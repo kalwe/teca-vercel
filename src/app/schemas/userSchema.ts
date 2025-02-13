@@ -1,9 +1,11 @@
 import { z } from "zod";
 import axios from "axios";
+import { UserType, userOutputSchema, userInputSchema } from "./schemas";
+
 
 //  URL base da API (substitua pelo seu endpoint real)
 const API_URL = "https://api.example.com/users";
-const api = "/user"
+
 
 //  Base Schema (simula BaseModel do Pydantic)
 export const baseSchema = z.object({
@@ -70,69 +72,99 @@ export type UserFormProps = {
 //  API Service utilizando `axios` (CRUD completo)
 // =================================================
 
-export const UserService = {
-  // Criar usuário (POST)
-  async createUser(userData: UserType) {
-    try {
-      const response = await api.post(endpoint, userData);
-      if (response.status === 201) return response.data;
 
-      console.error("❌ Erro ao criar usuário. Resposta inesperada:", response.status);
-      return null;
+export const UserService = {
+  /**
+   * Cria um novo usuário com validação
+   * @param {UserType} userData - Dados do usuário
+   * @returns {Promise<UserType>} - Resposta da API validada
+   */
+  async createUser(userData: UserType): Promise<UserType> {
+    try {
+      const response = await axios.post(API_URL, userData, {
+        validateStatus: status => status === 201,
+      });
+
+      return userOutputSchema.parse(response.data);
     } catch (error) {
-      console.error("❌ Erro ao criar usuário:", error);
-      throw error;
+      console.error("Erro ao criar usuário:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao criar usuário.");
     }
   },
 
-  // Buscar todos os usuários (GET)
-  async getUsers() {
+  /**
+   * Busca todos os usuários
+   * @returns {Promise<UserType[]>} - Lista de usuários validados
+   */
+  async getUsers(): Promise<UserType[]> {
     try {
-      const response = await api.get(endpoint);
+      const response = await axios.get(API_URL, {
+        validateStatus: status => status === 200,
+      });
+
       return response.data;
     } catch (error) {
-      console.error("❌ Erro ao buscar usuários:", error);
-      throw error;
+      console.error("Erro ao buscar usuários:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao buscar usuários.");
     }
   },
 
-  // Buscar usuário por ID (GET)
-  async getUserById(userId: number) {
+  /**
+   * Busca um usuário pelo ID
+   * @param {number} userId - ID do usuário
+   * @returns {Promise<UserType>} - Dados do usuário validados
+   */
+  async getUserById(userId: number): Promise<UserType> {
+    if (!userId) throw new Error("ID inválido fornecido para buscar usuário.");
     try {
-      const response = await axios.get(`${API_URL}/${userId}`);
+      const response = await axios.get(`${API_URL}/${userId}`, {
+        validateStatus: status => status === 200,
+      });
+
       return userOutputSchema.parse(response.data);
     } catch (error) {
-      console.error("❌ Erro ao buscar usuário por ID:", error);
-      throw error;
+      console.error("Erro ao buscar usuário por ID:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao buscar usuário.");
     }
   },
 
-  // Atualizar usuário (PUT)
-  async updateUser(userId: number, userData: Partial<z.infer<typeof userInputSchema>>) {
+  /**
+   * Atualiza um usuário existente com validação
+   * @param {number} userId - ID do usuário
+   * @param {Partial<z.infer<typeof userInputSchema>>} userData - Novos dados do usuário
+   * @returns {Promise<UserType>} - Dados atualizados validados
+   */
+  async updateUser(userId: number, userData: Partial<z.infer<typeof userInputSchema>>): Promise<UserType> {
+    if (!userId) throw new Error("ID inválido fornecido para atualizar usuário.");
     try {
       const validatedData = userInputSchema.partial().parse(userData);
-      const response = await axios.put(`${API_URL}/${userId}`, validatedData);
+      const response = await axios.put(`${API_URL}/${userId}`, validatedData, {
+        validateStatus: status => status === 200,
+      });
+
       return userOutputSchema.parse(response.data);
     } catch (error) {
-      console.error("❌ Erro ao atualizar usuário:", error);
-      throw error;
+      console.error("Erro ao atualizar usuário:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao atualizar usuário.");
     }
   },
 
-  // Excluir usuário (DELETE)
-  async deleteUser(userId: number): Promise<boolean> {
+  /**
+   * Exclui um usuário pelo ID
+   * @param {number} userId - ID do usuário a ser removido
+   * @returns {Promise<void>} - Confirmação da exclusão
+   */
+  async deleteUser(userId: number): Promise<void> {
+    if (!userId) throw new Error("ID inválido fornecido para deletar usuário.");
     try {
-      const response = await axios.delete(`${API_URL}/${userId}`);
+      await axios.delete(`${API_URL}/${userId}`, {
+        validateStatus: status => status === 204,
+      });
 
-      if (response.status === 200 || response.status === 204) {
-        return true;
-      }
-
-      console.error(` Erro ao excluir usuário. Resposta inesperada: ${response.status}`);
-      return false;
+      // Retorno void porque `204 No Content` não tem corpo de resposta
     } catch (error) {
-      console.error(" Erro ao excluir usuário:", error);
-      return false;
+      console.error("Erro ao excluir usuário:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao excluir usuário.");
     }
   },
 };

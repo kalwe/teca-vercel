@@ -1,63 +1,69 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { PessoaFisica } from "../switch-tabs/person";
-import { Funcionario } from "../switch-tabs/employee";
-import { Address } from "../switch-tabs/address";
-import { Contact } from "../switch-tabs/Contact";
-import { Bank } from "../switch-tabs/bank";
-import { Clothing } from "../switch-tabs/clothing";
-import { ContractFormProps } from "@/app/types/employee";
+import { useState } from "react"
+import { PessoaFisica } from "../switch-tabs/person"
+import { Funcionario } from "../switch-tabs/employee"
+import { Address } from "../switch-tabs/address"
+import { Contact } from "../switch-tabs/Contact"
+import { Bank } from "../switch-tabs/bank"
+import { Clothing } from "../switch-tabs/clothing"
+import { ContractFormProps } from "@/app/types/employee"
 
+// TODO: verificar em:
+//    /app/(routes)/contract-display/page.tsx
+//    /app/(routes)/contract-display/[id]/page.tsx
+//  os parametros que estao sendo passados
+//  pois esta definido um objeto {} do tipo ContractFormProps, porem esta faltando onSave, onCancel
 export default function ContractForm({ mode, employeeData, isEditable }: ContractFormProps) {
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(0)
 
-  const [pessoaFisica, setPessoaFisica] = useState(employeeData?.pessoaFisica ?? {});
-  const [funcionario, setFuncionario] = useState(employeeData?.funcionario ?? {});
-  const [address, setAddress] = useState(employeeData?.address ?? {});
-  const [contact, setContact] = useState(employeeData?.contact ?? {});
-  const [bankAccount, setBankAccount] = useState(employeeData?.bank_account ?? {});
-  const [clothing, setClothing] = useState(employeeData?.clothing ?? {});
+  const [pessoaFisica, setPessoaFisica] = useState(employeeData?.pessoaFisica ?? {})
+  const [funcionario, setFuncionario] = useState(employeeData?.funcionario ?? {})
+  const [address, setAddress] = useState(employeeData?.address ?? {})
+  const [contact, setContact] = useState(employeeData?.contact ?? {})
+  const [bankAccount, setBankAccount] = useState(employeeData?.bank_account ?? {})
+  const [clothing, setClothing] = useState(employeeData?.clothing ?? {})
 
   const tabs = [
+    // TODO: ajustar pessoaFisica e funcionario tudo dentro de employee
     { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica },
     { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario },
     { name: "ENDEREÇO", component: Address, state: address, setState: setAddress },
     { name: "CONTATO", component: Contact, state: contact, setState: setContact },
     { name: "DADOS BANCÁRIOS", component: Bank, state: bankAccount, setState: setBankAccount },
     { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing },
-  ];
+  ]
 
-  const CurrentComponent = tabs[selectedTab]?.component as React.ElementType;
-  const currentState = tabs[selectedTab]?.state;
+  const CurrentComponent = tabs[selectedTab]?.component as React.ElementType
+  const currentState = tabs[selectedTab]?.state
 
   const handleInputChange = (data: Record<string, unknown>) => {
     switch (selectedTab) {
       case 0:
-        setPessoaFisica((prev) => ({ ...prev, ...data }));
-        break;
+        setPessoaFisica((prev) => ({ ...prev, ...data }))
+        break
       case 1:
-        setFuncionario((prev) => ({ ...prev, ...data }));
-        break;
+        setFuncionario((prev) => ({ ...prev, ...data }))
+        break
       case 2:
-        setAddress((prev) => ({ ...prev, ...data }));
-        break;
+        setAddress((prev) => ({ ...prev, ...data }))
+        break
       case 3:
-        setContact((prev) => ({ ...prev, ...data }));
-        break;
+        setContact((prev) => ({ ...prev, ...data }))
+        break
       case 4:
-        setBankAccount((prev) => ({ ...prev, ...data }));
-        break;
+        setBankAccount((prev) => ({ ...prev, ...data }))
+        break
       case 5:
-        setClothing((prev) => ({ ...prev, ...data }));
-        break;
+        setClothing((prev) => ({ ...prev, ...data }))
+        break
       default:
-        console.error("Erro: Aba inválida selecionada.");
+        console.error("Erro: Aba inválida selecionada.")
     }
-  };
+  }
 
-  const handleNextTab = () => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
-  const handlePrevTab = () => setSelectedTab((prev) => Math.max(prev - 1, 0));
+  const handleNextTab = () => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))
+  const handlePrevTab = () => setSelectedTab((prev) => Math.max(prev - 1, 0))
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
@@ -98,5 +104,5 @@ export default function ContractForm({ mode, employeeData, isEditable }: Contrac
         </div>
       </div>
     </div>
-  );
+  )
 }

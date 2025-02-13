@@ -6,7 +6,6 @@ export type ClothingType = {
 }
 
 export type ClothingProps = {
-    // TODO: type?
     data: ClothingType
     onChange: (updatedData: ClothingProps["data"]) => void
     mode: "add" | "edit" | "view" | "create"

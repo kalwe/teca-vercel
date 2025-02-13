@@ -8,6 +8,7 @@ export interface Vacancy {
     salary: number;
 }
 
+// TODO: nunca usado
 export interface VacancyResponse {
     id: number;
     quantity: number;
@@ -21,6 +22,7 @@ export interface VacancyResponse {
 }
 
 
+// TODO: temos redundancia de 'VacancyContextProps' em vacancySchema
 export interface VacancyContextProps {
     vacancies: Vacancy[];
     set_vacancies: React.Dispatch<React.SetStateAction<Vacancy[]>>; // ✅ Add this line

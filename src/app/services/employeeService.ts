@@ -1,5 +1,7 @@
-import { getEmployeeByIdMock } from "../../../tests/api/employeeMock";
 import api from "./api"; // Importa a instância do Axios configurada
+
+// TODO: create const for endpoint
+
 
 export const EmployeeService = {
   /**
@@ -22,10 +24,10 @@ export const EmployeeService = {
       throw error
     }
   },
+
   /**
    * Busca um funcionário por ID
    * @param {number} id - ID do funcionário
-
    */
   async getEmployeeById(EmployeeData: EmployeeType) { // FIXME: como voce vai buscar um employee pelo id se passa um "EmployeeType"  e nao adiciona no enpoint?
     try {
@@ -47,9 +49,9 @@ export const EmployeeService = {
    * Busca todos os funcionários cadastrados
    * @returns {Promise} - Lista de funcionários
    */
-  getAllEmployees: async (page: number) => {
+  getAllEmployees: async (page: number) => { // TODO: odne voce usa page?
     try {
-      const response = await api.get("/employee");
+      const response = await api.get("/employee"); // TODO: usar "const endpoint = '/employee' " em api.delete()
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar todos os funcionários:", error);
@@ -65,7 +67,7 @@ export const EmployeeService = {
    */
   updateEmployee: async (id: number, employeeData) => {
     try {
-      const response = await api.put(`/employee/${id}`, employeeData);
+      const response = await api.put(`/employee/${id}`, employeeData); // TODO: usar "const endpoint = '/employee' " em api.delete()
       return response.data;
     } catch (error) {
       console.error("Erro ao atualizar funcionário:", error);
@@ -78,9 +80,11 @@ export const EmployeeService = {
    * @param {number} id - ID do funcionário a ser removido
    * @returns {Promise} - Confirmação da exclusão
    */
+  // TODO: declarar deleteEmployee como methodo, dessa forma voce esta typando, varios estao assim
+  // user "async deleteEmployee(id: number) {""
   deleteEmployee: async (id: number) => {
     try {
-      const response = await api.delete(`/employee/${id}`);
+      const response = await api.delete(`/employee/${id}`); // TODO: usar "const endpoint = '/employee' " em api.delete()
       return response.data;
     } catch (error) {
       console.error("Erro ao deletar funcionário:", error);

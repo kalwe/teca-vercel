@@ -1,7 +1,7 @@
 import { z } from "zod";
-import api from "../services/api";
+import { axios } from "axios"
 
-// 🔹 Esquema de validação para Vaga
+//  Esquema de validação para Vaga
 export const vacancySchema = z.object({
   id: z.number().optional(), // Permite ID opcional para criação
   quantity: z.number().min(1, "A quantidade deve ser pelo menos 1"),
@@ -34,11 +34,11 @@ export const vacancySchema = z.object({
   salary: z.number().positive("O salário deve ser um valor positivo."),
 });
 
-// 🔹 Tipo inferido do esquema de vaga
+//  Tipo inferido do esquema de vaga
 export type Vacancy = z.infer<typeof vacancySchema>;
 
-// 🔹 Função para sanitizar os dados antes do envio
-export const sanitizeVacancy = (data: any): Vacancy => {
+//  Função para sanitizar os dados antes do envio
+export const sanitizeVacancy = (data): Vacancy => {
   return vacancySchema.parse({
     id: data.id,
     quantity: data.quantity,
@@ -50,98 +50,127 @@ export const sanitizeVacancy = (data: any): Vacancy => {
   });
 };
 
-// 🔹 Definição do Contexto de Vagas
+const responseValidateStatus = (status, validStatus) => {
+  return status === validStatus
+}
+
+//  Definição do Contexto de Vagas
+// TODO: duplicado em vacancyType
 export interface VacancyContextProps {
   vacancies: Vacancy[];
-  set_vacancies: React.Dispatch<React.SetStateAction<Vacancy[]>>;
+  set_vacancies: React.Dispatch<React.SetStateAction<Vacancy[]>>; // TODO: oq isso faz exatamente? "React.Dispatch<React.SetStateAction<Vacancy[]>>"
   add_vacancy: (vacancy: Vacancy) => Promise<void>;
   update_vacancy: (id: number, updates: Partial<Vacancy>) => Promise<void>;
   remove_vacancy: (id: number) => Promise<void>;
+  // TODO: add_vacancy, update_vacancy e remove_vacancy nunca sao usados
 }
 
-// 🔹 Serviço de API para Vagas
-const endpoint = "/vacancy";
+const endpoint = '/address' // TODO: set 'vacancy' endpoint name
 
 export const VacancyService = {
+
   /**
-   * 🔥 Cria uma nova vaga com validação
+   * Cria uma nova vaga com validação
    * @param {Vacancy} vacancyData - Dados da vaga
    * @returns {Promise<Vacancy>} - Resposta da API validada
    */
   async createVacancy(vacancyData: Vacancy): Promise<Vacancy> {
     try {
       const validatedData = sanitizeVacancy(vacancyData);
-      const response = await api.post(endpoint, validatedData);
+      const response = await axios.post(endpoint, validatedData, {
+        validateStatus: responseValidateStatus(status, 201),
+      });
+
       return vacancySchema.parse(response.data);
-    } catch (error) {
-      console.error("❌ Erro ao criar vaga:", error);
-      throw new Error("Erro ao criar vaga.");
+    } catch (error) { // TODO: verificar se "error" contem variavel response 'error.response'
+      console.error("Erro ao criar vaga:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao criar vaga.");
     }
   },
 
   /**
-   * 🔍 Busca uma vaga pelo ID
+   * Busca uma vaga pelo ID
    * @param {number} id - ID da vaga
-   * @returns {Promise<Vacancy>} - Dados da vaga validada
+   * @returns {Promise<Vacancy>} - Dados da vaga validados
    */
   async getVacancyById(id: number): Promise<Vacancy> {
+    if (!id) throw new Error("ID inválido fornecido para buscar vaga.");
     try {
-      const response = await api.get(`${endpoint}/${id}`);
+      const response = await axios.get(`${endpoint}/${id}`, {
+        validateStatus: responseValidateStatus(status, 200),
+      });
+
       return vacancySchema.parse(response.data);
     } catch (error) {
-      console.error("❌ Erro ao buscar vaga:", error);
-      throw new Error("Erro ao buscar vaga.");
+      console.error("Erro ao buscar vaga:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao buscar vaga.");
     }
   },
 
   /**
-   * 📜 Obtém todas as vagas
+   * Obtém todas as vagas
    * @returns {Promise<Vacancy[]>} - Lista de vagas validadas
    */
-  async getAllVacancies(addressData: AddressType) { // FIXME: porque voce passa "addressData: AddressType" sendo que para buscar todas vagas so precisa chaamar o endpoint sem passar nada, ele vai apenas retornar as vagas
+  // FIXME: porque voce passa "addressData: AddressType" sendo que para buscar todas vagas so precisa chaamar o endpoint sem passar nada, ele vai apenas retornar as vagas
+  async getAllVacancies(): Promise<Vacancy[]> {
     try {
-      const response = await api.post(endpoint, addressData)
-      if (response.status == 201)
-        return response.data
+      const response = await axios.get(endpoint, {
+        validateStatus: responseValidateStatus(status, 200),
+      });
 
-      // TODO: validar se for erro
-
-      // const createdMock = createAddressMock(addressData)
-      // return createdMock
+      return response.data;
     } catch (error) {
-      console.error("Erro ao criar endereço:", error)
-      throw error
+      console.error("Erro ao buscar todas as vagas:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao buscar vagas.");
     }
   },
+
   /**
-   * 🔄 Atualiza uma vaga existente com validação
+   * Atualiza uma vaga existente com validação
    * @param {number} id - ID da vaga
    * @param {Partial<Vacancy>} vacancyData - Novos dados da vaga
    * @returns {Promise<Vacancy>} - Dados atualizados validados
    */
   async updateVacancy(id: number, vacancyData: Partial<Vacancy>): Promise<Vacancy> {
+    if (!id) throw new Error("ID inválido fornecido para atualizar vaga.");
     try {
-      const validatedData = sanitizeVacancy({ ...vacancyData, id });
-      const response = await api.put(`${endpoint}/${id}`, validatedData);
+      const validatedData = sanitizeVacancy(vacancyData);
+      const response = await axios.put(`${endpoint}/${id}`, validatedData, {
+        validateStatus: responseValidateStatus(status, 200),
+      });
+
       return vacancySchema.parse(response.data);
     } catch (error) {
-      console.error("❌ Erro ao atualizar vaga:", error);
-      throw new Error("Erro ao atualizar vaga.");
+      console.error("Erro ao atualizar vaga:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao atualizar vaga.");
     }
   },
 
   /**
-   * 🗑️ Exclui uma vaga pelo ID
+   * Exclui uma vaga pelo ID
    * @param {number} id - ID da vaga a ser removida
-   * @returns {Promise<{ success: boolean }>} - Confirmação da exclusão
+   * @returns {Promise<void>} - Confirmação da exclusão
    */
-  async deleteVacancy(id: number): Promise<{ success: boolean }> {
+  async deleteVacancy(id: number): Promise<void> {
+    if (!id) throw new Error("ID inválido fornecido para deletar vaga.");
     try {
-      await api.delete(`${endpoint}/${id}`);
-      return { success: true };
+      await axios.delete(`${endpoint}/${id}`, {
+        validateStatus: responseValidateStatus(status, 204),
+      });
+
+      // TODO: return a json:
+      //
+      // {
+      //   "id": 1,
+      //   "version": 32,
+      //   "is_active": false,
+      //   "deleted_at": "00/01/9999 15:35:48"
+      // }
+
+      // Retornamos void porque `204 No Content` não tem corpo de resposta
     } catch (error) {
-      console.error("❌ Erro ao deletar vaga:", error);
-      throw new Error("Erro ao deletar vaga.");
+      console.error("Erro ao deletar vaga:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Erro ao deletar vaga.");
     }
   },
 };

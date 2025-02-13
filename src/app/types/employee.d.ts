@@ -4,18 +4,19 @@ import { Address } from "./address"
 import { BankAccount } from "./BankAccount"
 import { Clothing } from "./clothing"
 import { Contact } from "./contact"
-import { Function } from "./role"
+import { Function } from "./role" // TODO: change file name and or create another for Function
 
+// TODO: remover bank_account, funcionario, pessoaFisica
 export type EmployeeType = {
   bank_account: {}
   funcionario: {}
   pessoaFisica: {}
-  active: any
+  is_active: boolean
   position: string
-  full_name: ReactNode
+  full_name: string
   id: number
-  person: any
-  role: any
+  person: any // TODO: mergear os fields
+  role: any // TODO: tipar corretamente
   name: string // First name of the employee
   registration: string // Registration number of the employee
   supervisor: boolean // Indicates if the employee is a supervisor
@@ -46,11 +47,6 @@ export interface ContractFormProps {
   isEditable: boolean
 }
 
-const dataEmployee: EmployeeType = EmployeeSchema.parser(data)
-onSave(dataEmployee)
-  .then(data => { print(data)})
-  .catch(err => console.log(err))
-
 // Masks
 
 
@@ -69,8 +65,8 @@ export interface BirthDayMaskProps {
 
 export interface CepMaskProps {
 value: string
-onChange: (value: string) => void
-disabled?: boolean // Permite desabilitar o campo, se necessário
+  onChange: (value: string) => void
+  disabled?: boolean // Permite desabilitar o campo, se necessário
 }
 
 
@@ -81,16 +77,16 @@ export interface PhoneMaskProps {
 }
 
 export interface QuantityMaskProps {
-value: number // Valor inicial da quantidade
-onChange: (newQuantity: number) => void // Função chamada quando a quantidade muda
-min?: number // Valor mínimo permitido (opcional, padrão: 0)
-max?: number // Valor máximo permitido (opcional, padrão: Infinity)
+  value: number // Valor inicial da quantidade
+  onChange: (newQuantity: number) => void // Função chamada quando a quantidade muda
+  min?: number // Valor mínimo permitido (opcional, padrão: 0)
+  max?: number // Valor máximo permitido (opcional, padrão: Infinity)
 }
 
 export interface RgMaskProps {
-value: string
-onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-disabled?: boolean // Propriedade opcional para desativar o campo
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  disabled?: boolean // Propriedade opcional para desativar o campo
 }
 
 export interface MoneyInputProps {

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import type { ClothingProps, ClothingType } from "@/app/types/clothing"
 import { ClothingService } from "@/app/services/clothingService"
 import { clothingSchema } from "@/app/schemas/clothingSchema"
@@ -10,13 +11,14 @@ export function Clothing({
   data = {},
   onChange,
   isEditable,
-  onNext,
+
   onPrev,
-  employee, // Mantendo mesmo padrão do Address.tsx
+  employee,
 }: ClothingProps) {
 
   const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof ClothingType, string>>>({})
+  const router = useRouter();
 
   const handleInputChange = (field: string, value: string) => {
     const updatedData = { ...data, [field]: value };
@@ -43,7 +45,9 @@ export function Clothing({
     try {
       const createdClothing = await ClothingService.createClothing({ ...data, employee })
       console.log(createdClothing)
-      onNext()
+
+      router.push("/contract-display/employee");
+
     } catch (error) {
       alert("Erro ao cadastrar vestuário. Verifique os campos.")
       console.error(error)
@@ -85,7 +89,7 @@ export function Clothing({
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           disabled={!isNextEnabled}
         >
-          Próximo
+          Salvar
         </button>
       </div>
     </div>

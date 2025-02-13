@@ -18,31 +18,34 @@ export function Address({
   const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof AddressType, string>>>({})
 
+  // TODO: identar corretamente
   const handleInputChange = (field: string, value: string) => {
-    const updatedData = { ...data, [field]: value };
+  const updatedData = { ...data, [field]: value } // TODO: remover linha vazia abaixo
 
     try {
-      addressSchema.parse(updatedData); // Valida os dados
-      setErrors({}); // Limpa os erros ao preencher corretamente
-      setIsNextEnabled(true);
+      addressSchema.parse(updatedData) // Valida os dados
+      setErrors({}) // Limpa os erros ao preencher corretamente TODO: teria que limpar o erro corrigido
+      setIsNextEnabled(true)
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, string> = {}
         error.errors.forEach((e) => {
-          newErrors[e.path[0]] = e.message;
-        });
-        setErrors(newErrors);
-        setIsNextEnabled(false);
+          newErrors[e.path[0]] = e.message
+        })
+        setErrors(newErrors)
+        setIsNextEnabled(false)
       }
     }
 
-    onChange(updatedData);
-  };
+    onChange(updatedData)
+  }
 
   const handleSave = async () => {
     try {
+      // TODO: 'data' nunca eh validada, pode ser feito no handleInputChange() de preferencia
       const createdAddress = await AddressService.createAddress({ ...data, employee })
       console.log(createdAddress)
+      // TODO: poderia usar onChange() para atribuir o novo valor, dessa forma continua com o antigo
       onNext()
     } catch (error) {
       alert("Erro ao criar endereço. Verifique os campos.")

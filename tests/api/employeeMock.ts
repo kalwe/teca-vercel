@@ -27,7 +27,6 @@ enum MaritalStatusEnum {
   WIDOWER = "Viúvo",
 }
 
-
 type PersonType = {
   full_name: string
   tax_id: string
@@ -83,7 +82,7 @@ export function getEmployeeByIdMock(id: number): EmployeeTypeMock | null {
     return employeeList.find(employee => employee.id === id) || null
 }
 
-// function getAllEmployeees(): EmployeeSchema[] {
+// function getAllEmployees(): EmployeeSchema[] {
 export function getAllEmployeesMock(): EmployeeTypeMock[] {
     return employeeList
 }

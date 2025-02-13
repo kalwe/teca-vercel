@@ -11,7 +11,7 @@ const VagasForm: React.FC = () => {
   const router = useRouter();
 
   /**
-   * 🚀 Carrega as vagas automaticamente ao abrir a página
+   * Carrega as vagas automaticamente ao abrir a página
    */
   useEffect(() => {
     const fetchVacancies = async () => {
@@ -20,7 +20,7 @@ const VagasForm: React.FC = () => {
         if (!Array.isArray(fetchedVacancies)) throw new Error("Dados inválidos recebidos.");
         setVacancies(fetchedVacancies);
       } catch (error) {
-        console.error("❌ Erro ao buscar vagas:", error);
+        console.error("Erro ao buscar vagas:", error);
       }
     };
 

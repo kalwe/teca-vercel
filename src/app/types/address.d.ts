@@ -9,7 +9,7 @@ export type AddressType = {
 }
 
 export type AddressProps = {
-  data?: Partial<Address>
+  data?: Partial<Address> // TODO: o correto seria AddressType?, o mesmo abaixo em AddressData ?!?
   onChange: (updatedData: AddressData) => void // TODO: dafuck come from AddressData ?!?
   isEditable: boolean
   onNext: () => void
