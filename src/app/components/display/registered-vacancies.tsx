@@ -24,7 +24,7 @@ const VagasForm: React.FC = () => {
       }
     };
 
-    fetchVacancies(); // TODO: o method fetchedVacancies eh async
+    await fetchVacancies(); // TODO: o method fetchedVacancies eh async
   }, [setVacancies]); // TODO: pq passar o setVacancies ?!?
 
   return (

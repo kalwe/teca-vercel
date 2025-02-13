@@ -23,8 +23,9 @@ export function Address({
   const updatedData = { ...data, [field]: value } // TODO: remover linha vazia abaixo
 
     try {
-      addressSchema.parse(updatedData) // Valida os dados
-      setErrors({}) // Limpa os erros ao preencher corretamente TODO: teria que limpar o erro corrigido
+      const validatedAddress = addressSchema.parse(updatedData) // Valida os dados
+      data = validatedAddress
+      setErrors({}) // Limpa os erros ao pr eencher corretamente TODO: teria que limpar o erro corrigido
       setIsNextEnabled(true)
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -44,8 +45,8 @@ export function Address({
     try {
       // TODO: 'data' nunca eh validada, pode ser feito no handleInputChange() de preferencia
       const createdAddress = await AddressService.createAddress({ ...data, employee })
-      console.log(createdAddress)
       // TODO: poderia usar onChange() para atribuir o novo valor, dessa forma continua com o antigo
+      onChange(createdAddress)
       onNext()
     } catch (error) {
       alert("Erro ao criar endereço. Verifique os campos.")
