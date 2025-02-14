@@ -3,7 +3,7 @@
 import "react-datepicker/dist/react-datepicker.css";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { cvSchema, CvService } from "@/app/schemas/cvSchema";
+import { resumeSchema, ResumeService } from "@/app/schemas/resumeSchema";
 import { z } from "zod";
 import { useEffect } from "react";
 
@@ -14,14 +14,14 @@ import { CpfMask } from "../masks/cpf";
 import CepMask from "../masks/cep";
 import BirthDayMask from "../masks/birthday";
 import { PhoneMask } from "../masks/phone";
-import { CvFormProps } from "@/app/schemas/cvSchema";
+import { ResumeFormProps } from "@/app/schemas/resumeSchema";
 
-function CvForm({ mode, curriculoData }: CvFormProps) {
+function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
   const router = useRouter();
 
   // Estado do formulário com fallback para valores vazios
-  const [formData, setFormData] = useState<z.infer<typeof cvSchema>>(
-    curriculoData || {} as z.infer<typeof cvSchema>
+  const [formData, setFormData] = useState<z.infer<typeof resumeSchema>>(
+    curriculoData || {} as z.infer<typeof resumeSchema>
   );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -30,11 +30,11 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
 
 
   // Atualiza os campos do formulário e faz a validação instantânea
-  const handleChange = useCallback(<K extends keyof z.infer<typeof cvSchema>>(key: K, value: z.infer<typeof cvSchema>[K]) => {
+  const handleChange = useCallback(<K extends keyof z.infer<typeof resumeSchema>>(key: K, value: z.infer<typeof resumeSchema>[K]) => {
     const updatedData = { ...formData, [key]: value };
 
     try {
-      cvSchema.parse(updatedData); // Validação
+      resumeSchema.parse(updatedData); // Validação
       setErrors({});
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -73,7 +73,7 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
       const formDataToSend = new FormData();
       formDataToSend.append("file", file);
 
-      await CvService.uploadCvFile(formDataToSend);
+      await ResumeService.uploadResumeFile(formDataToSend);
       alert("✅ Currículo enviado com sucesso!");
     } catch (error) {
       console.error("❌ Erro ao salvar currículo:", error);
@@ -118,8 +118,8 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
               <div key={key}>
                 <input
                   type={type}
-                  value={formData[key as keyof z.infer<typeof cvSchema>] || ""}
-                  onChange={(e) => handleChange(key as keyof z.infer<typeof cvSchema>, e.target.value)}
+                  value={formData[key as keyof z.infer<typeof resumeSchema>] || ""}
+                  onChange={(e) => handleChange(key as keyof z.infer<typeof resumeSchema>, e.target.value)}
                   placeholder={placeholder}
                   className={`w-full px-4 py-2 border ${errors[key] ? "border-red-500" : "border-gray-300"} rounded-lg bg-gray-50`}
                 />
@@ -141,7 +141,7 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              onClick={() => router.push("/curriculo-display/visualize-cv")}
+              onClick={() => router.push("/curriculo-display/visualize-resume")}
               className="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600"
             >
               Cancelar
@@ -161,4 +161,4 @@ function CvForm({ mode, curriculoData }: CvFormProps) {
   );
 }
 
-export default CvForm;
+export default ResumeForm;

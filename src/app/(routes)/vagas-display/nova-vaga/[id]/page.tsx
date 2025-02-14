@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Vacancy, vacancySchema } from "@/app/schemas/vacancySchema";
 import { VacancyService } from "@/app/services/vacancyService";
-import NovaVagaForm from "@/app/components/display/newVacancy-form";
+import NovanewVacancyForm from "@/app/components/display/newVacancy-form";
 import { Navigation } from "@/app/components/navigation/navigation";
 import { z } from "zod";
 
@@ -32,7 +32,7 @@ export default function EditVacancyPage() {
         if (vacancy) {
           setVacancyData(vacancy);
         } else {
-          alert("Vaga não encontrada. Redirecionando...");
+          alert("Vacancy não encontrada. Redirecionando...");
           router.replace("/vagas-display/");
         }
       } catch (error) {
@@ -56,7 +56,7 @@ export default function EditVacancyPage() {
       // Atualiza vaga via API (PUT)
       await VacancyService.updateVacancy(validatedData.id, validatedData);
 
-      alert("Vaga atualizada com sucesso.");
+      alert("Vacancy atualizada com sucesso.");
       router.push("/vagas-display/");
     } catch (error) {
       console.error("Erro ao atualizar vaga:", error.response?.data || error.message);
@@ -84,7 +84,7 @@ export default function EditVacancyPage() {
     <div className="mx-auto mt-10">
       <Navigation />
       {vacancyData ? (
-        <NovaVagaForm
+        <NovanewVacancyForm
           vacancyData={vacancyData}
           setVacancyData={setVacancyData}
           onSave={handleSave}

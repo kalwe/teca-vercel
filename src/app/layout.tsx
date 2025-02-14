@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { EmployeeProvider } from "@/app/context/EmployeeContext";
-import { VagasProvider } from "@/app/context/VagasContext";
-import { CvProvider } from "./context/CurriculoContext";
+import { VacancyProvider } from "@/app/context/VacancyContext";
+import { ResumeProvider } from "./context/CurriculoContext";
 import { ReminderProvider } from "@/app/context/ReminderContext";
 import { UserProvider } from "@/app/context/UserContext";
 import { HoursBankProvider } from "@/app/context/HoursBankContext"; // Added HoursBankProvider
@@ -33,13 +33,13 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
     <UserProvider>
 
         <EmployeeProvider>
-          <VagasProvider>
-            <CvProvider>
+          <VacancyProvider>
+            <ResumeProvider>
               <ReminderProvider>
                 <HoursBankProvider>{children}</HoursBankProvider>
               </ReminderProvider>
-            </CvProvider>
-          </VagasProvider>
+            </ResumeProvider>
+          </VacancyProvider>
         </EmployeeProvider>
 
     </UserProvider>

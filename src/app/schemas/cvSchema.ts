@@ -17,7 +17,7 @@ export enum ScholarityType {
 }
 
 // Schema de CV
-export const cvSchema = z.object({
+export const resumeSchema = z.object({
   id: z
     .number()
     .int()
@@ -81,14 +81,14 @@ export const cvSchema = z.object({
     }),
 });
 
-export interface CvFormProps {
+export interface ResumeFormProps {
   mode: "edit" | "create";
-  curriculoData?: Cv;
-  onSave: (updatedData: Cv) => Promise<void>; // Callback para salvar
+  curriculoData?: Resume;
+  onSave: (updatedData: Resume) => Promise<void>; // Callback para salvar
   onCancel: () => void; // Callback para cancelar
   loading: boolean; // Indica estado de carregamento
 }
 
 
 // Tipos inferidos do schema
-export type Cv = z.infer<typeof cvSchema>;
+export type Resume = z.infer<typeof resumeSchema>;

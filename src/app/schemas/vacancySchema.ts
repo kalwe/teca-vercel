@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { axios } from "axios"
 
-//  Esquema de validação para Vaga
+//  Esquema de validação para Vacancy
 export const vacancySchema = z.object({
   id: z.number().optional(), // Permite ID opcional para criação
   quantity: z.number().min(1, "A quantidade deve ser pelo menos 1"),
@@ -54,7 +54,7 @@ const responseValidateStatus = (status, validStatus) => {
   return status === validStatus
 }
 
-//  Definição do Contexto de Vagas
+//  Definição do Contexto de Vacancy
 // TODO: duplicado em vacancyType
 export interface VacancyContextProps {
   vacancies: Vacancy[];

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import CvForm from "@/app/components/display/cv-form";
+import ResumeForm from "@/app/components/display/resume-form";
 import { Navigation } from "@/app/components/navigation/navigation";
-import { CvService } from "@/app/schemas/cvSchema";
+import { ResumeService } from "@/app/schemas/resumeSchema";
 
 export default function CurriculoDetailPage() {
   const { id } = useParams(); // Pega o ID da URL
@@ -14,17 +14,17 @@ export default function CurriculoDetailPage() {
 
   useEffect(() => {
     if (id) {
-      const fetchCv = async () => {
+      const fetchResume = async () => {
         try {
-          const cvData = await CvService.getCvById(id);
-          setFormData(cvData);
+          const resumeData = await ResumeService.getResumeById(id);
+          setFormData(resumeData);
         } catch (error) {
           console.error("Erro ao carregar o currículo:", error);
         } finally {
           setLoading(false);
         }
       };
-      fetchCv();
+      fetchResume();
     }
   }, [id]);
 
@@ -42,7 +42,7 @@ export default function CurriculoDetailPage() {
     <div className="mx-auto mt-10">
       <Navigation />
       {formData && (
-        <CvForm
+        <ResumeForm
           mode="edit"
           isEditable={true}
           initialData={formData} // Passa os dados carregados para o formulário

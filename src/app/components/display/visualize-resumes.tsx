@@ -4,46 +4,46 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { cvSchema, CvService } from "@/app/schemas/cvSchema";
-import cvImage from '../assets/cvImage.png';
+import { resumeSchema, ResumeService } from "@/app/schemas/resumeSchema";
+import resumeImage from '../assets/resumeImage.png';
 
 export function VisualizeCV() {
   const router = useRouter();
-  const [cvs, setCvs] = useState<Cv[]>([]);
+  const [resumes, setResumes] = useState<Resume[]>([]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const lastCvRef = useRef<HTMLDivElement | null>(null);
+  const lastResumeRef = useRef<HTMLDivElement | null>(null);
 
   /**
    *  Carrega os currículos automaticamente ao abrir a página
    */
   useEffect(() => {
-    const fetchCvs = async () => {
+    const fetchResumes = async () => {
       try {
-        const fetchedCvs = await CvService.getAllCvs(page);
-        if (!Array.isArray(fetchedCvs)) throw new Error("Dados inválidos recebidos.");
+        const fetchedResumes = await ResumeService.getAllResumes(page);
+        if (!Array.isArray(fetchedResumes)) throw new Error("Dados inválidos recebidos.");
 
-        const validatedCvs = fetchedCvs.map((cv) => cvSchema.parse(cv));
-        setCvs((prevCvs) => [...prevCvs, ...validatedCvs]);
+        const validatedResumes = fetchedResumes.map((resume) => resumeSchema.parse(resume));
+        setResumes((prevResumes) => [...prevResumes, ...validatedResumes]);
       } catch (error) {
-        console.error("❌ Erro ao buscar currículos:", error);
+        console.error("Erro ao buscar currículos:", error);
         setErrorMessage("Erro ao carregar currículos.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCvs();
+    fetchResumes();
   }, [page]);
 
   /**
    *  Incrementa a página para buscar mais currículos quando necessário
    */
-  const fetchMoreCvs = useCallback(() => { // TODO: PRA QUE useCallback ?!?!?!
+  const fetchMoreResumes = useCallback(() => { // TODO: PRA QUE useCallback ?!?!?!
     setPage((prevPage) => prevPage + 1); // TODO: como isso funciona?
   }, []);
 
@@ -56,14 +56,14 @@ export function VisualizeCV() {
     observerRef.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          fetchMoreCvs();
+          fetchMoreResumes();
         }
       },
       { rootMargin: "100px" }
     );
 
-    if (lastCvRef.current) observerRef.current.observe(lastCvRef.current);
-  }, [fetchMoreCvs]);
+    if (lastResumeRef.current) observerRef.current.observe(lastResumeRef.current);
+  }, [fetchMoreResumes]);
 
   /**
    *  Navega para editar o currículo
@@ -82,18 +82,18 @@ export function VisualizeCV() {
   /**
    *  Filtragem de currículos conforme o termo digitado
    */
-  const filteredCvs = useMemo(() => {
-    if (!searchTerm) return cvs;
+  const filteredResumes = useMemo(() => {
+    if (!searchTerm) return resumes;
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return cvs.filter(
-      (cv) =>
-        cv.full_name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        cv.email.toLowerCase().includes(lowerCaseSearchTerm) ||
-        cv.position.toLowerCase().includes(lowerCaseSearchTerm) ||
-        cv.region.toLowerCase().includes(lowerCaseSearchTerm) ||
-        cv.scholarity.toLowerCase().includes(lowerCaseSearchTerm)
+    return resumes.filter(
+      (resume) =>
+        resume.full_name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        resume.email.toLowerCase().includes(lowerCaseSearchTerm) ||
+        resume.position.toLowerCase().includes(lowerCaseSearchTerm) ||
+        resume.region.toLowerCase().includes(lowerCaseSearchTerm) ||
+        resume.scholarity.toLowerCase().includes(lowerCaseSearchTerm)
     );
-  }, [searchTerm, cvs]);
+  }, [searchTerm, resumes]);
 
   return (
     <div className="flex justify-center items-center min-h-screen p-4"
@@ -101,7 +101,7 @@ export function VisualizeCV() {
     >
       <div className="w-full max-w-4xl bg-gray-800 shadow-md rounded-lg border p-6">
 
-        {/* 🔎 Campo de Busca */}
+        {/* Campo de Busca */}
         <div className="flex px-4 py-3 mb-6 rounded-md border border-blue-500 bg-gray-700">
           <input
             type="text"
@@ -120,10 +120,10 @@ export function VisualizeCV() {
           </svg>
         </div>
 
-        {/* ❌ Exibe mensagem de erro, se houver */}
+        {/* Exibe mensagem de erro, se houver */}
         {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
 
-        {/* ➕ Botão para adicionar novo currículo */}
+        {/* Botão para adicionar novo currículo */}
         <div className="flex items-center justify-center mb-6">
           <button
             onClick={navigateToAdd}
@@ -133,22 +133,22 @@ export function VisualizeCV() {
           </button>
         </div>
 
-        {/* ⏳ Mostra carregamento */}
+        {/* Mostra carregamento */}
         {loading && <p className="text-gray-300 text-center py-4">Carregando currículos...</p>}
 
-        {/* 📜 Lista de Currículos */}
+        {/* Lista de Currículos */}
         <div className="overflow-y-auto border-t border-gray-600" style={{ maxHeight: "300px" }}>
-          {filteredCvs.length > 0 ? (
+          {filteredResumes.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
-              {filteredCvs.map((cv, index) => (
+              {filteredResumes.map((resume, index) => (
                 <div
-                  key={cv.id}
+                  key={resume.id}
                   className="flex items-center justify-between bg-gray-700 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                  onClick={() => navigateToEdit(cv.id)}
-                  ref={index === filteredCvs.length - 1 ? lastCvRef : null}
+                  onClick={() => navigateToEdit(resume.id)}
+                  ref={index === filteredResumes.length - 1 ? lastResumeRef : null}
                 >
-                  <h1 className="text-gray-300 font-semibold">{cv.full_name}</h1>
-                  <Image alt="Currículo" src={cvImage} width={20} height={20} />
+                  <h1 className="text-gray-300 font-semibold">{resume.full_name}</h1>
+                  <Image alt="Currículo" src={resumeImage} width={20} height={20} />
                 </div>
               ))}
             </div>

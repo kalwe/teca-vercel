@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import axios from 'axios'; // FIXME: use api.ts
 import { vacancySchema, Vacancy } from '@/app/schemas/vacancySchema'; // 🔥 Importando o schema principal
 
 const API_URL = "https://api.example.com/vacancies"; // 🚀 Substitua pela URL real
@@ -14,9 +14,9 @@ interface VacancyContextProps {
   removeVacancy: (id: number) => Promise<void>;
 }
 
-const VagasContext = createContext<VacancyContextProps | undefined>(undefined);
+const VacancyContext = createContext<VacancyContextProps | undefined>(undefined);
 
-export const VagasProvider = ({ children }: { children: ReactNode }) => {
+export const VacancyProvider = ({ children }: { children: ReactNode }) => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
 
   /**
@@ -27,7 +27,7 @@ export const VagasProvider = ({ children }: { children: ReactNode }) => {
       const response = await axios.get(API_URL);
       const validatedVacancies = response.data.map((vacancy) =>
         vacancySchema.parse(vacancy)
-      ); // 🔥 Validando com o schema principal
+      ); // Validando com o schema principal
       setVacancies(validatedVacancies);
     } catch (error) {
       console.error('Error loading vacancies:', error);
@@ -64,7 +64,7 @@ export const VagasProvider = ({ children }: { children: ReactNode }) => {
 
       // Merge existing vacancy with updates
       const updatedVacancy = { ...existingVacancy, ...updates };
-      const validatedVacancy = vacancySchema.parse(updatedVacancy); // 🔥 Validando antes de enviar
+      const validatedVacancy = vacancySchema.parse(updatedVacancy); // Validando antes de enviar
 
       const response = await axios.put(`${API_URL}/${id}`, validatedVacancy);
       setVacancies((prev) =>
@@ -98,19 +98,19 @@ export const VagasProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <VagasContext.Provider value={{ vacancies, setVacancies, addVacancy, updateVacancy, removeVacancy }}>
+    <VacancyContext.Provider value={{ vacancies, setVacancies, addVacancy, updateVacancy, removeVacancy }}>
       {children}
-    </VagasContext.Provider>
+    </VacancyContext.Provider>
   );
 };
 
 /**
  * Custom hook to access the Vacancies context.
  */
-export const useVagasContext = () => {
-  const context = useContext(VagasContext);
+export const useVacancyContext = () => {
+  const context = useContext(VacancyContext);
   if (!context) {
-    throw new Error('useVagasContext must be used within a VagasProvider');
+    throw new Error('useVacancyContext must be used within a VacancyProvider');
   }
   return context;
 };

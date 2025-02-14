@@ -10,12 +10,12 @@ import { Layout } from "react-grid-layout";
 import { Navigation } from "@/app/components/navigation/navigation";
 import { EmployeeService } from "@/app/services/EmployeeService";
 import { VacancyService } from "@/app/schemas/vacancySchema";
-import { CvService } from "@/app/services/CvService";
+import { ResumeService } from "@/app/services/ResumeService";
 import { ReminderService } from "@/app/services/ReminderService";
 import { HoursBankService } from "@/app/services/HoursBankService";
 import { useEmployeeContext } from "@/app/context/EmployeeContext";
-import { useVagasContext } from "@/app/context/VagasContext";
-import { useCvContext } from "@/app/context/CurriculoContext";
+import { useVacancyContext } from "@/app/context/VacancyContext";
+import { useResumeContext } from "@/app/context/CurriculoContext";
 import { useReminderContext } from "@/app/context/ReminderContext";
 import { useHoursBankContext } from "@/app/context/HoursBankContext";
 
@@ -26,8 +26,8 @@ export default function DashboardDisplay() {
 
   // Contextos
   const { employees } = useEmployeeContext();
-  const { vacancies } = useVagasContext();
-  const { cvs } = useCvContext();
+  const { vacancies } = useVacancyContext();
+  const { resumes } = useResumeContext();
   const { reminders } = useReminderContext();
   const { hoursBank } = useHoursBankContext();
 
@@ -53,17 +53,17 @@ export default function DashboardDisplay() {
 
     async function fetchData() {
       try {
-        const [empData, vacData, cvData, remData, hoursData] = await Promise.all([
+        const [empData, vacData, resumeData, remData, hoursData] = await Promise.all([
           EmployeeService.getAllEmployees(),
           VacancyService.getAllVacancies(),
-          CvService.getAllCvs(),
+          ResumeService.getAllResumes(),
           ReminderService.getAllReminders(),
           HoursBankService.getAllHours(),
         ]);
 
         setEmployees(empData);
         setVacancies(vacData);
-        setCvs(cvData);
+        setResumes(resumeData);
         setReminders(remData);
         setHoursBank(hoursData);
       } catch (error) {
@@ -165,7 +165,7 @@ export default function DashboardDisplay() {
   </ul>
 </div>
 
-{/* Vagas */}
+{/* Vacancy */}
 <div
   key="vagas"
   className="cursor-pointer bg-gradient-to-br from-[#434D36] to-[#555D4C] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
@@ -173,7 +173,7 @@ export default function DashboardDisplay() {
   onMouseUp={onMouseUp}
   onClick={() => handleNavigation("/vagas-display/")}
 >
-  <h2 className="font-semibold text-xl mb-4 text-white">Vagas</h2>
+  <h2 className="font-semibold text-xl mb-4 text-white">Vacancy</h2>
   <ul
   >
     {loading ? (
@@ -220,7 +220,7 @@ export default function DashboardDisplay() {
           <div
             key="curriculos"
             className="cursor-pointer bg-gradient-to-br from-[#284703] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-            onClick={() => handleNavigation("/curriculo-display/visualize-cv")}
+            onClick={() => handleNavigation("/curriculo-display/visualize-resume")}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
           >
@@ -229,9 +229,9 @@ export default function DashboardDisplay() {
             {loading ? (
   <p className="text-white text-sm">Carregando...</p>
 ) : (
-  cvs.length > 0 ? (
-    cvs.slice(0, maxItemsToShow).map((cv, index) => (
-      <li key={index}>{cv.full_name} - {cv.position}</li>
+  resumes.length > 0 ? (
+    resumes.slice(0, maxItemsToShow).map((resume, index) => (
+      <li key={index}>{resume.full_name} - {resume.position}</li>
     ))
   ) : (
     <p className="text-white text-sm">Nenhum currículo disponível.</p>

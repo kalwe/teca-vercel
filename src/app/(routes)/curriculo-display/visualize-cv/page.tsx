@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import plusButton from '../assets/Mais 1.png'
-import { VisualizeCV } from "@/app/components/display/visualize-cv";
+import { VisualizeCV } from "@/app/components/display/visualize-resume";
 import { DropDownBurger } from "@/app/components/DropDown/dropdown-burger";
 import '../style.css'
 import { useRouter } from "next/navigation";

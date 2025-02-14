@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
-import { useVagasContext } from "@/app/context/VagasContext";
+import { useVacancyContext } from "@/app/context/VacancyContext";
 import { VacancyService } from "@/app/schemas/vacancySchema";
 
-const VagasForm: React.FC = () => {
-  const { vacancies, setVacancies } = useVagasContext();
+const VacancyForm: React.FC = () => {
+  const { vacancies, setVacancies } = useVacancyContext();
   const router = useRouter();
 
   /**
@@ -31,9 +31,9 @@ const VagasForm: React.FC = () => {
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600">
       <div className="w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border flex flex-col gap-6">
 
-        {/* Título e Botão Adicionar Vaga */}
+        {/* Título e Botão Adicionar Vacancy */}
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-extrabold text-white">Vagas</h1>
+          <h1 className="text-4xl font-extrabold text-white">Vacancy</h1>
           <button
             onClick={() => router.push("/vagas-display/nova-vaga")}
             className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all transform hover:scale-105"
@@ -50,11 +50,11 @@ const VagasForm: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <span className="text-white text-sm font-medium">Adicionar Vaga</span>
+            <span className="text-white text-sm font-medium">Adicionar Vacancy</span>
           </button>
         </div>
 
-        {/* Lista de Vagas */}
+        {/* Lista de Vacancy */}
         <div className="p-4 bg-gray-700 rounded-lg shadow-inner w-full">
           <div className="flex justify-between items-center border-b border-gray-600 pb-4 mb-2">
             <h1 className="text-gray-300 font-semibold">Cargo</h1>
@@ -84,4 +84,4 @@ const VagasForm: React.FC = () => {
   );
 };
 
-export default VagasForm;
+export default VacancyForm;

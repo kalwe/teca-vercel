@@ -1,31 +1,31 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react"
-import { CvService } from "../services/cvService"
-type CvContextData = {
-  cvs: [] // Usando '' para acomodar os dados do cvSchema
+import { ResumeService } from "../services/resumeService"
+type ResumeContextData = {
+  resumes: [] // Usando '' para acomodar os dados do resumeSchema
   loading: boolean
   error: string | null
-  addCv: (cv) => Promise<void>
-  updateCv: (id: number, cv: Partial<>) => Promise<void>
-  deleteCv: (id: number) => Promise<void>
+  addResume: (resume) => Promise<void>
+  updateResume: (id: number, resume: Partial<>) => Promise<void>
+  deleteResume: (id: number) => Promise<void>
 }
 
-const CvContext = createContext<CvContextData | undefined>(undefined)
+const ResumeContext = createContext<ResumeContextData | undefined>(undefined)
 
-export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cvs, setCvs] = useState<[]>([])
+export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [resumes, setResumes] = useState<[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
   // Carregar currículos da API na montagem do contexto
   useEffect(() => {
-    const fetchCvs = async () => {
+    const fetchResumes = async () => {
       setLoading(true)
       setError(null)
       try {
-        const data = await CvService.getAllCvs() // Método direto do cvSchema
-        setCvs(data) // Atualiza o estado com os currículos obtidos
+        const data = await ResumeService.getAllResumes() // Método direto do resumeSchema
+        setResumes(data) // Atualiza o estado com os currículos obtidos
       } catch (error) {
         console.error("Erro ao buscar currículos:", error)
         setError("Falha ao carregar currículos.")
@@ -34,16 +34,16 @@ export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }
       }
     }
 
-    fetchCvs()
+    fetchResumes()
   }, [])
 
   // Adicionar um novo currículo
-  const addCv = useCallback(async (cv) => {
+  const addResume = useCallback(async (resume) => {
     setLoading(true)
     setError(null)
     try {
-      const newCv = await CvService.createCv(cv) // Criando currículo com o serviço CvService
-      setCvs((prev) => [...prev, newCv]) // Atualiza o estado com o novo currículo
+      const newResume = await ResumeService.createResume(resume) // Criando currículo com o serviço ResumeService
+      setResumes((prev) => [...prev, newResume]) // Atualiza o estado com o novo currículo
     } catch (error) {
       console.error("Erro ao adicionar currículo:", error)
       setError("Erro ao adicionar currículo.")
@@ -53,7 +53,7 @@ export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   }, [])
 
   // Atualizar um currículo existente
-  const updateCv = useCallback(async (id: number, updatedCv: Partial) => {
+  const updateResume = useCallback(async (id: number, updatedResume: Partial) => {
     if (!id) {
       console.error("Erro: ID do currículo é obrigatório.")
       return
@@ -63,14 +63,14 @@ export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     setError(null)
 
     try {
-      const existingCv = cvs.find((cv) => cv.id === id)
-      if (!existingCv) throw new Error("Currículo não encontrado.")
+      const existingResume = resumes.find((resume) => resume.id === id)
+      if (!existingResume) throw new Error("Currículo não encontrado.")
 
-      const updatedData = { ...existingCv, ...updatedCv, id }
+      const updatedData = { ...existingResume, ...updatedResume, id }
 
-      const newCv = await CvService.updateCv(id, updatedData) // Atualizando currículo com CvService
-      setCvs((prevCvs) =>
-        prevCvs.map((cv) => (cv.id === id ? { ...cv, ...newCv } : cv))
+      const newResume = await ResumeService.updateResume(id, updatedData) // Atualizando currículo com ResumeService
+      setResumes((prevResumes) =>
+        prevResumes.map((resume) => (resume.id === id ? { ...resume, ...newResume } : resume))
       )
     } catch (error) {
       console.error("Erro ao atualizar currículo:", error)
@@ -78,15 +78,15 @@ export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     } finally {
       setLoading(false)
     }
-  }, [cvs])
+  }, [resumes])
 
   // Remover um currículo
-  const deleteCv = useCallback(async (id: number) => {
+  const deleteResume = useCallback(async (id: number) => {
     setLoading(true)
     setError(null)
     try {
-      await CvService.deleteCv(id) // Deletando currículo com CvService
-      setCvs((prevCvs) => prevCvs.filter((cv) => cv.id !== id)) // Atualiza a lista de currículos
+      await ResumeService.deleteResume(id) // Deletando currículo com ResumeService
+      setResumes((prevResumes) => prevResumes.filter((resume) => resume.id !== id)) // Atualiza a lista de currículos
     } catch (error) {
       console.error("Erro ao deletar currículo:", error)
       setError("Erro ao deletar currículo.")
@@ -96,16 +96,16 @@ export const CvProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   }, [])
 
   return (
-    <CvContext.Provider value={{ cvs, loading, error, addCv, updateCv, deleteCv }}>
+    <ResumeContext.Provider value={{ resumes, loading, error, addResume, updateResume, deleteResume }}>
       {children}
-    </CvContext.Provider>
+    </ResumeContext.Provider>
   )
 }
 
-export const useCvContext = (): CvContextData => {
-  const context = useContext(CvContext)
+export const useResumeContext = (): ResumeContextData => {
+  const context = useContext(ResumeContext)
   if (!context) {
-    throw new Error("useCvContext deve ser usado dentro de um CvProvider.")
+    throw new Error("useResumeContext deve ser usado dentro de um ResumeProvider.")
   }
   return context
 }

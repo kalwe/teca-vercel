@@ -1,23 +1,23 @@
 
-import { Cv } from "../types/cv"
-import { cvSchema } from "../schemas/cvSchema"
+import { Resume } from "../types/resume"
+import { resumeSchema } from "../schemas/resumeSchema"
 import axios from "axios" // TODO: usar instancia from api.ts
 
-const API_URL = "https://seu-api.com/cvs" // TODO: passar apenas endpoint ex: const endpoint = '/curriculuo'
+const API_URL = "https://seu-api.com/resumes" // TODO: passar apenas endpoint ex: const endpoint = '/curriculuo'
 
 
-export const CvService = {
+export const ResumeService = {
   /**
    * Cria um novo currículo
-   * @param {Cv} cvData - Dados do currículo
-   * @returns {Promise<Cv>} - Resposta validada da API
+   * @param {Resume} resumeData - Dados do currículo
+   * @returns {Promise<Resume>} - Resposta validada da API
    */
-  async createCv(cvData: Cv): Promise<Cv> {
+  async createResume(resumeData: Resume): Promise<Resume> {
     try {
       // Validação antes do envio
-      cvSchema.parse(cvData) // TODO: deve pegar o dado validado ex: 'const validatedCvData = cvSchema.parse(cvData)' e passar no axios.post
+      resumeSchema.parse(resumeData) // TODO: deve pegar o dado validado ex: 'const validatedResumeData = resumeSchema.parse(resumeData)' e passar no axios.post
 
-      const response = await axios.post(API_URL, cvData, {
+      const response = await axios.post(API_URL, resumeData, {
         validateStatus: status => status === 201,
       })
 
@@ -31,9 +31,9 @@ export const CvService = {
   /**
    * Busca um currículo pelo ID
    * @param {number} id - ID do currículo
-   * @returns {Promise<Cv>} - Dados do currículo
+   * @returns {Promise<Resume>} - Dados do currículo
    */
-  async getCvById(id: number): Promise<Cv> {
+  async getResumeById(id: number): Promise<Resume> {
     if (!id) throw new Error("ID inválido fornecido para buscar currículo.")
     try {
       const response = await axios.get(`${API_URL}/${id}`, {
@@ -49,9 +49,9 @@ export const CvService = {
 
   /**
    * Obtém todos os currículos
-   * @returns {Promise<Cv[]>} - Lista de currículos
+   * @returns {Promise<Resume[]>} - Lista de currículos
    */
-  async getAllCvs(): Promise<Cv[]> {
+  async getAllResumes(): Promise<Resume[]> {
     try {
       const response = await axios.get(API_URL, {
         validateStatus: status => status === 200,
@@ -79,15 +79,15 @@ export const CvService = {
   /**
    * Atualiza um currículo existente
    * @param {number} id - ID do currículo
-   * @param {Partial<Cv>} cvData - Novos dados do currículo
-   * @returns {Promise<Cv>} - Dados atualizados
+   * @param {Partial<Resume>} resumeData - Novos dados do currículo
+   * @returns {Promise<Resume>} - Dados atualizados
    */
-  async updateCv(id: number, cvData: Partial<Cv>): Promise<Cv> {
+  async updateResume(id: number, resumeData: Partial<Resume>): Promise<Resume> {
     if (!id) throw new Error("ID inválido fornecido para atualizar currículo.")
     try {
       // Validação antes do envio
-      cvSchema.parse(cvData) // TODO: mesmo coisa que que cvCreate() linha 19
-      const response = await axios.patch(`${API_URL}/${id}`, cvData, { // TODO: method nao pode ser patch, deve ser PUT
+      resumeSchema.parse(resumeData) // TODO: mesmo coisa que que resumeCreate() linha 19
+      const response = await axios.patch(`${API_URL}/${id}`, resumeData, { // TODO: method nao pode ser patch, deve ser PUT
         validateStatus: status => status === 200,
       })
 
@@ -103,7 +103,7 @@ export const CvService = {
    * @param {number} id - ID do currículo a ser removido
    * @returns {Promise<void>} - Confirmação da exclusão
    */
-  async deleteCv(id: number): Promise<void> {
+  async deleteResume(id: number): Promise<void> {
     if (!id) throw new Error("ID inválido fornecido para deletar currículo.")
     try {
       await axios.delete(`${API_URL}/${id}`, {

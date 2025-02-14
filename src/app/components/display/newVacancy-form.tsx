@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { useRouter } from "next/navigation";
-import { useVagasContext } from "@/app/context/VagasContext";
-import { vacancySchema, Vacancy, VacancyService } from "@/app/schemas/vacancySchema";
-import { z } from "zod";
-import MoneyInput from "@/app/components/masks/salary"; // Importação do MoneyInput
-import DropdownCheckboxPosition from "../DropDown/dropdown-position";
+import { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useRouter } from 'next/navigation';
+import { useVacancyContext } from '@/app/context/VacancyContext';
+import { vacancySchema, Vacancy, VacancyService } from '@/app/schemas/vacancySchema';
+import { z } from 'zod';
+import MoneyInput from '@/app/components/masks/salary'; // Importação do MoneyInput
+import DropdownCheckboxPosition from '../DropDown/dropdown-position';
 
-interface VagasFormProps {
+interface VacancyFormProps {
   vacancyData?: Vacancy;
   setVacancyData: React.Dispatch<React.SetStateAction<Vacancy>>;
 }
 
-const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData }) => {
-  const { vacancies, setVacancies } = useVagasContext();
+const NewVacancyForm: React.FC<VacancyFormProps> = ({ vacancyData, setVacancyData }) => {
+  const { vacancies, setVacancies } = useVacanciesContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const initialVacancyData: Vacancy = vacancyData || {
-    position: "",
+    position: '',
     quantity: 1,
-    description: "",
-    requirements: "",
-    benefits: "",
+    description: '',
+    requirements: '',
+    benefits: '',
     salary: 0,
-    date: "",
+    date: '',
   };
 
   const [localVacancyData, setLocalVacancyData] = useState<Vacancy>(initialVacancyData);
@@ -59,7 +59,7 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
   };
 
   /**
-   * 🚀 Salvar nova vaga (POST)
+   * Salvar nova vaga (POST)
    */
   const handleSave = async () => {
     if (loading) return;
@@ -69,10 +69,10 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
       const validatedData = vacancySchema.parse(localVacancyData);
       const newVacancy = await VacancyService.createVacancy(validatedData);
 
-      console.log("Vaga criada com sucesso!", newVacancy);
+      console.log('newVacancy criada com sucesso!', newVacancy);
       setVacancies([...vacancies, newVacancy]);
 
-      router.push("/vagas-display/");
+      router.push('/vagas-display/');
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
@@ -81,8 +81,8 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
         });
         setErrors(fieldErrors);
       } else {
-        console.error(" Erro ao criar vaga:", error);
-        alert("Erro ao criar vaga. Tente novamente.");
+        console.error(' Erro ao criar vaga:', error);
+        alert('Erro ao criar vaga. Tente novamente.');
       }
     } finally {
       setLoading(false);
@@ -92,11 +92,11 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600">
       <div className="w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border flex flex-col gap-6">
-        <h1 className="text-4xl font-extrabold text-white">Nova Vaga</h1>
+        <h1 className="text-4xl font-extrabold text-white">Nova Vacancy</h1>
 
         {/* Campos do Formulário */}
         <div>
-         <DropdownCheckboxPosition/>
+          <DropdownCheckboxPosition />
           {errors.position && <p className="text-red-500 text-sm">{errors.position}</p>}
         </div>
 
@@ -105,7 +105,7 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
             type="number"
             placeholder="Quantidade"
             value={localVacancyData.quantity}
-            onChange={(e) => handleChange("quantity", Number(e.target.value))}
+            onChange={(e) => handleChange('quantity', Number(e.target.value))}
             className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
           />
           {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity}</p>}
@@ -116,10 +116,12 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
             type="text"
             placeholder="Descrição"
             value={localVacancyData.description}
-            onChange={(e) => handleChange("description", e.target.value)}
+            onChange={(e) => handleChange('description', e.target.value)}
             className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
           />
-          {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+          {errors.description && (
+            <p className="text-red-500 text-sm">{errors.description}</p>
+          )}
         </div>
 
         <div>
@@ -127,10 +129,12 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
             type="text"
             placeholder="Requisitos"
             value={localVacancyData.requirements}
-            onChange={(e) => handleChange("requirements", e.target.value)}
+            onChange={(e) => handleChange('requirements', e.target.value)}
             className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
           />
-          {errors.requirements && <p className="text-red-500 text-sm">{errors.requirements}</p>}
+          {errors.requirements && (
+            <p className="text-red-500 text-sm">{errors.requirements}</p>
+          )}
         </div>
 
         <div>
@@ -138,7 +142,7 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
             type="text"
             placeholder="Benefícios"
             value={localVacancyData.benefits}
-            onChange={(e) => handleChange("benefits", e.target.value)}
+            onChange={(e) => handleChange('benefits', e.target.value)}
             className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
           />
           {errors.benefits && <p className="text-red-500 text-sm">{errors.benefits}</p>}
@@ -147,13 +151,13 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
         {/* Salary com MoneyInput */}
         <div>
           <MoneyInput
-            value={new Intl.NumberFormat("pt-BR", {
-              style: "currency",
-              currency: "BRL",
+            value={new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
             }).format(localVacancyData.salary)}
             onChange={(value) => {
-              const numericValue = Number(value.replace(/[^\d,]/g, "").replace(",", "."));
-              handleChange("salary", numericValue);
+              const numericValue = Number(value.replace(/[^\d,]/g, '').replace(',', '.'));
+              handleChange('salary', numericValue);
             }}
           />
           {errors.salary && <p className="text-red-500 text-sm">{errors.salary}</p>}
@@ -163,7 +167,7 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
         <div>
           <DatePicker
             selected={localVacancyData.date ? new Date(localVacancyData.date) : null}
-            onChange={(date) => handleChange("date", date ? date.toISOString() : "")}
+            onChange={(date) => handleChange('date', date ? date.toISOString() : '')}
             className="p-2 rounded bg-gray-700 text-white"
             placeholderText="Selecione uma data"
             showTimeSelect
@@ -180,11 +184,11 @@ const NovaVagaForm: React.FC<VagasFormProps> = ({ vacancyData, setVacancyData })
           className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-transform transform hover:scale-105 disabled:opacity-50"
           disabled={loading}
         >
-          {loading ? "Salvando..." : "Salvar Nova Vaga"}
+          {loading ? 'Salvando...' : 'Salvar Nova Vacancy'}
         </button>
       </div>
     </div>
   );
 };
 
-export default NovaVagaForm;
+export default NovanewVacancyForm;

@@ -1,11 +1,11 @@
 "use client";
 
 
-import CvForm from "@/app/components/display/cv-form";
+import ResumeForm from "@/app/components/display/resume-form";
 
 import { Navigation } from "@/app/components/navigation/navigation";
 
-export default function CvRoutes() {
+export default function ResumeRoutes() {
 
 
 
@@ -15,7 +15,7 @@ export default function CvRoutes() {
       background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
   }}>
     <Navigation/>
-      <CvForm
+      <ResumeForm
          mode="create"
 
          isEditable={true}

@@ -1,24 +1,28 @@
 "use client";
 
 import { z } from "zod";
-import axios from "axios";
+import axios from "axios"; // TODO: use api
 
 //  Schema de Login
 export const useAuthInputSchema = z.object({
-  name: z.string().min(5, "O nome deve ter pelo menos 5 caracteres.").max(80, "O nome não pode ter mais de 80 caracteres."),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
+  name: z
+    .string()
+    .min(5, "O nome deve ter pelo menos 5 caracteres.").max(80, "O nome não pode ter mais de 80 caracteres."),
+  password: z
+    .string()
+    .min(6, "A senha deve ter pelo menos 6 caracteres."),
 });
 
-export type UseAuthInput = z.infer<typeof useAuthInputSchema>;
-
 //  Schema de Resposta de Autenticação de Login
-export const userAuthOutputLoginSchema = z.object({
+export const userAuthOutputSchema = z.object({
   current_user_id: z.number(),
+  name: z.string(),
   id_authenticated: z.boolean(),
   token: z.string(),
 });
 
-export type UserAuthOutputLogin = z.infer<typeof userAuthOutputLoginSchema>;
+export type UseAuthInput = z.infer<typeof useAuthInputSchema>;
+export type UserAuthOutput = z.infer<typeof userAuthOutputSchema>;
 
 //  URL da API
 const API_URL = "/api/v1/auth"; // Substitua com sua URL real
@@ -39,10 +43,10 @@ export const AuthService = {
       const response = await axios.post(`${API_URL}/login`, validatedData);
 
       // Valida a resposta da API antes de usá-la com Zod
-      const authResponse = userAuthOutputLoginSchema.parse(response.data);
+      const authResponse = userAuthOutputSchema.parse(response.data);
 
       // Salva o token no localStorage
-      localStorage.setItem("token", authResponse.token);
+      localStorage.setItem("token", authResponse.token); // TODO: don`t set on api call
 
       return authResponse;
     } catch (error) {

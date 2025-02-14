@@ -35,7 +35,7 @@ export const addressSchema = z.object({
 });
 
 // Tipo inferido automaticamente pelo Zod
-export type AddressInput = z.infer<typeof addressSchema>;
+export type Address = z.infer<typeof addressSchema>;
 
 
 //  MANTER AddressService
@@ -47,10 +47,10 @@ export type AddressInput = z.infer<typeof addressSchema>;
 // export const AddressService = {
 //   /**
 //    * Cria um novo endereço com validação
-//    * @param {AddressInput} addressData - Dados do endereço
-//    * @returns {Promise<AddressInput>} - Endereço criado
+//    * @param {Address} addressData - Dados do endereço
+//    * @returns {Promise<Address>} - Endereço criado
 //    */
-//   async createAddress(addressData: AddressInput): Promise<AddressOutput> {
+//   async createAddress(addressData: Address): Promise<AddressOutput> {
 //     try {
 //       const validatedData = addressSchema.parse(addressData); // Validação com Zod antes de enviar
 //       const response = await api.post(endpoint, validatedData);
@@ -78,7 +78,7 @@ export type AddressInput = z.infer<typeof addressSchema>;
 
 //   /**
 //    * 📜 Obtém todos os endereços cadastrados
-//    * @returns {Promise<AddressInput[]>} - Lista de endereços
+//    * @returns {Promise<Address[]>} - Lista de endereços
 //    */
 //   async getAllAddresses(): Promise<AddressOutput[]> {
 //     try {
@@ -93,10 +93,10 @@ export type AddressInput = z.infer<typeof addressSchema>;
 //   /**
 //    * Atualiza um endereço existente
 //    * @param {number} id - ID do endereço
-//    * @param {Partial<AddressInput>} addressData - Dados do endereço a serem atualizados
-//    * @returns {Promise<AddressInput>} - Endereço atualizado
+//    * @param {Partial<Address>} addressData - Dados do endereço a serem atualizados
+//    * @returns {Promise<Address>} - Endereço atualizado
 //    */
-//   async updateAddress(id: number, addressData: Partial<AddressInput>): Promise<AddressOutput> {
+//   async updateAddress(id: number, addressData: Partial<Address>): Promise<AddressOutput> {
 //     try {
 //       const validatedData = addressSchema.partial().parse(addressData); // Validação parcial antes de enviar
 //       const response = await api.put(`${endpoint}/${id}`, validatedData);

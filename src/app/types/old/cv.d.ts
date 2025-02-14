@@ -1,6 +1,6 @@
-import { Cv } from "./cv";
+import { Resume } from "./resume";
 
-export type Cv = {
+export type Resume = {
     id: number; // Unique identifier for the CV
     full_name: string; // Candidate's full name
     email: string; // Candidate's email
@@ -13,6 +13,3 @@ export type Cv = {
     date_of_birth: string; // Date of birth (Format: YYYY-MM-DD)
     pdf_url: string; // URL of the CV PDF file
   };
-
-
-

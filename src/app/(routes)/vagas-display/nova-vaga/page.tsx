@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { z } from 'zod';
-import NovaVagaForm from '@/app/components/display/newVacancy-form';
+import NovanewVacancyForm from '@/app/components/display/newVacancy-form';
 import { Navigation } from '@/app/components/navigation/navigation';
 import { vacancySchema} from '@/app/schemas/vacancySchema'; // Assumindo que você tenha um schema para nova vaga
 
-function NovaVaga() {
+function NovanewVacancy() {
   const [errors, setErrors] = useState<Record<string, string>>({}); // Armazenar os erros de validação
   const [loading, setLoading] = useState(false); // Controlar o estado de carregamento
 
@@ -18,9 +18,9 @@ function NovaVaga() {
       vacancySchema.parse(formData); // Isso irá lançar um erro se os dados forem inválidos
 
       // Se os dados forem válidos, enviar para a API (substitua pela lógica de envio)
-      // await NovaVagaService.createNovaVaga(formData);
+      // await NovanewVacancyService.createNovanewVacancy(formData);
 
-      alert('Vaga criada com sucesso!');
+      alert('Vacancy criada com sucesso!');
     } catch (error) {
       if (error instanceof z.ZodError) {
         // Se houver erro de validação Zod, capturamos e exibimos
@@ -46,9 +46,9 @@ function NovaVaga() {
   }}
     >
       <Navigation />
-      <NovaVagaForm onSave={handleSave} errors={errors} loading={loading} />
+      <NovanewVacancyForm onSave={handleSave} errors={errors} loading={loading} />
     </div>
   );
 }
 
-export default NovaVaga;
+export default NovanewVacancy;
