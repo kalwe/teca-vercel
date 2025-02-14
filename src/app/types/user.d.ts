@@ -1,7 +1,7 @@
 import { z } from "zod"
 import axios from "axios"
 
-const API_URL = "https://api.example.com/users" // 🚀 Altere conforme necessário
+const endpoint = "/user" // 🚀 Altere conforme necessário
 
 // Base Schema (simula BaseModel do Pydantic)
 export const baseSchema = z.object({
@@ -58,37 +58,37 @@ export const UserService = {
   // Criar usuário (POST)
   async createUser(userData: z.infer<typeof userInputSchema>) { // TODO: infer aqui nao eh bom
     const validatedData = userInputSchema.parse(userData)
-    const response = await axios.post(`${API_URL}`, validatedData)
+    const response = await axios.post(`${endpoint}`, validatedData)
     return userOutputSchema.parse(response.data) // Validação da resposta
   },
 
   // Buscar todos os usuários (GET)
   async getUsers() {
-    const response = await axios.get(API_URL)
+    const response = await axios.get(endpoint)
     return z.array(userOutputSchema).parse(response.data) // Validação da resposta
   },
 
   // Buscar usuário por ID (GET)
   async getUserById(userId: number) {
-    const response = await axios.get(`${API_URL}/${userId}`)
+    const response = await axios.get(`${endpoint}/${userId}`)
     return userOutputSchema.parse(response.data) // Validação da resposta
   },
 
   // Atualizar usuário (PUT)
   async updateUser(userId: number, userData: Partial<z.infer<typeof userInputSchema>>) {
-    const response = await axios.put(`${API_URL}/${userId}`, userData)
+    const response = await axios.put(`${endpoint}/${userId}`, userData)
     return userOutputSchema.parse(response.data) // Validação da resposta
   },
 
   // Excluir usuário (DELETE)
   async deleteUser(userId: number) {
-    await axios.delete(`${API_URL}/${userId}`)
+    await axios.delete(`${endpoint}/${userId}`)
     return { success: true, message: "Usuário excluído com sucesso!" }
   },
 
   // Fazer login (POST)
   async login(email: string, password: string) {
-    const response = await axios.post(`${API_URL}/login`, { email, password })
+    const response = await axios.post(`${endpoint}/login`, { email, password })
     return userOutputSchema.parse(response.data)
   },
 }

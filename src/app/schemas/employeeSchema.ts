@@ -36,8 +36,8 @@ export const employeeSchema = z.object({
       ),
     function: z.number(),
     // TODO: object inside z.object
-    address: z.object(addressSchema).optional(),
-    contact: z.object(contactSchema).optional(),
-    bank: z.object(bankAccountSchema).optional(),
-    clothing: z.object(clothingSchema).optional(),
+    address: z.(addressSchema).optional(),
+    contact: z.(contactSchema).optional(),
+    bank: z.(bankAccountSchema).optional(),
+    clothing: z.(clothingSchema).optional(),
   });
