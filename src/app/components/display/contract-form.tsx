@@ -7,14 +7,13 @@ import { Address } from "../switch-tabs/address"
 import { Contact } from "../switch-tabs/Contact"
 import { Bank } from "../switch-tabs/bank"
 import { Clothing } from "../switch-tabs/clothing"
-import { ContractFormProps } from "@/app/types/employee"
 
 // TODO: verificar em:
 //    /app/(routes)/contract-display/page.tsx
 //    /app/(routes)/contract-display/[id]/page.tsx
 //  os parametros que estao sendo passados
 //  pois esta definido um objeto {} do tipo ContractFormProps, porem esta faltando onSave, onCancel
-export default function ContractForm({ mode, employeeData, isEditable }: ContractFormProps) {
+export default function ContractForm(mode, employeeData, onSave, onCancel, isEditable) {
   const [selectedTab, setSelectedTab] = useState(0)
 
   const [pessoaFisica, setPessoaFisica] = useState(employeeData?.pessoaFisica ?? {})

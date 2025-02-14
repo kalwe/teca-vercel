@@ -1,7 +1,7 @@
 "use client";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { resumeSchema, ResumeService } from "@/app/schemas/resumeSchema";
@@ -41,9 +41,9 @@ export function VisualizeCV() {
   }, [page]);
 
   /**
-   *  Incrementa a página para buscar mais currículos quando necessário
+   * Incrementa a página para buscar mais currículos quando necessário
    */
-  const fetchMoreResumes = useCallback(() => { // TODO: PRA QUE useCallback ?!?!?!
+  const fetchMoreResumes = (() => { // TODO: PRA QUE useCallback ?!?!?!
     setPage((prevPage) => prevPage + 1); // TODO: como isso funciona?
   }, []);
 

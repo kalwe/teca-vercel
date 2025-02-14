@@ -19,7 +19,8 @@ const router = useRouter("")
       {/* Renderiza o formulário com as propriedades obrigatórias */}
       <ContractForm
         mode="create"
-
+        onSave
+        onCancel
         isEditable={true}
       />
 

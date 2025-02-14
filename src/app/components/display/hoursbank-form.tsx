@@ -10,21 +10,7 @@ interface Employee {
   weeklyHours?: number;
 }
 
-// Função para buscar funcionários da API real
-const fetchEmployeesFromAPI = async (searchTerm = ''): Promise<Employee[]> => {
-  try {
-    const response = await fetch( // FIXME: use o axios, ja temos EmployeeService.getAll
-      // FIXME: crate .env and add NEXT_PUBLIC_API_URL="http://api...""
-      `${process.env.NEXT_PUBLIC_API_URL}/employees?search=${searchTerm}` // FIXME: param searchTerm don`t exists
-    );
-    if (!response.ok) throw new Error('Erro ao buscar funcionários');
 
-    return await response.json();
-  } catch (error) {
-    console.error('Erro ao carregar funcionários:', error);
-    return [];
-  }
-};
 
 function HoursBank() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -33,16 +19,6 @@ function HoursBank() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      const allEmployees = await fetchEmployeesFromAPI();
-      setEmployees(allEmployees);
-      setFilteredEmployees(allEmployees);
-      setLoading(false);
-    };
-
-    fetchEmployees();
-  }, []);
 
   // Função para filtrar os funcionários conforme a busca do usuário
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => { // TODO: qual necessidade de useCallback() ?!?
