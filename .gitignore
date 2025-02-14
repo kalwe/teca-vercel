@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/tests/api/node_modules
+/tests/api/dist
 
 # next.js
 /.next/

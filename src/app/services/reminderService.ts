@@ -15,7 +15,7 @@ export type ReminderInput = z.infer<typeof reminderSchema>;
 export type ReminderOutput = z.infer<typeof reminderOutputSchema>;
 
 //  Sanitização dos dados antes do envio
-export const sanitizeReminder = (data): ReminderInput => {
+export const sanitizeReminder = (data): ReminderInput => { // TODO:
   return reminderSchema.parse({
     id: data.id ?? undefined, // Se não existir, deixa undefined
     date: data.date.trim(),
@@ -34,7 +34,7 @@ export type ReminderFormProps = {
   onCancel: () => void;
   schema: typeof reminderSchema;
   sanitize: typeof sanitizeReminder;
-  apiService: typeof ReminderService;
+  apiService: typeof ReminderService; // TODO:
 };
 
 
