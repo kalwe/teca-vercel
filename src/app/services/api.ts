@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 /**
  * API client for the backend services.
@@ -6,14 +6,14 @@ import axios from "axios";
  */
 
 // TODO: use const from '.env'
-const HOST = "127.0.0.1"
-const PORT = "3001"
-const API_URL = "api/v1"
+// const HOST = "127.0.0.1"
+// const PORT = "3001"
+// const API_URL = "api/v1"
 
 const api = axios.create({
-  baseURL: `http://${HOST}:${PORT}/${API_URL}`, // Replace with your Python backend URL
+  baseURL: `http://${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 

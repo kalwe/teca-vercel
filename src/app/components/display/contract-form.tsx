@@ -7,62 +7,96 @@ import { Address } from "../switch-tabs/address"
 import { Contact } from "../switch-tabs/Contact"
 import { Bank } from "../switch-tabs/bank"
 import { Clothing } from "../switch-tabs/clothing"
+import { EmployeeService } from "@/app/services/employeeService"
+import { useRouter } from "next/navigation"
 
-// TODO: verificar em:
-//    /app/(routes)/contract-display/page.tsx
-//    /app/(routes)/contract-display/[id]/page.tsx
-//  os parametros que estao sendo passados
-//  pois esta definido um objeto {} do tipo ContractFormProps, porem esta faltando onSave, onCancel
-export default function ContractForm(mode, employeeData, onSave, onCancel, isEditable) {
+export default function ContractForm({ mode, employeeData = {}, onSave, onCancel, isEditable = true }) {
+  const router = useRouter()
   const [selectedTab, setSelectedTab] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const [pessoaFisica, setPessoaFisica] = useState(employeeData?.pessoaFisica ?? {})
-  const [funcionario, setFuncionario] = useState(employeeData?.funcionario ?? {})
-  const [address, setAddress] = useState(employeeData?.address ?? {})
-  const [contact, setContact] = useState(employeeData?.contact ?? {})
-  const [bankAccount, setBankAccount] = useState(employeeData?.bank_account ?? {})
-  const [clothing, setClothing] = useState(employeeData?.clothing ?? {})
+  const [formData, setFormData] = useState({
+    pessoaFisica: employeeData?.pessoaFisica ?? {},
+    funcionario: employeeData?.funcionario ?? {},
+    address: employeeData?.address ?? {},
+    contact: employeeData?.contact ?? {},
+    bankAccount: employeeData?.bank_account ?? {},
+    clothing: employeeData?.clothing ?? {},
+  })
 
   const tabs = [
-    // TODO: ajustar pessoaFisica e funcionario tudo dentro de employee
-    { name: "PESSOA FÍSICA", component: PessoaFisica, state: pessoaFisica, setState: setPessoaFisica },
-    { name: "FUNCIONÁRIO", component: Funcionario, state: funcionario, setState: setFuncionario },
-    { name: "ENDEREÇO", component: Address, state: address, setState: setAddress },
-    { name: "CONTATO", component: Contact, state: contact, setState: setContact },
-    { name: "DADOS BANCÁRIOS", component: Bank, state: bankAccount, setState: setBankAccount },
-    { name: "VESTUÁRIO", component: Clothing, state: clothing, setState: setClothing },
+    { name: "PESSOA FÍSICA", component: PessoaFisica, key: "pessoaFisica" },
+    { name: "FUNCIONÁRIO", component: Funcionario, key: "funcionario" },
+    { name: "ENDEREÇO", component: Address, key: "address" },
+    { name: "CONTATO", component: Contact, key: "contact" },
+    { name: "DADOS BANCÁRIOS", component: Bank, key: "bankAccount" },
+    { name: "VESTUÁRIO", component: Clothing, key: "clothing" },
   ]
 
-  const CurrentComponent = tabs[selectedTab]?.component as React.ElementType
-  const currentState = tabs[selectedTab]?.state
+  const CurrentComponent = tabs[selectedTab].component
+  const currentKey = tabs[selectedTab].key
 
+  /**
+   * Atualiza os dados do formulário
+   */
   const handleInputChange = (data: Record<string, unknown>) => {
-    switch (selectedTab) {
-      case 0:
-        setPessoaFisica((prev) => ({ ...prev, ...data }))
-        break
-      case 1:
-        setFuncionario((prev) => ({ ...prev, ...data }))
-        break
-      case 2:
-        setAddress((prev) => ({ ...prev, ...data }))
-        break
-      case 3:
-        setContact((prev) => ({ ...prev, ...data }))
-        break
-      case 4:
-        setBankAccount((prev) => ({ ...prev, ...data }))
-        break
-      case 5:
-        setClothing((prev) => ({ ...prev, ...data }))
-        break
-      default:
-        console.error("Erro: Aba inválida selecionada.")
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [currentKey]: { ...prev[currentKey], ...data },
+    }))
   }
 
+  /**
+   * Avança para a próxima aba
+   */
   const handleNextTab = () => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))
+
+  /**
+   * Volta para a aba anterior
+   */
   const handlePrevTab = () => setSelectedTab((prev) => Math.max(prev - 1, 0))
+
+  /**
+   * Salva os dados do funcionário ao chegar na última aba e clicar em "Salvar"
+   */
+  const handleSave = async () => {
+    if (loading) return;
+    setLoading(true);
+    setError(null);
+
+    // Lista de campos obrigatórios
+    const requiredFields = {
+      camisa: formData.camisa,
+      calca: formData.calca,
+      calcado: formData.calcado,
+    };
+
+    // Verifica quais campos estão vazios
+    const missingFields = Object.entries(requiredFields)
+      .filter(([_, value]) => !value) // Filtra os campos vazios
+      .map(([key]) => key); // Retorna os nomes dos campos faltando
+
+    if (missingFields.length > 0) {
+      setError(`Os seguintes campos são obrigatórios: ${missingFields.join(", ")}`);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      console.log("📤 Enviando os seguintes dados:", JSON.stringify(formData, null, 2));
+
+      await EmployeeService.createEmployee(formData);
+      router.push("/contract-display/employee-list");
+    } catch (err) {
+      console.error("❌ Erro ao salvar funcionário:", err);
+      setError("Erro ao salvar funcionário. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
@@ -89,16 +123,44 @@ export default function ContractForm(mode, employeeData, onSave, onCancel, isEdi
 
           {/* Conteúdo */}
           <div className="w-full md:w-3/4 p-6">
-            {CurrentComponent && (
-              <CurrentComponent
-                data={currentState}
-                onChange={handleInputChange}
-                isEditable={isEditable}
-                mode={mode}
-                onNext={handleNextTab}
-                onPrev={handlePrevTab}
-              />
-            )}
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+            <CurrentComponent
+              data={formData[currentKey]}
+              onChange={handleInputChange}
+              isEditable={isEditable}
+              mode={mode}
+              onNext={handleNextTab}
+              onPrev={handlePrevTab}
+            />
+
+            {/* Botões */}
+            <div className="flex justify-between mt-4">
+              {selectedTab > 0 && (
+                <button
+                  onClick={handlePrevTab}
+                  className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all"
+                >
+                  Voltar
+                </button>
+              )}
+              {selectedTab < tabs.length - 1 ? (
+                <button
+                  onClick={handleNextTab}
+                  className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all"
+                >
+                  Próximo
+                </button>
+              ) : (
+                <button
+                  onClick={handleSave}
+                  className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all"
+                  disabled={loading}
+                >
+                  {loading ? "Salvando..." : "Salvar"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

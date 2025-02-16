@@ -3,7 +3,8 @@
 import { useUserContext } from "@/app/context/UserContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState} from "react";
-import { userOutputSchema, UserService } from "@/app/schemas/userSchema";
+import { userOutputSchema } from "@/app/schemas/userSchema";
+import { UserService } from "@/app/services/userService";
 import { z } from "zod";
 
 // Define o tipo do usuário baseado no `userOutputSchema`
@@ -14,27 +15,32 @@ function UserList() {
   const router = useRouter();
   const [userList, setUserList] = useState<UserOutput[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  /**
-   * 🚀 Carrega os usuários automaticamente ao abrir a página
-   */
+
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setLoading(true);
         const usersFromAPI = await UserService.getUsers();
         const validatedUsers = userOutputSchema.array().parse(usersFromAPI);
-        setUserList(validatedUsers);
+        const uniqueUsers = Array.from(new Map(validatedUsers.map(user => [user.id, user])).values());
+        setUserList(uniqueUsers);
       } catch (err) {
-        console.error("❌ Erro ao buscar usuários:", err);
+        console.error("Erro ao buscar usuários:", err);
         setError("Erro ao carregar usuários. Tente novamente.");
+      } finally {
+        setLoading(false);
       }
     };
+
 
     fetchUsers();
   }, []);
 
-  const handleEditUser = (userId: number) => {
-    router.push(`/user-display/${userId}`);
+  const handleEditUser = (user: UserOutput) => {
+    router.push(`/user-display/${user.id}`);
   };
 
   const toggleUserStatus = async (userId: number, isActive: boolean) => {
@@ -54,14 +60,24 @@ function UserList() {
   const handleDeleteUser = async (userId: number) => {
     try {
       if (confirm("Tem certeza que deseja excluir este usuário?")) {
+        console.log("Tentando excluir usuário com ID:", userId);
+
         await UserService.deleteUser(userId);
-        setUserList((prev) => prev.filter((user) => user.id !== userId));
+
+        console.log("Usuário deletado com sucesso!");
+
+        setUserList(prev => {
+          const updatedList = prev.filter(user => user.id !== userId);
+          return Array.from(new Map(updatedList.map(user => [user.id, user])).values());
+        });
       }
     } catch (err) {
       console.error("Erro ao deletar usuário:", err);
       setError("Erro ao excluir usuário.");
     }
   };
+
+
 
   const handleAddUser = () => {
     router.push("/user-display/");
@@ -132,11 +148,11 @@ function UserList() {
                         Excluir
                       </button>
                       <button
-                        onClick={() => handleEditUser(user.id)}
-                        className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg"
-                      >
-                        Editar
-                      </button>
+                      onClick={() => handleEditUser(user)}
+                      className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg"
+                    >
+                      Editar
+                    </button>
                     </td>
                   </tr>
                 ))

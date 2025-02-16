@@ -1,23 +1,32 @@
-import api from "./api" // Importa a instância do Axios configurada
+import api from "./api"; // Importa a instância do Axios configurada
 
-const endpoint = "/employee"
+const endpoint = "/employee";
 
 export const EmployeeService = {
   /**
    * Cria um novo funcionário
    * @param {object} employeeData - Dados do funcionário
-   * @returns {Promise} - Resposta da API
+   *  - Resposta da API
    */
   async createEmployee(EmployeeData: EmployeeType) {
     try {
-      const response = await api.post(endpoint, EmployeeData)
-      if (response.status == 201)
-        return response.data
+      console.log("📤 Enviando dados para criação:", EmployeeData);
 
-      // TODO: validar se for erro
+      const response = await api.post(endpoint, EmployeeData);
+
+      if (response.status === 201) {
+        console.log("✅ Funcionário criado com sucesso!", response.data);
+        return response.data;
+      } else {
+        console.warn("⚠️ Resposta inesperada:", response);
+      }
     } catch (error) {
-      console.error("Erro ao criar endereço:", error)
-      throw error
+      if (error.response) {
+        console.error("❌ Erro ao salvar funcionário:", error.response.data);
+      } else {
+        console.error("❌ Erro inesperado:", error.message);
+      }
+      throw error;
     }
   },
 
@@ -27,29 +36,26 @@ export const EmployeeService = {
    */
   async getEmployeeById(id: number) {
     try {
-      const response = await api.get(`${endpoint}/${id}`)
-      if (response.status == 200)
-        return response.data
+      const response = await api.get(`${endpoint}/${id}`);
 
-      // TODO: validar se for erro
+      if (response.status === 200) return response.data;
     } catch (error) {
-      console.error("Erro ao criar endereço:", error)
-      throw error
+      console.error("❌ Erro ao buscar funcionário por ID:", error);
+      throw error;
     }
   },
 
   /**
    * Busca todos os funcionários cadastrados
-   * @returns {Promise} - Lista de funcionários
+   *
    */
   async getAllEmployees() {
-  try {
-    const response = await api.get(endpoint)
-    if (response.status == 200)
-      return response.data
+    try {
+      const response = await api.get(endpoint);
+      if (response.status === 200) return response.data;
     } catch (error) {
-      console.error("Erro ao buscar todos os funcionários:", error)
-      throw error
+      console.error("❌ Erro ao buscar todos os funcionários:", error);
+      throw error;
     }
   },
 
@@ -57,34 +63,46 @@ export const EmployeeService = {
    * Atualiza um funcionário existente
    * @param {number} id - ID do funcionário
    * @param {object} employeeData - Novos dados do funcionário
-   * @returns {Promise} - Dados atualizados
+   *  - Dados atualizados
    */
-  async updateEmployee(id: number, employeeData) {
+  async updateEmployee(id: number, employeeData: EmployeeType) {
     try {
-      const response = await api.put(`${endpoint}/${id}`, employeeData)
-      if (response.data == 200)
-        return response.data
+      console.log("📤 Enviando atualização para ID:", id, "Dados:", employeeData);
+
+      const response = await api.put(`${endpoint}/${id}`, employeeData);
+
+      if (response.status === 200) {
+        console.log("✅ Funcionário atualizado com sucesso!", response.data);
+        return response.data;
+      } else {
+        console.warn("⚠️ Resposta inesperada ao atualizar:", response);
+      }
     } catch (error) {
-      console.error("Erro ao atualizar funcionário:", error)
-      throw error
+      console.error("❌ Erro ao atualizar funcionário:", error);
+      throw error;
     }
   },
 
   /**
    * Exclui um funcionário pelo ID
    * @param {number} id - ID do funcionário a ser removido
-   * @returns {Promise} - Confirmação da exclusão
+   *  - Confirmação da exclusão
    */
-
-  // user "async deleteEmployee(id: number) {""
   async deleteEmployee(id: number) {
     try {
-      const response = await api.delete(`${endpoint}/${id}`)
-      if (response.status == 200)
-        return response.data
+      console.log("📤 Enviando requisição para deletar funcionário ID:", id);
+
+      const response = await api.delete(`${endpoint}/${id}`);
+
+      if (response.status === 200) {
+        console.log("✅ Funcionário deletado com sucesso!");
+        return response.data;
+      } else {
+        console.warn("⚠️ Resposta inesperada ao deletar:", response);
+      }
     } catch (error) {
-      console.error("Erro ao deletar funcionário:", error)
-      throw error
+      console.error("❌ Erro ao deletar funcionário:", error);
+      throw error;
     }
   },
-}
+};
