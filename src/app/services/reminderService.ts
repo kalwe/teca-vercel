@@ -1,6 +1,7 @@
 
 import { reminderSchema } from "../schemas/reminderSchema";
 import api from "./api";
+import {z} from 'zod'
 
 const endpoint = '/reminder'
 

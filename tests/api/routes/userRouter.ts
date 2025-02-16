@@ -38,6 +38,7 @@ userRouter.get('/user/:id', (req: Request, res: Response) => {
     res.status(200).json(user)
 })
 
+
 // deleteById(id: number)
 userRouter.delete('/user/:id', (req: Request, res: Response) => {
     const id: number = Number(req.params.id)

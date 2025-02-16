@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { userInputSchema, UserService } from "@/app/schemas/userSchema";
-import { UserFormProps } from "@/app/schemas/userSchema";
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { userInputSchema } from "@/app/schemas/userSchema";
+import { UserService } from "@/app/services/userService";
 import { z } from "zod";
 
-export default function UserForm({ onSave, onCancel }: UserFormProps) {
+export default function UserForm({ mode = "create", userData, onSave }) {
   const router = useRouter();
+  const { id } = useParams();
+  const userId = id ? Number(id) : null;
+  const isEditMode = mode === "edit" && userId !== null;
 
-  const [formData, setFormData] = useState<z.infer<typeof userInputSchema>>({
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
@@ -19,21 +22,28 @@ export default function UserForm({ onSave, onCancel }: UserFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (isEditMode && userData) {
+      setFormData({
+        name: userData.name || "",
+        email: userData.email || "",
+        password: "", // Senha não deve ser carregada na edição
+      });
+    }
+  }, [isEditMode, userData]);
+
   /**
    * 🚀 Atualiza os campos e valida os dados em tempo real.
    */
-  const handleInputChange = <K extends keyof z.infer<typeof userInputSchema>>(
-    field: K,
-    value: z.infer<typeof userInputSchema>[K]
-  ) => {
-    const updatedData = { ...formData, [field]: value };
+  const handleInputChange = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
 
     try {
-      userInputSchema.parse(updatedData);
+      userInputSchema.parse({ ...formData, [field]: value });
       setErrors({});
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
+        const fieldErrors: Record<string> = {};
         err.errors.forEach((e) => {
           if (e.path.length > 0) {
             fieldErrors[e.path[0] as string] = e.message;
@@ -42,41 +52,85 @@ export default function UserForm({ onSave, onCancel }: UserFormProps) {
         setErrors(fieldErrors);
       }
     }
-
-    setFormData(updatedData);
   };
 
   /**
-   * 🚀 Salvar usuário
+   * 🚀 Valida e salva/atualiza usuário
    */
   const handleSave = async () => {
     if (loading) return;
 
-    if (formData.password !== confirmPassword) {
-      setErrors({ confirmPassword: "As senhas não coincidem." });
+    // Validações básicas
+    if (!formData.email || !formData.name) {
+      setErrors((prev) => ({
+        ...prev,
+        email: !formData.email ? "O email é obrigatório." : prev.email,
+        name: !formData.name ? "O nome é obrigatório." : prev.name,
+      }));
+      return;
+    }
+
+    // Se for criação, a senha é obrigatória
+    if (!isEditMode && (!formData.password || formData.password.length < 6)) {
+      setErrors((prev) => ({
+        ...prev,
+        password: "A senha deve ter pelo menos 6 caracteres.",
+      }));
+      return;
+    }
+
+    // Em qualquer modo, se senha for preenchida, validar confirmação
+    if (formData.password && formData.password !== confirmPassword) {
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: "As senhas não coincidem.",
+      }));
       return;
     }
 
     try {
       setLoading(true);
-      const validatedData = userInputSchema.parse(formData);
-      const newUser = await UserService.createUser(validatedData);
 
-      console.log("Usuário criado com sucesso!", newUser);
-      await onSave?.(newUser);
-      router.push("/user-display/user-list");
+      // Cria um objeto para envio
+      const validatedData = {
+        name: formData.name,
+        email: formData.email,
+        ...(formData.password ? { password: formData.password } : {}), // Apenas inclui a senha se preenchida
+      };
+
+      if (isEditMode) {
+        if (!userId) {
+          alert("Erro: ID do usuário não encontrado.");
+          return;
+        }
+        await UserService.updateUser(userId, validatedData);
+      } else {
+        await UserService.createUser(validatedData);
+      }
+
+      await onSave?.();
+      router.push("/user-display/user-list"); // Redireciona para a lista de usuários após salvar/atualizar
     } catch (error) {
-      console.error("❌ Erro ao criar usuário:", error);
-      alert("Erro ao criar usuário. Tente novamente.");
+      console.error("❌ Erro ao salvar usuário:", error);
+      alert("Erro ao salvar usuário. Verifique os campos.");
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * 🚀 Cancela a ação e retorna para a lista de usuários
+   */
+  const handleCancel = () => {
+    router.push("/user-display/user-list"); // Redireciona para a lista de usuários ao cancelar
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 ">
+    <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-3xl bg-gray-800 rounded-lg shadow-lg overflow-hidden p-6">
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">Criar Usuário</h2>
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">
+          {isEditMode ? "Atualizar Usuário" : "Criar Usuário"}
+        </h2>
         <div className="space-y-4">
           {/* Nome */}
           <div>
@@ -86,10 +140,9 @@ export default function UserForm({ onSave, onCancel }: UserFormProps) {
               id="name"
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              className={`w-full p-2 rounded border ${errors.name ? "border-red-500" : "border-gray-300"} bg-gray-700 text-white`}
+              className="w-full p-2 rounded bg-gray-700 text-white"
               placeholder="Digite o nome do usuário"
             />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
 
           {/* Email */}
@@ -100,22 +153,23 @@ export default function UserForm({ onSave, onCancel }: UserFormProps) {
               id="email"
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
-              className={`w-full p-2 rounded border ${errors.email ? "border-red-500" : "border-gray-300"} bg-gray-700 text-white`}
+              className="w-full p-2 rounded bg-gray-700 text-white"
               placeholder="Digite o email"
             />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
           {/* Senha */}
           <div>
-            <label htmlFor="password" className="block mb-2 text-white">Senha</label>
+            <label htmlFor="password" className="block mb-2 text-white">
+              {isEditMode ? "Nova Senha (opcional)" : "Senha"}
+            </label>
             <input
               type="password"
               id="password"
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
-              className={`w-full p-2 rounded border ${errors.password ? "border-red-500" : "border-gray-300"} bg-gray-700 text-white`}
-              placeholder="Digite a senha"
+              className="w-full p-2 rounded bg-gray-700 text-white"
+              placeholder={isEditMode ? "Digite uma nova senha (opcional)" : "Digite a senha"}
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
@@ -128,7 +182,7 @@ export default function UserForm({ onSave, onCancel }: UserFormProps) {
               id="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`w-full p-2 rounded border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"} bg-gray-700 text-white`}
+              className="w-full p-2 rounded bg-gray-700 text-white"
               placeholder="Confirme a senha"
             />
             {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
@@ -142,10 +196,10 @@ export default function UserForm({ onSave, onCancel }: UserFormProps) {
             className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all"
             disabled={loading}
           >
-            {loading ? "Salvando..." : "Salvar"}
+            {loading ? "Salvando..." : isEditMode ? "Atualizar" : "Salvar"}
           </button>
           <button
-            onClick={onCancel}
+            onClick={handleCancel}
             className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all ml-4"
           >
             Cancelar

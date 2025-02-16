@@ -34,10 +34,10 @@ export const employeeSchema = z.object({
         /^\d{4}-\d{2}-\d{2}$/,
         "A data de contratação deve estar no formato DD-MM-AAAA."
       ),
-    function: z.number(),
+    function: z.string().optional(),
     // TODO: object inside z.object
-    address: z.(addressSchema).optional(),
-    contact: z.(contactSchema).optional(),
-    bank: z.(bankAccountSchema).optional(),
-    clothing: z.(clothingSchema).optional(),
+    address: z.object(addressSchema).optional(),
+    contact: z.object(contactSchema).optional(),
+    bank: z.object(bankAccountSchema).optional(),
+    clothing: z.object(clothingSchema).optional(),
   });

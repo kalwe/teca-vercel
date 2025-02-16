@@ -14,11 +14,13 @@ const port = process.env.PORT || 3001
 const app: Express = express()
 const route = Router()
 
-const allowedOrigins = [`http://${host}:${port}`]
+const allowedOrigins = [`http://${host}:${port}`, "http://localhost:3000"];
 
 const options: cors.CorsOptions = {
-    origin: allowedOrigins
-}
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+};
 
 app.use(cors(options))
 app.use(express.json())

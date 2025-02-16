@@ -23,7 +23,7 @@ export function Funcionario({
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
 
-  // Função de validação e atualização do estado
+  // Atualiza estado e valida os dados
   const handleInputChange = (field: keyof Employee, value: unknown) => {
     const updatedData = { ...data, [field]: value };
 
@@ -45,14 +45,13 @@ export function Funcionario({
     onChange(updatedData);
   };
 
-  // Função para converter datas para o formato aceito pelo input[type="date"]
+  // Função para conversão segura de datas para `input[type="date"]`
   const formatDateForInput = (dateString?: string) => {
     if (!dateString) return "";
-    const parsedDate = Date.parse(dateString);
-    return !isNaN(parsedDate) ? new Date(parsedDate).toISOString().split("T")[0] : "";
+    return dateString.length === 10 ? dateString : ""; // Garante que a data já esteja no formato YYYY-MM-DD
   };
 
-  // Salva os dados do funcionário e avança
+  // Salvar funcionário e avançar
   const handleSave = async () => {
     try {
       const createdEmployee = await EmployeeService.createEmployee(data);
@@ -68,10 +67,27 @@ export function Funcionario({
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Funcionário</h2>
 
+      {/* Matrícula */}
+      <div className="w-full">
+        <label className="block text-gray-400 mb-2">Código de Funcionário</label>
+        <input
+          type="text"
+          name="registration"
+          value={data.registration || ""}
+          onChange={(e) => handleInputChange("registration", e.target.value)}
+          placeholder="Digite o código do funcionário"
+          className={`w-full bg-gray-700 text-white border ${
+            errors.registration ? "border-red-500" : "border-gray-600"
+          } rounded-lg py-2 px-3`}
+          disabled={!isEditable}
+        />
+        {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
+      </div>
+
+      {/* Data de Admissão e Remoção */}
       {[
-        { name: "registration", label: "Matrícula", placeholder: "Digite a matrícula", type: "text" },
-        { name: "contract_date", label: "Data de Admissão", placeholder: "", type: "date" },
-        { name: "removal_date", label: "Data de Remoção", placeholder: "", type: "date" },
+        { name: "contract_date", label: "Data de Admissão", type: "date" },
+        { name: "removal_date", label: "Data de Remoção", type: "date" },
       ].map((field) => (
         <div key={field.name} className="w-full">
           <label className="block text-gray-400 mb-2">{field.label}</label>
@@ -80,7 +96,6 @@ export function Funcionario({
             name={field.name}
             value={formatDateForInput(data[field.name] as string)}
             onChange={(e) => handleInputChange(field.name as keyof Employee, e.target.value)}
-            placeholder={field.placeholder}
             className={`w-full bg-gray-700 text-white border ${
               errors[field.name] ? "border-red-500" : "border-gray-600"
             } rounded-lg py-2 px-3`}
@@ -104,26 +119,28 @@ export function Funcionario({
       </div>
 
       {/* Checkboxes */}
-      <div className="w-full flex items-center">
-        <input
-          type="checkbox"
-          checked={!!data.supervisor}
-          onChange={(e) => handleInputChange("supervisor", e.target.checked)}
-          className="mr-2"
-          disabled={!isEditable}
-        />
-        <label className="text-gray-400">Encarregado</label>
-      </div>
+      <div className="flex flex-col space-y-2">
+        <div className="w-full flex items-center">
+          <input
+            type="checkbox"
+            checked={!!data.supervisor}
+            onChange={(e) => handleInputChange("supervisor", e.target.checked)}
+            className="mr-2"
+            disabled={!isEditable}
+          />
+          <label className="text-gray-400">Encarregado</label>
+        </div>
 
-      <div className="w-full flex items-center">
-        <input
-          type="checkbox"
-          checked={!!data.manager}
-          onChange={(e) => handleInputChange("manager", e.target.checked)}
-          className="mr-2"
-          disabled={!isEditable}
-        />
-        <label className="text-gray-400">Gerente</label>
+        <div className="w-full flex items-center">
+          <input
+            type="checkbox"
+            checked={!!data.manager}
+            onChange={(e) => handleInputChange("manager", e.target.checked)}
+            className="mr-2"
+            disabled={!isEditable}
+          />
+          <label className="text-gray-400">Gerente</label>
+        </div>
       </div>
 
       {/* Botões */}
