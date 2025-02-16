@@ -7,7 +7,7 @@ import axios from "axios";
 
 // TODO: use const from '.env'
 const HOST = "127.0.0.1"
-const PORT = "5001"
+const PORT = "3001"
 const API_URL = "api/v1"
 
 const api = axios.create({
