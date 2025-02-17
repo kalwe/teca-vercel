@@ -6,12 +6,12 @@ import axios from 'axios';
  */
 
 // TODO: use const from '.env'
-// const HOST = "127.0.0.1"
-// const PORT = "3001"
-// const API_URL = "api/v1"
+const host = process.env.NEXT_PUBLIC_HOST || 'localhost';
+const port = process.env.NEXT_PUBLIC_PORT || 3001;
+const api_suffix = 'api/v1';
 
 const api = axios.create({
-  baseURL: `http://${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`,
+  baseURL: `http://${host}:${port}/${api_suffix}`,
   headers: {
     'Content-Type': 'application/json',
   },

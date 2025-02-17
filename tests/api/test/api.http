@@ -1,0 +1,85 @@
+###
+curl -H "Origin: http://127.0.0.1:3001" --head http://127.0.0.1:3001
+
+
+###
+POST http://localhost:3001/user
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "john@domain.com",
+    "password": "pass@123"
+}
+
+
+###
+
+GET http://localhost:3001/user
+Content-Type: application/json
+
+
+###
+
+GET http://localhost:3001/user/3
+Content-Type: application/json
+
+
+###
+
+DELETE http://localhost:3001/user/3
+Content-Type: application/json
+
+
+###
+POST http://localhost:3001/employee
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "John Doe",
+  "full_name": "Johnathan Doe",
+  "tax_id": "123456789",
+  "national_id": "987654321",
+  "date_of_birth": "1990-05-20",
+  "issuing_body": "SSP",
+  "registration": "REG123456",
+  "supervisor": true,
+  "manager": false,
+  "salary": 5000,
+  "contract_date": "2023-01-15",
+  "function": 101,
+  "gender": "MALE",
+  "marital_status": "SINGLE",
+  "is_active": true
+}
+
+
+#   "address": {
+#     "street": "123 Main St",
+#     "number": "123",
+#     "city": "New York",
+#     "state": "NY",
+#     "zip_code": "10001",
+#     "state": "SP",
+#     "imployee": 1
+#   },
+#   "contact": {
+#     "email": "john.doe@example.com",
+#     "phone_number": "+1-555-1234",
+#     "website": "meusite.com",
+#     "imployee": 1
+#   },
+#   "bank": {
+#     "bank": "Bank of America",
+#     "agency": "1234",
+#     "account": "567890",
+#     "account_type": "salario",
+#     "imployee": 1
+#   },
+#   "clothing": {
+#     "shirt_size": "M",
+#     "pants_size": "M",
+#     "shoe_size": "42",
+#     "imployee": 1
+#   },
