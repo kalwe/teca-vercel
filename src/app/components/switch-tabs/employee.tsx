@@ -7,6 +7,7 @@ import { EmployeeService } from "@/app/services/employeeService";
 import DropdownCheckboxFuncao from "../DropDown/dropdown-role";
 import { z } from "zod";
 
+
 export function Funcionario({
   data = {} as Employee,
   onChange,
@@ -142,6 +143,7 @@ export function Funcionario({
           <label className="text-gray-400">Gerente</label>
         </div>
       </div>
+
 
       {/* Botões */}
       <div className="flex justify-between mt-6">

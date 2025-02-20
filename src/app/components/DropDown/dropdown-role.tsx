@@ -1,28 +1,25 @@
 'use client';
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react"; // ✅ Adicionado useEffect
 import { DropdownCheckboxFuncaoProps } from "@/app/types/dropdown";
 
 export function DropdownCheckboxFuncao({
   value = "",
   onChange,
 }: DropdownCheckboxFuncaoProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Controla a visibilidade do dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Opções mockadas sem chamadas à API
   const options = [
     { id: 1, name: "Função1" },
     { id: 2, name: "Função2" },
     { id: 3, name: "Função3" },
   ];
 
-  // Alterna a visibilidade do dropdown
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDropdownOpen((prevState) => !prevState);
   };
 
-  // Fecha o dropdown ao clicar fora dele
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (

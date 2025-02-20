@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
-import "react-datepicker/dist/react-datepicker.css";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVacancyContext } from "@/app/context/VacancyContext";
-import { VacancyService } from "@/app/schemas/vacancySchema";
+import { VacancyService } from "@/app/services/vacancyService";
 
-const VacancyForm: React.FC = () => {
+const VacancyList: React.FC = () => {
   const { vacancies, setVacancies } = useVacancyContext();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   /**
    * Carrega as vagas automaticamente ao abrir a página
@@ -16,72 +17,119 @@ const VacancyForm: React.FC = () => {
   useEffect(() => {
     const fetchVacancies = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const fetchedVacancies = await VacancyService.getAllVacancies();
-        if (!Array.isArray(fetchedVacancies)) throw new Error("Dados inválidos recebidos.");
-        setVacancies(fetchedVacancies);
+
+        if (!Array.isArray(fetchedVacancies)) {
+          throw new Error("Dados inválidos recebidos.");
+        }
+
+        // Remove duplicatas com base no ID da vaga
+        const uniqueVacancies = fetchedVacancies.filter(
+          (v, index, self) =>
+            index === self.findIndex((t) => t.id === v.id)
+        );
+
+        setVacancies(uniqueVacancies);
       } catch (error) {
         console.error("Erro ao buscar vagas:", error);
+        setError("Erro ao carregar vagas. Tente novamente.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    await fetchVacancies();
+    fetchVacancies();
   }, [setVacancies]);
+
+  /**
+   * Exclui uma vaga específica
+   */
+  const handleDelete = async (vacancyId: number) => {
+    if (!confirm("Tem certeza que deseja excluir esta vaga?")) return;
+
+    try {
+      // Deleta na API
+      await VacancyService.deleteVacancy(vacancyId);
+
+      // Remove imediatamente da lista na tela
+      setVacancies((prev) => prev.filter((v) => v.id !== vacancyId));
+    } catch (error) {
+      console.error("Erro ao excluir vaga:", error);
+      alert("Erro ao excluir vaga. Tente novamente.");
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600">
       <div className="w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border flex flex-col gap-6">
-
-        {/* Título e Botão Adicionar Vacancy */}
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-extrabold text-white">Vacancy</h1>
+          <h1 className="text-4xl font-extrabold text-white">Vagas</h1>
           <button
             onClick={() => router.push("/vagas-display/nova-vaga")}
-            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all transform hover:scale-105"
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-transform transform hover:scale-105"
           >
-            <div className="w-[30px] h-[30px] bg-white rounded-full flex items-center justify-center shadow-md">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5 text-green-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
-            <span className="text-white text-sm font-medium">Adicionar Vacancy</span>
+            Adicionar Vagas
           </button>
         </div>
 
         {/* Lista de Vacancy */}
         <div className="p-4 bg-gray-700 rounded-lg shadow-inner w-full">
           <div className="flex justify-between items-center border-b border-gray-600 pb-4 mb-2">
-            <h1 className="text-gray-300 font-semibold">Cargo</h1>
-            <h1 className="text-gray-300 font-semibold">Quantidade</h1>
+            <h1 className="text-gray-300 font-semibold w-2/5">Cargo</h1>
+            <h1 className="text-gray-300 font-semibold w-1/5 text-center">Quantidade</h1>
+            <h1 className="text-gray-300 font-semibold w-2/5 text-right">Ações</h1>
           </div>
 
-          <div className="overflow-y-auto rounded-lg" style={{ maxHeight: "300px" }}>
-            {vacancies.length > 0 ? (
-              vacancies.map((vacancy, index) => (
-                <div
-                  key={index}
-                  onClick={() => router.push(`/vagas-display/nova-vaga?index=${index}`)}
-                  className="flex justify-between items-center p-2 bg-gray-800 rounded-md mb-2 cursor-pointer hover:bg-gray-700"
-                >
-                  <span className="text-gray-300 font-medium">{vacancy.position}</span>
-                  <span className="text-gray-300 font-medium">{vacancy.quantity}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-300 text-center">Nenhuma vaga carregada</p>
-            )}
-          </div>
+          {loading && <p className="text-white text-center">Carregando vagas...</p>}
+          {error && <p className="text-red-500 text-center">{error}</p>}
+
+          {!loading && !error && (
+            <div className="overflow-y-auto rounded-lg" style={{ maxHeight: "300px" }}>
+              {vacancies.length > 0 ? (
+                vacancies.map((vacancy) => (
+                  <div
+                    key={vacancy.id}
+                    className="flex justify-between items-center p-2 bg-gray-800 rounded-md mb-2 hover:bg-gray-700"
+                  >
+                    {/* Cargo */}
+                    <span className="text-gray-300 font-medium w-2/5">
+                      {vacancy.position}
+                    </span>
+
+                    {/* Quantidade */}
+                    <span className="text-gray-300 font-medium w-1/5 text-center">
+                      {vacancy.quantity}
+                    </span>
+
+                    {/* Ações */}
+                    <div className="flex justify-end w-2/5 gap-2">
+                      <button
+                        onClick={() => router.push(`/vagas-display/nova-vaga/${vacancy.id}`)}
+                        className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(vacancy.id)}
+                        className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all"
+                      >
+                        Excluir
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-300 text-center">Nenhuma vaga carregada</p>
+              )}
+            </div>
+          )}
         </div>
-
       </div>
     </div>
   );
 };
 
-export default VacancyForm;
+export default VacancyList;

@@ -1,16 +1,16 @@
 "use client";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { resumeSchema, ResumeService } from "@/app/schemas/resumeSchema";
-import resumeImage from '../assets/resumeImage.png';
+import { resumeSchema } from "@/app/schemas/cvSchema";
+import { ResumeService } from "@/app/services/resumeService"; // Import corrigido
+import resumeImage from "../assets/cvImage.png";
 
 export function VisualizeCV() {
   const router = useRouter();
   const [resumes, setResumes] = useState<Resume[]>([]);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -19,18 +19,24 @@ export function VisualizeCV() {
   const lastResumeRef = useRef<HTMLDivElement | null>(null);
 
   /**
-   *  Carrega os currículos automaticamente ao abrir a página
+   * 🚀 Carrega os currículos automaticamente ao abrir a página via GET
    */
   useEffect(() => {
     const fetchResumes = async () => {
       try {
+        setLoading(true);
         const fetchedResumes = await ResumeService.getAllResumes(page);
-        if (!Array.isArray(fetchedResumes)) throw new Error("Dados inválidos recebidos.");
+
+        if (!Array.isArray(fetchedResumes)) {
+          throw new Error("Dados inválidos recebidos.");
+        }
+
+        console.log("✅ Currículos carregados:", fetchedResumes); // Debugging
 
         const validatedResumes = fetchedResumes.map((resume) => resumeSchema.parse(resume));
         setResumes((prevResumes) => [...prevResumes, ...validatedResumes]);
       } catch (error) {
-        console.error("Erro ao buscar currículos:", error);
+        console.error("❌ Erro ao buscar currículos:", error);
         setErrorMessage("Erro ao carregar currículos.");
       } finally {
         setLoading(false);
@@ -41,14 +47,14 @@ export function VisualizeCV() {
   }, [page]);
 
   /**
-   * Incrementa a página para buscar mais currículos quando necessário
+   * 🚀 Incrementa a página para buscar mais currículos quando necessário
    */
-  const fetchMoreResumes = (() => { // TODO: PRA QUE useCallback ?!?!?!
-    setPage((prevPage) => prevPage + 1); // TODO: como isso funciona?
+  const fetchMoreResumes = useCallback(() => {
+    setPage((prevPage) => prevPage + 1);
   }, []);
 
   /**
-   *  Configura o IntersectionObserver para paginação infinita
+   * 🚀 Configura o IntersectionObserver para paginação infinita
    */
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
@@ -66,21 +72,21 @@ export function VisualizeCV() {
   }, [fetchMoreResumes]);
 
   /**
-   *  Navega para editar o currículo
+   * 🚀 Navega para editar o currículo
    */
   const navigateToEdit = (id: number) => {
     router.push(`/curriculo-display/${id}`);
   };
 
   /**
-   *  Navega para adicionar um novo currículo
+   * 🚀 Navega para adicionar um novo currículo
    */
   const navigateToAdd = () => {
     router.push("/curriculo-display/");
   };
 
   /**
-   *  Filtragem de currículos conforme o termo digitado
+   * 🚀 Filtragem de currículos conforme o termo digitado
    */
   const filteredResumes = useMemo(() => {
     if (!searchTerm) return resumes;
@@ -96,7 +102,8 @@ export function VisualizeCV() {
   }, [searchTerm, resumes]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-4"
+    <div
+      className="flex justify-center items-center min-h-screen p-4"
       style={{ background: "linear-gradient(to bottom right,rgb(11, 20, 11),rgb(79, 116, 82))" }}
     >
       <div className="w-full max-w-4xl bg-gray-800 shadow-md rounded-lg border p-6">

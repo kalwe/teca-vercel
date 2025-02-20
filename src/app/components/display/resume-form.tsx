@@ -3,18 +3,13 @@
 import "react-datepicker/dist/react-datepicker.css";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { resumeSchema, ResumeService } from "@/app/schemas/resumeSchema";
+import { resumeSchema } from "@/app/schemas/cvSchema";
+import { ResumeService } from "@/app/services/resumeService";
 import { z } from "zod";
 import { useEffect } from "react";
-
-import DropdownCheckboxRegional from "../DropDown/dropdown-regional";
-import DropdownCheckboxSchool from "../DropDown/dropdown-school";
+import DatePicker from "react-datepicker";
 import DropdownCheckboxPosition from "../DropDown/dropdown-position";
-import { CpfMask } from "../masks/cpf";
-import CepMask from "../masks/cep";
-import BirthDayMask from "../masks/birthday";
-import { PhoneMask } from "../masks/phone";
-import { ResumeFormProps } from "@/app/schemas/resumeSchema";
+import { ResumeFormProps } from "@/app/schemas/cvSchema";
 
 function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
   const router = useRouter();
@@ -25,16 +20,16 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
   );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [file, setFile] = useState<File | null>(null); // Mantido e usado corretamente
-  const [loading] = useState<boolean>(false);
-
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [registrationDate, setRegistrationDate] = useState<Date | null>(new Date());
 
   // Atualiza os campos do formulário e faz a validação instantânea
   const handleChange = useCallback(<K extends keyof z.infer<typeof resumeSchema>>(key: K, value: z.infer<typeof resumeSchema>[K]) => {
     const updatedData = { ...formData, [key]: value };
 
     try {
-      resumeSchema.parse(updatedData); // Validação
+      resumeSchema.parse(updatedData);
       setErrors({});
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -51,20 +46,21 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
     setFormData(updatedData);
   }, [formData]);
 
-  // Upload do arquivo PDF
+  // Upload de qualquer tipo de arquivo
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
 
-    if (uploadedFile && uploadedFile.type === "application/pdf") {
+    if (uploadedFile) {
       setFile(uploadedFile);
     } else {
-      alert("Por favor, selecione um arquivo PDF válido.");
+      alert("Por favor, selecione um arquivo válido.");
     }
   };
 
-  // Salvar currículo (POST ou PUT)
+  // Salvar currículo (POST para a API)
   const handleSave = async () => {
     try {
+      setLoading(true);
       if (!file) {
         alert("Por favor, selecione um arquivo.");
         return;
@@ -72,13 +68,18 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
 
       const formDataToSend = new FormData();
       formDataToSend.append("file", file);
+      formDataToSend.append("registrationDate", registrationDate?.toISOString() || "");
 
       await ResumeService.uploadResumeFile(formDataToSend);
       alert("✅ Currículo enviado com sucesso!");
+      router.push("/curriculo-display/visualize-cv");
     } catch (error) {
-      console.error("❌ Erro ao salvar currículo:", error);
+      console.error("Erro ao salvar currículo:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
     if (file) {
       console.log("Arquivo selecionado:", file.name);
@@ -92,8 +93,7 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
           {mode === "edit" ? "Editar Currículo" : "Novo Currículo"}
         </h1>
         <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-
-          {/* Upload do Arquivo PDF */}
+          {/* Upload de Arquivo */}
           <div>
             <label
               htmlFor="file-upload"
@@ -104,44 +104,43 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
               </div>
-              <span>Insira currículo (PDF)</span>
-              <input id="file-upload" type="file" accept=".pdf" onChange={handleFileUpload} className="hidden" />
+              <span>Anexar Arquivo</span>
+              <input id="file-upload" type="file" onChange={handleFileUpload} className="hidden" />
             </label>
           </div>
 
           {/* Campos do Formulário */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {[
-              { key: "full_name", placeholder: "Nome Completo", type: "text" },
-              { key: "email", placeholder: "E-mail", type: "email" },
-            ].map(({ key, placeholder, type }) => (
-              <div key={key}>
-                <input
-                  type={type}
-                  value={formData[key as keyof z.infer<typeof resumeSchema>] || ""}
-                  onChange={(e) => handleChange(key as keyof z.infer<typeof resumeSchema>, e.target.value)}
-                  placeholder={placeholder}
-                  className={`w-full px-4 py-2 border ${errors[key] ? "border-red-500" : "border-gray-300"} rounded-lg bg-gray-50`}
-                />
-                {errors[key] && <p className="text-red-500 text-xs mt-1">{errors[key]}</p>}
-              </div>
-            ))}
-
-            <BirthDayMask value={formData.date_of_birth || ""} onChange={(value) => handleChange("date_of_birth", value)} />
-            <CepMask value={formData.zip_code || ""} onChange={(value) => handleChange("zip_code", value)} />
-            <CpfMask value={formData.tax_id || ""} onChange={(value) => handleChange("tax_id", value)} />
-            <PhoneMask value={formData.phone || ""} onChange={(value) => handleChange("phone", value)} />
+            <div>
+              <input
+                type="text"
+                value={formData.full_name || ""}
+                onChange={(e) => handleChange("full_name", e.target.value)}
+                placeholder="Nome Completo"
+                className={`w-full px-4 py-2 border ${errors.full_name ? "border-red-500" : "border-gray-300"} rounded-lg bg-gray-50`}
+              />
+              {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
+            </div>
 
             <DropdownCheckboxPosition value={formData.position || ""} onChange={(value) => handleChange("position", value)} />
-            <DropdownCheckboxRegional value={formData.region || ""} onChange={(value) => handleChange("region", value)} />
-            <DropdownCheckboxSchool value={formData.scholarity || ""} onChange={(value) => handleChange("scholarity", value)} />
+
+            {/* Selecionador de Data */}
+            <div>
+              <label className="block text-white mb-2">Data do Cadastro</label>
+              <DatePicker
+                selected={registrationDate}
+                onChange={(date) => setRegistrationDate(date)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
           </div>
 
           {/* Botões de Ação */}
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              onClick={() => router.push("/curriculo-display/visualize-resume")}
+              onClick={() => router.push("/curriculo-display/visualize-cv")}
               className="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600"
             >
               Cancelar

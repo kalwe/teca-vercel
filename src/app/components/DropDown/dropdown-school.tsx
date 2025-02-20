@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { DropdownCheckboxSchoolProps } from "@/app/types/dropdown";
-import { ScholarityType } from "@/app/schemas/resumeSchema";
+import { ScholarityType } from "@/app/schemas/cvSchema";
 
 export function DropdownCheckboxSchool({
   value,

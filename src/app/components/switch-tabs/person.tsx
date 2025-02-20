@@ -74,12 +74,13 @@ export function PessoaFisica({
       <h2 className="text-white text-xl font-bold">Pessoa Física</h2>
 
       {[
-        { name: data.tax_id, label: "Nome Completo", placeholder: "Digite o nome completo" },
-        { name: "tax_id", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
-        { name: "national_id", label: "RG", placeholder: "Digite o RG" },
-        { name: "issuing_body", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
-      ].map((field) => (
-        <div key={field.name} className="w-full">
+  { key: "full_name", name: "full_name", label: "Nome Completo", placeholder: "Digite o nome completo" },
+  { key: "tax_id", name: "tax_id", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
+  { key: "national_id", name: "national_id", label: "RG", placeholder: "Digite o RG" },
+  { key: "issuing_body", name: "issuing_body", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
+].map((field) => (
+  <div key={field.key} className="w-full">
+
           <label className="block text-gray-400 mb-2">{field.label}</label>
           <input
             type="text"

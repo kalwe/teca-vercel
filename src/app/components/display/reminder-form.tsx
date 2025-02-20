@@ -10,7 +10,6 @@ import { z } from "zod";
 const ReminderForm: React.FC<ReminderFormProps> = ({
     mode,
     reminderData,
-
     onSave,
     onCancel,
 }) => {
@@ -63,7 +62,7 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
     };
 
     /**
-     * 🚀 Função para Criar ou Atualizar um Lembrete (POST ou PUT)
+     * 🚀 Criar ou Atualizar um Lembrete (POST ou PUT)
      */
     const handleSubmit = async () => {
         try {
@@ -143,7 +142,7 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
                         {errors.reason && <p className="text-red-500 text-sm">{errors.reason}</p>}
                     </div>
 
-                    {/* Campo de Horário */}
+                    {/* Campo de Hora */}
                     <div>
                         <label htmlFor="time" className="text-white block mb-1">
                             Hora do lembrete:
@@ -186,22 +185,11 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
 
                     {/* Botões de Ação */}
                     <div className="flex justify-between">
-                        <button
-                            type="button"
-                            className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-500"
-                            onClick={() => {
-                                onCancel?.();
-                                router.push("/dashboard-display/");
-                            }}
-                        >
+                        <button className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-500">
                             Cancelar
                         </button>
-                        <button
-                            onClick={handleSubmit}
-                            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500 disabled:opacity-50"
-                            disabled={loading}
-                        >
-                            {loading ? "Salvando..." : "Salvar Lembrete"}
+                        <button className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500">
+                            Salvar Lembrete
                         </button>
                     </div>
                 </div>

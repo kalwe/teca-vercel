@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import ResumeForm from "@/app/components/display/resume-form";
 import { Navigation } from "@/app/components/navigation/navigation";
-import { ResumeService } from "@/app/schemas/resumeSchema";
+import { ResumeService } from "@/app/services/resumeService";
+
+
 
 export default function CurriculoDetailPage() {
   const { id } = useParams(); // Pega o ID da URL

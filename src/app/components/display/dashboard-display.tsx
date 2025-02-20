@@ -1,15 +1,14 @@
 "use client";
 
 
-import { Responsive, WidthProvider } from "react-grid-layout";
+import { Responsive, WidthProvider, Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Layout } from "react-grid-layout";
 import { Navigation } from "@/app/components/navigation/navigation";
 import { EmployeeService } from "@/app/services/EmployeeService";
-import { VacancyService } from "@/app/schemas/vacancySchema";
+import { VacancyService } from "@/app/services/vacancyService";
 import { ResumeService } from "@/app/services/ResumeService";
 import { ReminderService } from "@/app/services/ReminderService";
 import { HoursBankService } from "@/app/services/HoursBankService";
@@ -220,7 +219,7 @@ export default function DashboardDisplay() {
           <div
             key="curriculos"
             className="cursor-pointer bg-gradient-to-br from-[#284703] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-            onClick={() => handleNavigation("/curriculo-display/visualize-resume")}
+            onClick={() => handleNavigation("/curriculo-display/visualize-cv")}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
           >

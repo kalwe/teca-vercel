@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { axios } from "axios"
+
 
 //  Esquema de validação para Vacancy
 export const vacancySchema = z.object({
@@ -50,9 +50,6 @@ export const sanitizeVacancy = (data): Vacancy => {
   });
 };
 
-const responseValidateStatus = (status, validStatus) => {
-  return status === validStatus
-}
 
 //  Definição do Contexto de Vacancy
 // TODO: duplicado em vacancyType
@@ -64,113 +61,3 @@ export interface VacancyContextProps {
   remove_vacancy: (id: number) => Promise<void>;
   // TODO: add_vacancy, update_vacancy e remove_vacancy nunca sao usados
 }
-
-const endpoint = '/address' // TODO: set 'vacancy' endpoint name
-
-export const VacancyService = {
-
-  /**
-   * Cria uma nova vaga com validação
-   * @param {Vacancy} vacancyData - Dados da vaga
-   * @returns {Promise<Vacancy>} - Resposta da API validada
-   */
-  async createVacancy(vacancyData: Vacancy): Promise<Vacancy> {
-    try {
-      const validatedData = sanitizeVacancy(vacancyData);
-      const response = await axios.post(endpoint, validatedData, {
-        validateStatus: responseValidateStatus(status, 201),
-      });
-
-      return vacancySchema.parse(response.data);
-    } catch (error) { // TODO: verificar se "error" contem variavel response 'error.response'
-      console.error("Erro ao criar vaga:", error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || "Erro ao criar vaga.");
-    }
-  },
-
-  /**
-   * Busca uma vaga pelo ID
-   * @param {number} id - ID da vaga
-   * @returns {Promise<Vacancy>} - Dados da vaga validados
-   */
-  async getVacancyById(id: number): Promise<Vacancy> {
-    if (!id) throw new Error("ID inválido fornecido para buscar vaga.");
-    try {
-      const response = await axios.get(`${endpoint}/${id}`, {
-        validateStatus: responseValidateStatus(status, 200),
-      });
-
-      return vacancySchema.parse(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar vaga:", error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || "Erro ao buscar vaga.");
-    }
-  },
-
-  /**
-   * Obtém todas as vagas
-   * @returns {Promise<Vacancy[]>} - Lista de vagas validadas
-   */
-  // FIXME: porque voce passa "addressData: AddressType" sendo que para buscar todas vagas so precisa chaamar o endpoint sem passar nada, ele vai apenas retornar as vagas
-  async getAllVacancies(): Promise<Vacancy[]> {
-    try {
-      const response = await axios.get(endpoint, {
-        validateStatus: responseValidateStatus(status, 200),
-      });
-
-      return response.data;
-    } catch (error) {
-      console.error("Erro ao buscar todas as vagas:", error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || "Erro ao buscar vagas.");
-    }
-  },
-
-  /**
-   * Atualiza uma vaga existente com validação
-   * @param {number} id - ID da vaga
-   * @param {Partial<Vacancy>} vacancyData - Novos dados da vaga
-   * @returns {Promise<Vacancy>} - Dados atualizados validados
-   */
-  async updateVacancy(id: number, vacancyData: Partial<Vacancy>): Promise<Vacancy> {
-    if (!id) throw new Error("ID inválido fornecido para atualizar vaga.");
-    try {
-      const validatedData = sanitizeVacancy(vacancyData);
-      const response = await axios.put(`${endpoint}/${id}`, validatedData, {
-        validateStatus: responseValidateStatus(status, 200),
-      });
-
-      return vacancySchema.parse(response.data);
-    } catch (error) {
-      console.error("Erro ao atualizar vaga:", error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || "Erro ao atualizar vaga.");
-    }
-  },
-
-  /**
-   * Exclui uma vaga pelo ID
-   * @param {number} id - ID da vaga a ser removida
-   * @returns {Promise<void>} - Confirmação da exclusão
-   */
-  async deleteVacancy(id: number): Promise<void> {
-    if (!id) throw new Error("ID inválido fornecido para deletar vaga.");
-    try {
-      await axios.delete(`${endpoint}/${id}`, {
-        validateStatus: responseValidateStatus(status, 204),
-      });
-
-      // TODO: return a json:
-      //
-      // {
-      //   "id": 1,
-      //   "version": 32,
-      //   "is_active": false,
-      //   "deleted_at": "00/01/9999 15:35:48"
-      // }
-
-      // Retornamos void porque `204 No Content` não tem corpo de resposta
-    } catch (error) {
-      console.error("Erro ao deletar vaga:", error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || "Erro ao deletar vaga.");
-    }
-  },
-};

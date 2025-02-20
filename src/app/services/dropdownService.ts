@@ -1,4 +1,5 @@
-import axios from "axios";
+
+import api from "./api";
 
 const API_URL = "http://your-python-api.com/positions"; // Replace with your actual API
 
@@ -8,7 +9,7 @@ export const PositionService = {
    * @returns {Promise<{ id: number; name: string }[]>} - List of job positions
    */
   async getAllPositions(): Promise<{ id: number; name: string }[]> {
-    const response = await axios.get(API_URL);
+    const response = await api.get(API_URL);
 
     if (Array.isArray(response.data)) {
       return response.data; // API returns a plain list
@@ -27,7 +28,7 @@ export const RoleService = {
    * @returns {Promise<{ id: number; name: string }[]>} - List of functions
    */
   async getAllFunctions(): Promise<{ id: number; name: string }[]> {
-    const response = await axios.get(API_URL);
+    const response = await api.get(API_URL);
 
     if (Array.isArray(response.data)) {
       return response.data; // API retorna uma lista simples
@@ -46,7 +47,7 @@ export const RegionService = {
    * @returns {Promise<{ id: number; name: string }[]>} - List of regions
    */
   async getAllRegions(): Promise<{ id: number; name: string }[]> {
-    const response = await axios.get(API_URL);
+    const response = await api.get(API_URL);
 
     if (Array.isArray(response.data)) {
       return response.data; // API retorna uma lista simples

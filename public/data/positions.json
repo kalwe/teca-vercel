@@ -1,0 +1,310 @@
+[
+  {
+    "id": 1,
+    "name": "AJUDANTE DE MECÂNICO"
+  },
+  {
+    "id": 2,
+    "name": "AJUDANTE DE MECÂNICO I"
+  },
+  {
+    "id": 3,
+    "name": "ALMOXARIFADO"
+  },
+  {
+    "id": 4,
+    "name": "AJUDANTE DE MOTORISTA"
+  },
+  {
+    "id": 5,
+    "name": "ANALISTA ADMINISTRATIVO I"
+  },
+  {
+    "id": 6,
+    "name": "ANALISTA DE DEPARTAMENTO PESSOAL"
+  },
+  {
+    "id": 7,
+    "name": "ANALISTA FLORESTAL"
+  },
+  {
+    "id": 8,
+    "name": "ANALISTA FLORESTAL II"
+  },
+  {
+    "id": 9,
+    "name": "ASSISTENTE ADMINISTRATIVO"
+  },
+  {
+    "id": 10,
+    "name": "ASSISTENTE ADMINISTRATIVO - APRENDIZ"
+  },
+  {
+    "id": 11,
+    "name": "ASSISTENTE ADMINISTRATIVO I"
+  },
+  {
+    "id": 12,
+    "name": "ASSISTENTE ADMINISTRATIVO II"
+  },
+  {
+    "id": 13,
+    "name": "ASSISTENTE ADMINISTRATIVO III"
+  },
+  {
+    "id": 14,
+    "name": "ASSISTENTE ADMINISTRATIVO RURAL"
+  },
+  {
+    "id": 15,
+    "name": "ASSISTENTE DE COMPRAS"
+  },
+  {
+    "id": 16,
+    "name": "ASSISTENTE DE COMPRAS I"
+  },
+  {
+    "id": 17,
+    "name": "ASSISTENTE DE RECRUTAMENTO E SELEÇÃO"
+  },
+  {
+    "id": 18,
+    "name": "AUXILIAR ADMINISTRATIVO"
+  },
+  {
+    "id": 19,
+    "name": "AUXILIAR DE ALMOXARIFADO"
+  },
+  {
+    "id": 20,
+    "name": "AUXILIAR DE BORRACHEIRO"
+  },
+  {
+    "id": 21,
+    "name": "AUXILIAR DE ELETRICISTA"
+  },
+  {
+    "id": 22,
+    "name": "AUXILIAR DE ESCRITÓRIO EM GERAL"
+  },
+  {
+    "id": 23,
+    "name": "AUXILIAR LIDER DE CAMPO"
+  },
+  {
+    "id": 24,
+    "name": "AUXILIAR DE MECÂNICO"
+  },
+  {
+    "id": 25,
+    "name": "AUXILIAR DE MECÂNICO I"
+  },
+  {
+    "id": 26,
+    "name": "AUXILIAR DE MECÂNICO II"
+  },
+  {
+    "id": 27,
+    "name": "AUXILIAR DE QUALIDADE"
+  },
+  {
+    "id": 28,
+    "name": "BORRACHEIRO"
+  },
+  {
+    "id": 29,
+    "name": "BORRACHEIRO II"
+  },
+  {
+    "id": 30,
+    "name": "BORRACHEIRO III"
+  },
+  {
+    "id": 31,
+    "name": "COORDENADOR FLORESTAL"
+  },
+  {
+    "id": 32,
+    "name": "ELETRICISTA"
+  },
+  {
+    "id": 33,
+    "name": "ELETRICISTA AUTOMOTIVO"
+  },
+  {
+    "id": 34,
+    "name": "ELETRICISTA AUTOMOTIVO II"
+  },
+  {
+    "id": 35,
+    "name": "ELETRICISTA I"
+  },
+  {
+    "id": 36,
+    "name": "ELETRICISTA II"
+  },
+  {
+    "id": 37,
+    "name": "FAXINEIRO"
+  },
+  {
+    "id": 38,
+    "name": "LIDER DE CAMPO"
+  },
+  {
+    "id": 39,
+    "name": "LIDER DE CAMPO I"
+  },
+  {
+    "id": 40,
+    "name": "LIDER DE CAMPO II"
+  },
+  {
+    "id": 41,
+    "name": "LIDER DE QUALIDADE"
+  },
+  {
+    "id": 42,
+    "name": "MECÂNICO"
+  },
+  {
+    "id": 43,
+    "name": "MECÂNICO DE MANUTENÇÃO DE MOTOROÇADEIRAS"
+  },
+  {
+    "id": 44,
+    "name": "MECÂNICO ELETRICISTA"
+  },
+  {
+    "id": 45,
+    "name": "MECÂNICO I"
+  },
+  {
+    "id": 46,
+    "name": "MECÂNICO II"
+  },
+  {
+    "id": 47,
+    "name": "MECANICO LIDER"
+  },
+  {
+    "id": 48,
+    "name": "MECANICO LUBRIFICADOR"
+  },
+  {
+    "id": 49,
+    "name": "MECÂNICO LUBRIFICADOR II"
+  },
+  {
+    "id": 50,
+    "name": "MONITOR FLORESTAL I"
+  },
+  {
+    "id": 51,
+    "name": "MOTORISTA"
+  },
+  {
+    "id": 52,
+    "name": "MOTORISTA DE CAMINHÃO - GUINCHO LEVE"
+  },
+  {
+    "id": 53,
+    "name": "MOTORISTA DE CAMINHÃO - GUINCHO"
+  },
+  {
+    "id": 54,
+    "name": "MOTORISTA DE CAMINHÃO - GUINCHO II"
+  },
+  {
+    "id": 55,
+    "name": "MOTORISTA DE CAMINHÃO - GUINCHO III"
+  },
+  {
+    "id": 56,
+    "name": "MOTORISTA I"
+  },
+  {
+    "id": 57,
+    "name": "MOTORISTA III"
+  },
+  {
+    "id": 58,
+    "name": "RECEPCIONISTA"
+  },
+  {
+    "id": 59,
+    "name": "SERVIÇOS GERAIS"
+  },
+  {
+    "id": 60,
+    "name": "SOLDADOR"
+  },
+  {
+    "id": 61,
+    "name": "SOLDADOR MECÂNICO"
+  },
+  {
+    "id": 62,
+    "name": "SOLDADOR MECÂNICO I"
+  },
+  {
+    "id": 63,
+    "name": "SUPERVISOR DE MANUTENÇÃO"
+  },
+  {
+    "id": 64,
+    "name": "SUPERVISOR DE SEGURANÇA DO TRABALHO"
+  },
+  {
+    "id": 65,
+    "name": "SUPERVISOR DE SEGURANÇA DO TRABALHO I"
+  },
+  {
+    "id": 66,
+    "name": "SUPERVISOR DE SEGURANÇA DO TRABALHO II"
+  },
+  {
+    "id": 67,
+    "name": "SUPERVISOR DE TI"
+  },
+  {
+    "id": 68,
+    "name": "SUPERVISOR FINANCEIRO"
+  },
+  {
+    "id": 69,
+    "name": "SUPERVISOR FLORESTAL"
+  },
+  {
+    "id": 70,
+    "name": "TECNICO DE OPERAÇÕES FLORESTAIS"
+  },
+  {
+    "id": 71,
+    "name": "TECNICO EM SEGURANÇA DO TRABALHO"
+  },
+  {
+    "id": 72,
+    "name": "TRABALHADOR FLORESTAL"
+  },
+  {
+    "id": 73,
+    "name": "TRABALHADOR RURAL POLIVALENTE"
+  },
+  {
+    "id": 74,
+    "name": "TRATORISTA"
+  },
+  {
+    "id": 75,
+    "name": "TRATORISTA I"
+  },
+  {
+    "id": 76,
+    "name": "VIGIA"
+  },
+  {
+    "id": 77,
+    "name": "ZELADOR"
+  }
+]
