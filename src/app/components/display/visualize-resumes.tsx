@@ -5,8 +5,19 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { resumeSchema } from "@/app/schemas/cvSchema";
-import { ResumeService } from "@/app/services/resumeService"; // Import corrigido
+import { ResumeService } from "@/app/services/resumeService"; // Certifique-se de que esse serviço está implementado corretamente
 import resumeImage from "../assets/cvImage.png";
+
+// Defina o tipo Resume conforme sua implementação, por exemplo:
+interface Resume {
+  id: number;
+  full_name: string;
+  email: string;
+  position: string;
+  region: string;
+  scholarity: string;
+  // outros campos que você precise...
+}
 
 export function VisualizeCV() {
   const router = useRouter();
@@ -19,7 +30,7 @@ export function VisualizeCV() {
   const lastResumeRef = useRef<HTMLDivElement | null>(null);
 
   /**
-   * 🚀 Carrega os currículos automaticamente ao abrir a página via GET
+   * Carrega os currículos via GET a partir da página atual
    */
   useEffect(() => {
     const fetchResumes = async () => {
@@ -31,12 +42,11 @@ export function VisualizeCV() {
           throw new Error("Dados inválidos recebidos.");
         }
 
-        console.log("✅ Currículos carregados:", fetchedResumes); // Debugging
-
+        // Valida cada currículo conforme o schema
         const validatedResumes = fetchedResumes.map((resume) => resumeSchema.parse(resume));
         setResumes((prevResumes) => [...prevResumes, ...validatedResumes]);
       } catch (error) {
-        console.error("❌ Erro ao buscar currículos:", error);
+        console.error("Erro ao buscar currículos:", error);
         setErrorMessage("Erro ao carregar currículos.");
       } finally {
         setLoading(false);
@@ -47,14 +57,15 @@ export function VisualizeCV() {
   }, [page]);
 
   /**
-   * 🚀 Incrementa a página para buscar mais currículos quando necessário
+   * Incrementa a página para buscar mais currículos (paginação infinita)
    */
   const fetchMoreResumes = useCallback(() => {
     setPage((prevPage) => prevPage + 1);
   }, []);
 
   /**
-   * 🚀 Configura o IntersectionObserver para paginação infinita
+   * Configura o IntersectionObserver para detectar o último item da lista
+   * e acionar o carregamento de novos currículos.
    */
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
@@ -69,24 +80,25 @@ export function VisualizeCV() {
     );
 
     if (lastResumeRef.current) observerRef.current.observe(lastResumeRef.current);
-  }, [fetchMoreResumes]);
+  }, [fetchMoreResumes, resumes]);
 
   /**
-   * 🚀 Navega para editar o currículo
+   * Navega para a página de edição do currículo
    */
   const navigateToEdit = (id: number) => {
     router.push(`/curriculo-display/${id}`);
   };
 
   /**
-   * 🚀 Navega para adicionar um novo currículo
+   * Navega para a página de adicionar um novo currículo
    */
   const navigateToAdd = () => {
     router.push("/curriculo-display/");
   };
 
   /**
-   * 🚀 Filtragem de currículos conforme o termo digitado
+   * Filtra os currículos com base no termo digitado.
+   * O filtro é aplicado em vários campos (nome, email, cargo, região, escolaridade).
    */
   const filteredResumes = useMemo(() => {
     if (!searchTerm) return resumes;
@@ -104,10 +116,9 @@ export function VisualizeCV() {
   return (
     <div
       className="flex justify-center items-center min-h-screen p-4"
-      style={{ background: "linear-gradient(to bottom right,rgb(11, 20, 11),rgb(79, 116, 82))" }}
+      style={{ background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))" }}
     >
       <div className="w-full max-w-4xl bg-gray-800 shadow-md rounded-lg border p-6">
-
         {/* Campo de Busca */}
         <div className="flex px-4 py-3 mb-6 rounded-md border border-blue-500 bg-gray-700">
           <input
@@ -127,7 +138,7 @@ export function VisualizeCV() {
           </svg>
         </div>
 
-        {/* Exibe mensagem de erro, se houver */}
+        {/* Mensagem de erro, se houver */}
         {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
 
         {/* Botão para adicionar novo currículo */}
@@ -140,10 +151,10 @@ export function VisualizeCV() {
           </button>
         </div>
 
-        {/* Mostra carregamento */}
+        {/* Indicador de carregamento */}
         {loading && <p className="text-gray-300 text-center py-4">Carregando currículos...</p>}
 
-        {/* Lista de Currículos */}
+        {/* Lista de currículos com scroll infinito */}
         <div className="overflow-y-auto border-t border-gray-600" style={{ maxHeight: "300px" }}>
           {filteredResumes.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">

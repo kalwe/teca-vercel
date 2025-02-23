@@ -59,7 +59,7 @@ export const VacancyService = {
     const response = await api.get(`/vacancy/${id}`);
     const vacancyData = response.data;
 
-    // 🔥 Converter salary para número
+    //  Converter salary para número
     if (vacancyData.salary) {
       vacancyData.salary = Number(vacancyData.salary);
     }
@@ -95,7 +95,7 @@ export const VacancyService = {
   async updateVacancy(id: number, vacancyData: any) {
     if (!id) throw new Error("ID inválido fornecido para atualizar vaga.");
     try {
-      // 🔥 Garantindo que salary é number antes de enviar
+      //  Garantindo que salary é number antes de enviar
       const validatedData = {
         ...vacancyData,
         salary: Number(vacancyData.salary), // Forçando number aqui
@@ -103,7 +103,7 @@ export const VacancyService = {
 
       console.log("Payload enviado para API:", validatedData);
 
-      // 🔥 Convertendo para Form Data para burlar o JSON.stringify
+      //  Convertendo para Form Data para burlar o JSON.stringify
       const formData = new URLSearchParams();
       Object.keys(validatedData).forEach((key) => {
         formData.append(key, validatedData[key]);
@@ -111,7 +111,7 @@ export const VacancyService = {
 
       console.log("Payload final enviado:", formData);
 
-      // 🔥 Enviando o payload na marra
+      //  Enviando o payload na marra
       const response = await api.put(`${endpoint}/${id}`, formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

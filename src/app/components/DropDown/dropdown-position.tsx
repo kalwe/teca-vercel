@@ -13,7 +13,7 @@ const DropdownCheckboxPosition = ({
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const fetchPositions = async () => {
+    const fetchPositions = async () => { // TODO: use axios and call endpoint getAllPositions (é pra usar a porra do ID ao invés do nome)
       try {
         const response = await fetch("/data/positions.json");
         if (!response.ok) {
@@ -82,7 +82,7 @@ const DropdownCheckboxPosition = ({
                 <li
                   key={position.id}
                   className={`p-2 cursor-pointer ${
-                    value === position.name ? "bg-gray-300" : "hover:bg-gray-200"
+                    value === position.id ? "bg-gray-300" : "hover:bg-gray-200"
                   }`}
                   onClick={() => handleSelect(position.name)}
                 >

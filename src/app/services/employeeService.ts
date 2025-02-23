@@ -10,21 +10,21 @@ export const EmployeeService = {
    */
   async createEmployee(EmployeeData: EmployeeType) {
     try {
-      console.log("📤 Enviando dados para criação:", EmployeeData);
+      console.log(" Enviando dados para criação:", EmployeeData);
 
       const response = await api.post(endpoint, EmployeeData);
 
       if (response.status === 201) {
-        console.log("✅ Funcionário criado com sucesso!", response.data);
+        console.log(" Funcionário criado com sucesso!", response.data);
         return response.data;
       } else {
-        console.warn("⚠️ Resposta inesperada:", response);
+        console.warn(" Resposta inesperada:", response);
       }
     } catch (error) {
       if (error.response) {
-        console.error("❌ Erro ao salvar funcionário:", error.response.data);
+        console.error(" Erro ao salvar funcionário:", error.response.data);
       } else {
-        console.error("❌ Erro inesperado:", error.message);
+        console.error(" Erro inesperado:", error.message);
       }
       throw error;
     }

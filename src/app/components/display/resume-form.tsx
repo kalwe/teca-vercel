@@ -1,12 +1,11 @@
 "use client";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { resumeSchema } from "@/app/schemas/cvSchema";
 import { ResumeService } from "@/app/services/resumeService";
 import { z } from "zod";
-import { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import DropdownCheckboxPosition from "../DropDown/dropdown-position";
 import { ResumeFormProps } from "@/app/schemas/cvSchema";
@@ -16,7 +15,7 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
 
   // Estado do formulário com fallback para valores vazios
   const [formData, setFormData] = useState<z.infer<typeof resumeSchema>>(
-    curriculoData || {} as z.infer<typeof resumeSchema>
+    curriculoData || ({} as z.infer<typeof resumeSchema>)
   );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -25,28 +24,31 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
   const [registrationDate, setRegistrationDate] = useState<Date | null>(new Date());
 
   // Atualiza os campos do formulário e faz a validação instantânea
-  const handleChange = useCallback(<K extends keyof z.infer<typeof resumeSchema>>(key: K, value: z.infer<typeof resumeSchema>[K]) => {
-    const updatedData = { ...formData, [key]: value };
+  const handleChange = useCallback(
+    <K extends keyof z.infer<typeof resumeSchema>>(key: K, value: z.infer<typeof resumeSchema>[K]) => {
+      const updatedData = { ...formData, [key]: value };
 
-    try {
-      resumeSchema.parse(updatedData);
-      setErrors({});
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
-        err.errors.forEach((error) => {
-          if (error.path.length > 0) {
-            fieldErrors[error.path[0] as string] = error.message;
-          }
-        });
-        setErrors(fieldErrors);
+      try {
+        resumeSchema.parse(updatedData);
+        setErrors({});
+      } catch (err) {
+        if (err instanceof z.ZodError) {
+          const fieldErrors: Record<string, string> = {};
+          err.errors.forEach((error) => {
+            if (error.path.length > 0) {
+              fieldErrors[error.path[0] as string] = error.message;
+            }
+          });
+          setErrors(fieldErrors);
+        }
       }
-    }
 
-    setFormData(updatedData);
-  }, [formData]);
+      setFormData(updatedData);
+    },
+    [formData]
+  );
 
-  // Upload de qualquer tipo de arquivo
+  // Upload de arquivo
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
 
@@ -57,7 +59,7 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
     }
   };
 
-  // Salvar currículo (POST para a API)
+  // Salvar currículo utilizando createResume
   const handleSave = async () => {
     try {
       setLoading(true);
@@ -66,15 +68,21 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
         return;
       }
 
+      // Cria um FormData com todos os dados do currículo
       const formDataToSend = new FormData();
       formDataToSend.append("file", file);
-      formDataToSend.append("registrationDate", registrationDate?.toISOString() || "");
+      formDataToSend.append("registrationDate", registrationDate ? registrationDate.toISOString() : "");
+      formDataToSend.append("full_name", formData.full_name || "");
+      formDataToSend.append("position", formData.position || "");
+      // Se houver outros campos no formData, adicione-os aqui conforme necessário.
 
-      await ResumeService.uploadResumeFile(formDataToSend);
+      // Chama o método createResume do serviço
+      await ResumeService.createResume(formDataToSend);
       alert("✅ Currículo enviado com sucesso!");
       router.push("/curriculo-display/visualize-cv");
     } catch (error) {
       console.error("Erro ao salvar currículo:", error);
+      alert("Erro ao salvar currículo. Verifique o console para mais detalhes.");
     } finally {
       setLoading(false);
     }

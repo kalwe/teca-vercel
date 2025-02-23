@@ -3,25 +3,25 @@
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useReminderContext } from "@/app/context/ReminderContext";
-import { reminderSchema, ReminderInput, ReminderService, ReminderFormProps } from "@/app/schemas/reminderSchema";
+import DatePicker from "react-datepicker";
+import { reminderSchema, ReminderInput, ReminderFormProps } from "@/app/schemas/reminderSchema";
 import { z } from "zod";
+import { ReminderService } from "@/app/services/reminderService";
+import { format, parseISO } from "date-fns";
 
 const ReminderForm: React.FC<ReminderFormProps> = ({
     mode,
     reminderData,
     onSave,
-    onCancel,
 }) => {
-    const { addReminder } = useReminderContext();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<ReminderInput>(reminderData || {
-        date: "",
-        time: "00:00",
+        date: "", // 🔥 Agora só tem `date`
         reason: "",
         description: "",
     });
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null); // 🔥 Estado para o DatePicker
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     /**
@@ -49,42 +49,40 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
     };
 
     /**
-     * Formata a data ao digitar.
+     *  Manipula a mudança no DatePicker
      */
-    const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, "");
-
-        if (value.length > 2) value = value.slice(0, 2) + "/" + value.slice(2);
-        if (value.length > 5) value = value.slice(0, 5) + "/" + value.slice(5, 9);
-        if (value.length > 10) value = value.slice(0, 10);
-
-        handleChange("date", value);
+    const handleDateChange = (date: Date | null) => {
+        setSelectedDate(date);
+        if (date) {
+            const formattedDate = format(date, "yyyy-MM-dd HH:mm:ss");
+            handleChange("date", formattedDate); // 🔥 Salva a data completa no estado
+        }
     };
 
     /**
-     * 🚀 Criar ou Atualizar um Lembrete (POST ou PUT)
+     *  Criar ou Atualizar um Lembrete (POST ou PUT)
      */
     const handleSubmit = async () => {
         try {
             setLoading(true);
-            const validatedData = reminderSchema.parse(formData);
+            const dataToSubmit = { ...formData };
 
-            let savedReminder;
-            if (mode === "create") {
-                savedReminder = await ReminderService.createReminder(validatedData);
-                addReminder(savedReminder);
-            } else {
-                savedReminder = await ReminderService.updateReminder(reminderData?.id, validatedData);
-            }
+            // 🔥 Valida os dados usando o reminderSchema
+            const validatedData = reminderSchema.parse(dataToSubmit);
 
-            alert("✅ Lembrete salvo com sucesso!");
+            // 🔥 Faz o POST para criar o lembrete
+            const savedReminder = await ReminderService.createReminder(validatedData);
+
+            alert("✅ Lembrete criado com sucesso!");
             onSave?.(savedReminder);
             router.push("/dashboard-display/");
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const fieldErrors: Record<string, string> = {};
                 error.errors.forEach((e) => {
-                    fieldErrors[e.path[0] as string] = e.message;
+                    if (e.path.length > 0) {
+                        fieldErrors[e.path[0] as string] = e.message;
+                    }
                 });
                 setErrors(fieldErrors);
             } else {
@@ -105,21 +103,20 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
 
                 {/* Formulário */}
                 <div className="space-y-6">
-                    {/* Campo de Data */}
+                    {/* DatePicker - Combina Data e Hora */}
                     <div>
                         <label htmlFor="date" className="text-white block mb-1">
-                            Selecione o dia:
+                            Selecione Data e Hora:
                         </label>
-                        <input
-                            type="text"
-                            id="date"
-                            value={formData.date}
-                            className={`w-full px-4 py-2 rounded-md border ${
-                                errors.date ? "border-red-500" : "border-gray-600"
-                            } bg-gray-700 text-white placeholder-gray-400`}
-                            placeholder="dd/mm/aaaa"
-                            onChange={handleDateInputChange}
-                            maxLength={10}
+                        <DatePicker
+                            selected={selectedDate}
+                            onChange={handleDateChange}
+                            showTimeSelect
+                            timeFormat="HH:mm"
+                            timeIntervals={30}
+                            dateFormat="dd/MM/yyyy HH:mm"
+                            className="w-full px-4 py-2 rounded-md border border-gray-600 bg-gray-700 text-white"
+                            placeholderText="Selecione Data e Hora"
                         />
                         {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
                     </div>
@@ -140,30 +137,6 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
                             placeholder="Digite o motivo"
                         />
                         {errors.reason && <p className="text-red-500 text-sm">{errors.reason}</p>}
-                    </div>
-
-                    {/* Campo de Hora */}
-                    <div>
-                        <label htmlFor="time" className="text-white block mb-1">
-                            Hora do lembrete:
-                        </label>
-                        <select
-                            id="time"
-                            value={formData.time}
-                            onChange={(e) => handleChange("time", e.target.value)}
-                            className="w-full px-4 py-2 rounded-md border border-gray-600 bg-gray-700 text-white"
-                        >
-                            {Array.from({ length: 48 }).map((_, i) => {
-                                const hour = Math.floor(i / 2).toString().padStart(2, "0");
-                                const minutes = i % 2 === 0 ? "00" : "30";
-                                return (
-                                    <option key={`${hour}:${minutes}`} value={`${hour}:${minutes}`}>
-                                        {`${hour}:${minutes}`}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                        {errors.time && <p className="text-red-500 text-sm">{errors.time}</p>}
                     </div>
 
                     {/* Campo de Descrição */}
@@ -188,9 +161,14 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
                         <button className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-500">
                             Cancelar
                         </button>
-                        <button className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500">
+                        <button
+                        onClick={handleSubmit}
+                        className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500">
                             Salvar Lembrete
                         </button>
+                        {loading && (
+                            <p className="text-gray-300 text-center">Carregando...</p>
+                        )}
                     </div>
                 </div>
             </div>

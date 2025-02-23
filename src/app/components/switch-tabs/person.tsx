@@ -81,7 +81,7 @@ export function PessoaFisica({
 ].map((field) => (
   <div key={field.key} className="w-full">
 
-          <label className="block text-gray-400 mb-2">{field.label}</label>
+
           <input
             type="text"
             name={field.name}
@@ -99,7 +99,7 @@ export function PessoaFisica({
 
       {/* Data de nascimento */}
       <div className="w-full">
-        <label className="block text-gray-400 mb-2">Data de Nascimento</label>
+
         <DatePicker
           selected={data.date_of_birth ? new Date(data.date_of_birth.split("-").reverse().join("-")) : null}
           onChange={(date) => handleInputChange("date_of_birth", date)}
@@ -115,7 +115,7 @@ export function PessoaFisica({
 
       {/* Gênero */}
       <div className="w-full">
-        <label className="block text-gray-400 mb-2">Gênero</label>
+
         <DropdownCheckboxGender
           value={data.gender || ""}
           onChange={(value) => handleInputChange("gender", value)}
@@ -126,7 +126,7 @@ export function PessoaFisica({
 
       {/* Estado Civil */}
       <div className="w-full">
-        <label className="block text-gray-400 mb-2">Estado Civil</label>
+
         <DropdownCheckboxMaritalStatus
           value={data.marital_status || ""}
           onChange={(value) => handleInputChange("marital_status", value)}

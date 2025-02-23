@@ -4,31 +4,19 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ReminderForm from "@/app/components/display/reminder-form";
 import { Navigation } from "@/app/components/navigation/navigation";
-import { reminderSchema, ReminderInput, sanitizeReminder, ReminderService } from "@/app/schemas/reminderSchema"; // ✅ Importação correta
+import {ReminderInput} from "@/app/schemas/reminderSchema"; // ✅ Importação correta
 
 export default function Reminder() {
   const router = useRouter();
 
-  // 🔹 Estado inicial agora inclui `id`
   const [reminderData, setReminderData] = useState<ReminderInput>({
-    id: 0, // ✅ Adicionado para evitar erro
     date: "",
     time: "00:00",
     reason: "",
     description: "",
-  });
+});
 
 
-  const handleSave = async (data: ReminderInput) => {
-    try {
-      const sanitizedData = sanitizeReminder(data);
-      const createdReminder = await ReminderService.createReminder(sanitizedData);
-      setReminderData(createdReminder); // Atualiza com os dados retornados da API
-      router.push("/dashboard-display/");
-    } catch (error) {
-      console.error("❌ Erro ao criar lembrete:", error);
-    }
-  };
 
   return (
     <div
@@ -40,15 +28,10 @@ export default function Reminder() {
 
       {/* ✅ Passando corretamente as propriedades para ReminderForm */}
       <ReminderForm
-        mode="create"
-        reminderData={reminderData}
-        setReminderData={setReminderData}
-        isEditable={true}
-        onSave={handleSave}
-        onCancel={() => router.push("/dashboard-display/")}
-        schema={reminderSchema}
-        sanitize={sanitizeReminder}
-        apiService={ReminderService}
+   mode="create"
+    reminderData={reminderData}
+
+
       />
 
       {/* Botão "Voltar" */}
