@@ -1,34 +1,34 @@
 import { z } from "zod"
 
-import { BankAccountSchema } from "./BankAccountSchema"
 import { AddressSchema } from "./AddressSchema"
-import { ContactSchema  }from "./ContactSchema"
-import { ClothingSchema } from "./ClothingSchema"
+import { BankAccountSchema } from "./BankAccountSchema"
 import { ResponseSchema } from "./BaseSchema"
-import { MaritalStatusEnum } from "./MaritalStatusEnum"
+import { ClothingSchema } from "./ClothingSchema"
+import { ContactSchema } from "./ContactSchema"
 import { GenderEnum } from "./GenderEnum"
+import { MaritalStatusEnum } from "./MaritalStatusEnum"
 
 export const EmployeeSchema = z.object({
     id: z.number().optional(),
     name: z.string(),
-    full_name: z.string(),
-    tax_id: z.string(),
-    national_id: z.string(),
-    date_of_birth: z.string(),
-    issuing_body: z.string(),
+    fullName: z.string(),
+    taxId: z.string(),
+    nationalId: z.string(),
+    dateOfBirth: z.string(),
+    issuingBody: z.string(),
     registration: z.string(),
     supervisor: z.boolean(),
     manager: z.boolean(),
     salary: z.number(),
-    contract_date: z.string(),
-    removal_date: z.string().optional(),
+    contractDate: z.string(),
+    removalDate: z.string().optional(),
     function: z.number(),
     address: AddressSchema.optional(),
     contact: ContactSchema.optional(),
     bank: BankAccountSchema.optional(),
     clothing: ClothingSchema.optional(),
     gender: z.nativeEnum(GenderEnum),
-    marital_status: z.nativeEnum(MaritalStatusEnum),
+    maritalStatus: z.nativeEnum(MaritalStatusEnum),
     is_active: z.boolean().optional(),
 })
 

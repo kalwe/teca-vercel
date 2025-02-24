@@ -95,8 +95,8 @@ model Employee {
   supervisor    Boolean   @default(false)
   manager       Boolean   @default(false)
   salary        Decimal   @db.Money
-  contractDate  String    @map("contract_date")
-  removalDate   String    @map("removal_date")
+  contractDate  String    @map("contractDate")
+  removalDate   String    @map("removalDate")
   functionId    Int       @map("function_id")
   address       Address?
   contact       Contact?

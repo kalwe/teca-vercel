@@ -72,7 +72,7 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
       const formDataToSend = new FormData();
       formDataToSend.append("file", file);
       formDataToSend.append("registrationDate", registrationDate ? registrationDate.toISOString() : "");
-      formDataToSend.append("full_name", formData.full_name || "");
+      formDataToSend.append("fullName", formData.fullName || "");
       formDataToSend.append("position", formData.position || "");
       // Se houver outros campos no formData, adicione-os aqui conforme necessário.
 
@@ -122,12 +122,12 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
             <div>
               <input
                 type="text"
-                value={formData.full_name || ""}
-                onChange={(e) => handleChange("full_name", e.target.value)}
+                value={formData.fullName || ""}
+                onChange={(e) => handleChange("fullName", e.target.value)}
                 placeholder="Nome Completo"
-                className={`w-full px-4 py-2 border ${errors.full_name ? "border-red-500" : "border-gray-300"} rounded-lg bg-gray-50`}
+                className={`w-full px-4 py-2 border ${errors.fullName ? "border-red-500" : "border-gray-300"} rounded-lg bg-gray-50`}
               />
-              {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
+              {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
             </div>
 
             <DropdownCheckboxPosition value={formData.position || ""} onChange={(value) => handleChange("position", value)} />

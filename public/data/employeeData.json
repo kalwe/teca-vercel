@@ -1,11 +1,11 @@
 {
     "pessoaFisica": {
       "name": "",
-      "national_id": "",
+      "nationalId": "",
       "gender": "",
-      "marital_status": "",
+      "maritalStatus": "",
       "rg": "",
-      "issuing_body": "",
+      "issuingBody": "",
       "selectedDate": null
     },
     "funcionario": {

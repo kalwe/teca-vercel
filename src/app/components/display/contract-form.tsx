@@ -1,30 +1,34 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { PessoaFisica } from "../switch-tabs/person"
-import { Funcionario } from "../switch-tabs/employee"
-import { Address } from "../switch-tabs/address"
-import { Contact } from "../switch-tabs/Contact"
-import { Bank } from "../switch-tabs/bank"
-import { Clothing } from "../switch-tabs/clothing"
-import { EmployeeService } from "@/app/services/employeeService"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import { PessoaFisica } from "../switch-tabs/person";
+import { Funcionario } from "../switch-tabs/employee";
+import { Address } from "../switch-tabs/address";
+import { Contact } from "../switch-tabs/contact";
+import { Bank } from "../switch-tabs/bank";
+import { Clothing } from "../switch-tabs/clothing";
 
-export default function ContractForm({ mode, employeeData = {}, onSave, onCancel, isEditable = true }) {
-  const router = useRouter()
-  const [selectedTab, setSelectedTab] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+/**
+ * ContractForm component manages a multi-tab form for contract details.
+ * Each tab corresponds to a separate form section.
+ *
+ * SOLID Principles Applied:
+ * - Single Responsibility: ContractForm handles tab navigation and form state,
+ *   while each child component handles its own presentation.
+ * - Open/Closed: The tabs array can be extended with new components without
+ *   modifying the core logic.
+ *
+ * @param mode - Defines the operational mode of the form.
+ * @param isEditable - Boolean flag to enable or disable editing.
+ */
+export default function ContractForm({ mode, isEditable = true }) {
+  // State to manage the currently selected tab index.
+  const [selectedTab, setSelectedTab] = useState(0);
+  // State to store the form data for each tab. Using a Record for flexibility.
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
+  const [error] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
-    pessoaFisica: employeeData?.pessoaFisica ?? {},
-    funcionario: employeeData?.funcionario ?? {},
-    address: employeeData?.address ?? {},
-    contact: employeeData?.contact ?? {},
-    bankAccount: employeeData?.bank_account ?? {},
-    clothing: employeeData?.clothing ?? {},
-  })
-
+  // Define the tabs with their respective components and keys.
   const tabs = [
     { name: "PESSOA FÍSICA", component: PessoaFisica, key: "pessoaFisica" },
     { name: "FUNCIONÁRIO", component: Funcionario, key: "funcionario" },
@@ -32,77 +36,40 @@ export default function ContractForm({ mode, employeeData = {}, onSave, onCancel
     { name: "CONTATO", component: Contact, key: "contact" },
     { name: "DADOS BANCÁRIOS", component: Bank, key: "bankAccount" },
     { name: "VESTUÁRIO", component: Clothing, key: "clothing" },
-  ]
+  ];
 
-  const CurrentComponent = tabs[selectedTab].component
-  const currentKey = tabs[selectedTab].key
+  // Retrieve the currently active component and its associated key.
+  const CurrentComponent = tabs[selectedTab].component;
+  const currentKey = tabs[selectedTab].key;
 
   /**
-   * Atualiza os dados do formulário
+   * Handles input changes from child components.
+   * Updates the form data state using the current tab's key.
+   *
+   * @param data - The updated data from the child component.
    */
   const handleInputChange = (data: Record<string, unknown>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [currentKey]: { ...prev[currentKey], ...data },
-    }))
-  }
-
-  /**
-   * Avança para a próxima aba
-   */
-  const handleNextTab = () => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))
-
-  /**
-   * Volta para a aba anterior
-   */
-  const handlePrevTab = () => setSelectedTab((prev) => Math.max(prev - 1, 0))
-
-  /**
-   * Salva os dados do funcionário ao chegar na última aba e clicar em "Salvar"
-   */
-  const handleSave = async () => {
-    if (loading) return;
-    setLoading(true);
-    setError(null);
-
-    // Lista de campos obrigatórios
-    const requiredFields = {
-      camisa: formData.camisa,
-      calca: formData.calca,
-      calcado: formData.calcado,
-    };
-
-    // Verifica quais campos estão vazios
-    const missingFields = Object.entries(requiredFields)
-      .filter(([_, value]) => !value) // Filtra os campos vazios
-      .map(([key]) => key); // Retorna os nomes dos campos faltando
-
-    if (missingFields.length > 0) {
-      setError(`Os seguintes campos são obrigatórios: ${missingFields.join(", ")}`);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      console.log("📤 Enviando os seguintes dados:", JSON.stringify(formData, null, 2));
-
-      await EmployeeService.createEmployee(formData);
-      router.push("/contract-display/employee-list");
-    } catch (err) {
-      console.error("❌ Erro ao salvar funcionário:", err);
-      setError("Erro ao salvar funcionário. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [currentKey]: { ...prevData[currentKey], ...data },
+    }));
   };
 
+  /**
+   * Advances to the next tab.
+   */
+  const handleNextTab = () => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1));
 
+  /**
+   * Returns to the previous tab.9
+   */
+  const handlePrevTab = () => setSelectedTab((prev) => Math.max(prev - 1, 0));
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-5xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="flex flex-col md:flex-row">
-          {/* Menu Lateral */}
+          {/* Sidebar Menu */}
           <div className="w-full md:w-1/4 bg-gray-900 text-white">
             <div className="flex flex-col space-y-2 p-4">
               {tabs.map((tab, index) => (
@@ -121,49 +88,22 @@ export default function ContractForm({ mode, employeeData = {}, onSave, onCancel
             </div>
           </div>
 
-          {/* Conteúdo */}
+          {/* Content Area */}
           <div className="w-full md:w-3/4 p-6">
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             <CurrentComponent
-              data={formData[currentKey]}
+              // Pass the current form data to the child component for controlled inputs.
+              data={formData[currentKey] || {}}
               onChange={handleInputChange}
               isEditable={isEditable}
               mode={mode}
               onNext={handleNextTab}
               onPrev={handlePrevTab}
             />
-
-            {/* Botões */}
-            <div className="flex justify-between mt-4">
-              {selectedTab > 0 && (
-                <button
-                  onClick={handlePrevTab}
-                  className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all"
-                >
-                  Voltar
-                </button>
-              )}
-              {selectedTab < tabs.length - 1 ? (
-                <button
-                  onClick={handleNextTab}
-                  className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all"
-                >
-                  Próximo
-                </button>
-              ) : (
-                <button
-                  onClick={handleSave}
-                  className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all"
-                  disabled={loading}
-                >
-                  {loading ? "Salvando..." : "Salvar"}
-                </button>
-              )}
-            </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

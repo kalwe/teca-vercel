@@ -38,19 +38,19 @@ Content-Type: application/json
 {
   "id": 1,
   "name": "John Doe",
-  "full_name": "Johnathan Doe",
-  "tax_id": "123456789",
-  "national_id": "987654321",
-  "date_of_birth": "1990-05-20",
-  "issuing_body": "SSP",
+  "fullName": "Johnathan Doe",
+  "taxId": "123456789",
+  "nationalId": "987654321",
+  "dateOfBirth": "1990-05-20",
+  "issuingBody": "SSP",
   "registration": "REG123456",
   "supervisor": true,
   "manager": false,
   "salary": 5000,
-  "contract_date": "2023-01-15",
+  "contractDate": "2023-01-15",
   "function": 101,
   "gender": "MALE",
-  "marital_status": "SINGLE",
+  "maritalStatus": "SINGLE",
   "is_active": true
 }
 

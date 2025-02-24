@@ -230,7 +230,7 @@ export default function DashboardDisplay() {
 ) : (
   resumes.length > 0 ? (
     resumes.slice(0, maxItemsToShow).map((resume, index) => (
-      <li key={index}>{resume.full_name} - {resume.position}</li>
+      <li key={index}>{resume.fullName} - {resume.position}</li>
     ))
   ) : (
     <p className="text-white text-sm">Nenhum currículo disponível.</p>

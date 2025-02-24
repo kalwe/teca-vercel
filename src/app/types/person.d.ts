@@ -2,13 +2,13 @@ import { GenderEnum } from "../schemas/enums/gender"
 import { MaritalStatusEnum } from "../schemas/enums/maritalStatus"
 
 export type PersonType = {
-  full_name: string
-  tax_id: string
-  national_id: string
-  date_of_birth: Date | null
-  issuing_body: string
+  fullName: string
+  taxId: string
+  nationalId: string
+  dateOfBirth: Date | null
+  issuingBody: string
   gender: GenderEnum
-  marital_status: MaritalStatusEnum
+  maritalStatus: MaritalStatusEnum
 }
 
 export type PersonProps = {
@@ -21,11 +21,11 @@ export type PersonProps = {
 
 // ✅ Define valores padrão para um novo funcionário
 // export const initialPersonData: PersonType = {
-//   full_name: "",
-//   tax_id: "",
-//   national_id: "",
-//   date_of_birth: null,
-//   issuing_body: "",
+//   fullName: "",
+//   taxId: "",
+//   nationalId: "",
+//   dateOfBirth: null,
+//   issuingBody: "",
 //   gender: "Masculino", // Ajuste para um valor válido de GenderType
-//   marital_status: "Solteiro", // Ajuste para um valor válido de MaritalStatusType
+//   maritalStatus: "Solteiro", // Ajuste para um valor válido de MaritalStatusType
 // }

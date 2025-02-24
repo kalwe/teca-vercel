@@ -10,7 +10,7 @@ export const resumeSchema = z.object({
     .int()
     .positive("O ID deve ser um número inteiro positivo"), // Identificador único
 
-  full_name: z
+  fullName: z
     .string()
     .min(3, "O nome completo deve ter pelo menos 3 caracteres")
     .max(100, "O nome completo deve ter no máximo 100 caracteres")
@@ -27,7 +27,7 @@ export const resumeSchema = z.object({
   registration_date: z
     .string()
     .refine((date) => !isNaN(Date.parse(date)), {
-      message: "Data inválida. Use um formato de data válido (YYYY-MM-DD ou ISO8601).",
+      message: "Data inválida. Use um formato de data válido (dd-mm-yyyy ou ISO8601).",
     }),
 });
 

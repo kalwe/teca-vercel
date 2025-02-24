@@ -24,7 +24,7 @@ export const hoursBankSchema = z.object({
 
   date: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de data inválido (YYYY-MM-DD)"),
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de data inválido (dd-mm-yyyy)"),
 
   created_at: z
     .string()

@@ -1,9 +1,9 @@
 // import { employeeSchema } from "@/app/schemas/employeeSchema"
 // import { deletedJson } from "../data/employee"
-import { AddressTypeMock } from "./addressMock"
-import { ContactTypeMock } from "./contactMock"
 import { BankAccountType } from "../../src/app/types/bankAccount"
 import { ClothingType } from "../../src/app/types/clothing"
+import { AddressTypeMock } from "./addressMock"
+import { ContactTypeMock } from "./contactMock"
 
 
 // type FunctionType = {
@@ -28,20 +28,20 @@ enum MaritalStatusEnum {
 }
 
 type PersonType = {
-  full_name: string
-  tax_id: string
-  national_id: string
-  date_of_birth: Date | null
-  issuing_body: string
+  fullName: string
+  taxId: string
+  nationalId: string
+  dateOfBirth: Date | null
+  issuingBody: string
   gender: GenderEnum
-  marital_status: MaritalStatusEnum
+  maritalStatus: MaritalStatusEnum
 }
 
 // Define the EmployeeTypeMock type based on the JSON schema
 type EmployeeTypeMock = {
   active: boolean
   position: string
-  full_name: string
+  fullName: string
   id?: number
   person: PersonType // TODO: should inherence person type
   name: string
@@ -49,8 +49,8 @@ type EmployeeTypeMock = {
   supervisor: boolean
   manager: boolean
   salary: number
-  contract_date: Date
-  removal_date: Date
+  contractDate: Date
+  removalDate: Date
   function: number
   address: AddressTypeMock
   contact: ContactTypeMock
