@@ -61,6 +61,10 @@ generateToken(): string {
  * Sends a GET request to the proxy.
  * @param filter - An object containing the filter parameters for the API request.
  */
+/**
+ * Calls the Bank of Hours API using the provided filter parameters.
+ * @param filter - An object containing the filter parameters for the API request.
+ */
 async getBankHoursExtract(filter: HoursBankFilter) {
   const token = this.generateToken();
 
@@ -69,22 +73,49 @@ async getBankHoursExtract(filter: HoursBankFilter) {
     "User": this.apiUser,
     "Token": token,
   };
-  console.log("API Response:", data);
 
-
-  // Construct query parameters from the filter object
+  // Build the request URL with query parameters
   const queryParams = new URLSearchParams(filter as Record<string, string>).toString();
+  const requestUrl = `/api/proxy?${queryParams}`;
+  console.log("Request URL:", requestUrl);
 
-  const response = await fetch(`/api/proxy?${queryParams}`, {
-    method: "GET",
-    headers,
-  });
+  try {
+    // Initialize data with a default value
+    let data = {};
 
-  if (!response.ok) {
-    throw new Error("Erro ao buscar dados");
+    // Fetch data from the proxy
+    const response = await fetch(requestUrl, {
+      method: "GET",
+      headers,
+    });
+
+    // Check if the response is ok (status in the range 200-299)
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar dados: ${response.status} ${response.statusText}`);
+    }
+
+    // Get content type to determine how to parse the response
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json();
+    } else {
+      console.warn("Unexpected content type:", contentType);
+      data = await response.text(); // If not JSON, get text response
+    }
+
+    console.log("API Response Data:", data);
+
+    // Return data or throw an error if the structure is unexpected
+    if (!data || typeof data !== "object") {
+      throw new Error("Dados inesperados na resposta da API.");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Erro na requisição:", error);
+    throw error; // Re-throw to be caught in the component
   }
-
-  return response.json();
 }
+
 
 }

@@ -75,38 +75,38 @@ function EmployeeDashboard() {
       const data = await hoursBankService.getBankHoursExtract(filter);
       console.log("API Response Data:", data);
 
+      // Check for success or error in the API response
       if (data.success === false) {
         console.error("API Error:", data.info);
         setError(data.info || "Erro ao carregar os dados.");
         return;
       }
 
+      // Safely access data arrays with default values
+      const labels = Array.isArray(data.labels) ? data.labels : [];
+      const workedHours = Array.isArray(data.workedHours) ? data.workedHours : [];
+      const extraHours = Array.isArray(data.extraHours) ? data.extraHours : [];
+
       // Format data for the bar chart
       setBarChartData({
-        labels: data.labels || [],
+        labels,
         datasets: [
           {
             label: "Horas Trabalhadas",
-            data: Array.isArray(data.workedHours) ? data.workedHours : [],
+            data: workedHours,
             backgroundColor: "rgba(75, 192, 192, 0.8)",
           },
           {
             label: "Horas Extras",
-            data: Array.isArray(data.extraHours) ? data.extraHours : [],
+            data: extraHours,
             backgroundColor: "rgba(255, 99, 132, 0.8)",
           },
         ],
       });
 
-      // Aggregate totals for the pie chart with safety checks
-      const totalWorked = Array.isArray(data.workedHours)
-        ? data.workedHours.reduce((acc: number, val: number) => acc + val, 0)
-        : 0;
-
-      const totalExtra = Array.isArray(data.extraHours)
-        ? data.extraHours.reduce((acc: number, val: number) => acc + val, 0)
-        : 0;
-
+      // Aggregate totals for the pie chart
+      const totalWorked = workedHours.reduce((acc: number, val: number) => acc + val, 0);
+      const totalExtra = extraHours.reduce((acc: number, val: number) => acc + val, 0);
       setPieChartData({
         labels: ["Horas Trabalhadas", "Horas Extras"],
         datasets: [
@@ -123,6 +123,7 @@ function EmployeeDashboard() {
       setLoading(false);
     }
   };
+
 
   // Trigger the API call whenever the date filters or selected employee changes.
   useEffect(() => {
