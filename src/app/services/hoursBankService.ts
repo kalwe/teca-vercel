@@ -1,75 +1,90 @@
-import axios from "../utils/axiosInstance";
-import { HoursBank } from "../types/hoursBank";
-import { hoursBankSchema } from "../schemas/hoursBankSchema";
+/**
+ * hoursBankService.ts
+ *
+ * Service for handling API calls related to the Bank of Hours.
+ * It generates an access token by concatenating the base token with the current date (in dd/mm/yyyy format)
+ * and encrypting it using SHA256. The service then makes a POST request to the API with the necessary headers and body.
+ */
+
+import crypto from "crypto";
+
+// Interface defining the filter parameters for the API request.
+export interface HoursBankFilter {
+  dtde: string; // Start date (dd/mm/yyyy)
+  dtate: string; // End date (dd/mm/yyyy)
+  nome_pessoa?: string; // Employee name (if applicable)
+  cod_pessoa?: string; // Employee ID
+}
+
+export class HoursBankService {
+  private apiUrl: string;
+  private apiUser: string;
+  private apiTokenBase: string;
+
+  /**
+   * Constructor for HoursBankService.
+   * @param apiUrl - The URL of the API endpoint.
+   * @param apiUser - The user login to be sent in the header.
+   * @param apiTokenBase - The base token provided by support.
+   */
+  constructor(apiUrl: string, apiUser: string, apiTokenBase: string) {
+    this.apiUrl = apiUrl;
+    this.apiUser = apiUser;
+    this.apiTokenBase = apiTokenBase;
+  }
 
 /**
- * Service to handle Hours Bank API calls
+ * Generates an encrypted token by concatenating the base token with the current date
+ * and hashing the result using SHA256.
+ * @returns {string} The SHA256 encrypted token.
  */
-export const HoursBankService = {
-  /**
-   * Fetch all hours bank records from the API
-   * @returns {Promise<HoursBank[]>} - List of hours bank records
-   */
-  async getAllHours(): Promise<HoursBank[]> {
-    try {
-      const response = await axios.get("/hoursbank");
+generateToken(): string {
+  const today = new Date().toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const tokenString = `${this.apiTokenBase}${today}`;
+  const encryptedToken = crypto.createHash("sha256").update(tokenString).digest("hex");
 
-      // ✅ Validating and sanitizing the response data
-      return response.data.map((entry: unknown) => hoursBankSchema.parse(entry));
-    } catch (error) {
-      console.error("⚠ Error fetching hours bank records:", error);
-      throw new Error("Failed to fetch hours bank records");
-    }
-  },
+  console.log("Generated Token:", encryptedToken);
+  return encryptedToken;
+}
+
 
   /**
-   * Create a new hours bank entry
-   * @param {HoursBank} hoursData - Hours bank data validated by schema
-   * @returns {Promise<HoursBank>} - Created hours bank entry
+   * Calls the Bank of Hours API using the provided filter parameters.
+   * @param filter - An object containing the filter parameters for the API request.
    */
-  async createHours(hoursData: HoursBank): Promise<HoursBank> {
-    try {
-      // ✅ Validate and sanitize input data before sending
-      const validatedData = hoursBankSchema.parse(hoursData);
+/**
+ * Calls the Bank of Hours API using the provided filter parameters.
+ * Sends a GET request to the proxy.
+ * @param filter - An object containing the filter parameters for the API request.
+ */
+async getBankHoursExtract(filter: HoursBankFilter) {
+  const token = this.generateToken();
 
-      const response = await axios.post("/hoursbank", validatedData);
-      return hoursBankSchema.parse(response.data);
-    } catch (error) {
-      console.error("⚠ Error creating hours bank entry:", error);
-      throw new Error("Failed to create hours bank entry");
-    }
-  },
+  const headers = {
+    "Content-Type": "application/json",
+    "User": this.apiUser,
+    "Token": token,
+  };
+  console.log("API Response:", data);
 
-  /**
-   * Update an existing hours bank entry by ID
-   * @param {number} id - ID of the hours bank entry
-   * @param {Partial<HoursBank>} hoursData - Updated data
-   * @returns {Promise<HoursBank>} - Updated hours bank entry
-   */
-  async updateHours(id: number, hoursData: Partial<HoursBank>): Promise<HoursBank> {
-    try {
-      // ✅ Validate only the updated fields before sending
-      const validatedData = hoursBankSchema.partial().parse(hoursData);
 
-      const response = await axios.put(`/hoursbank/${id}`, validatedData);
-      return hoursBankSchema.parse(response.data);
-    } catch (error) {
-      console.error("⚠ Error updating hours bank entry:", error);
-      throw new Error("Failed to update hours bank entry");
-    }
-  },
+  // Construct query parameters from the filter object
+  const queryParams = new URLSearchParams(filter as Record<string, string>).toString();
 
-  /**
-   * Delete an hours bank entry by ID
-   * @param {number} id - ID of the hours bank entry
-   * @returns {Promise<void>} - No return value on success
-   */
-  async deleteHours(id: number): Promise<void> {
-    try {
-      await axios.delete(`/hoursbank/${id}`);
-    } catch (error) {
-      console.error("⚠ Error deleting hours bank entry:", error);
-      throw new Error("Failed to delete hours bank entry");
-    }
-  },
-};
+  const response = await fetch(`/api/proxy?${queryParams}`, {
+    method: "GET",
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao buscar dados");
+  }
+
+  return response.json();
+}
+
+}
