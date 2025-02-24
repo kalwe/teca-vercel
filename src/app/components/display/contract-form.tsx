@@ -9,15 +9,7 @@ import { Bank } from "../switch-tabs/bank";
 import { Clothing } from "../switch-tabs/clothing";
 
 /**
- * ContractForm component manages a multi-tab form for contract details.
- * Each tab corresponds to a separate form section.
- *
- * SOLID Principles Applied:
- * - Single Responsibility: ContractForm handles tab navigation and form state,
- *   while each child component handles its own presentation.
- * - Open/Closed: The tabs array can be extended with new components without
- *   modifying the core logic.
- *
+
  * @param mode - Defines the operational mode of the form.
  * @param isEditable - Boolean flag to enable or disable editing.
  */

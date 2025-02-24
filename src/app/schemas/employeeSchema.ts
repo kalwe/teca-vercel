@@ -22,6 +22,6 @@ export const employeeSchema = z.object({
         /^\d{2}-\d{2}-\d{4}$/,
         "A data de contratação deve estar no formato DD-MM-AAAA."
       ),
-    positionId: z.string().optional(),
+    positionId: z.string(),
 
   });
