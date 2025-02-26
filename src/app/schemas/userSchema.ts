@@ -1,5 +1,5 @@
-import { Role } from '@/app/types/authType';
 import { z } from 'zod';
+import { Role } from '../types/authType';
 
 export const baseSchema = z.object({
   id: z.number().int().positive().optional(),
