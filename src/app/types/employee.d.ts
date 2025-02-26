@@ -1,95 +1,84 @@
-// Employee.ts
+import { Address } from './address';
+import { BankAccount } from './BankAccount';
+import { Clothing } from './clothing';
+import { Contact } from './contact';
 
-import { Address } from "./address"
-import { BankAccount } from "./BankAccount"
-import { Clothing } from "./clothing"
-import { Contact } from "./contact"
-import { Function } from "./role" // TODO: change file name and or create another for Function
-
-// TODO: remover bank_account, funcionario, pessoaFisica
 export type EmployeeType = {
-  bank_account: {}
-  funcionario: {}
-  pessoaFisica: {}
-  is_active: boolean
-  position: string
-  full_name: string
-  id: number
-  person: any // TODO: mergear os fields
-  role: any // TODO: tipar corretamente
-  name: string // First name of the employee
-  registration: string // Registration number of the employee
-  supervisor: boolean // Indicates if the employee is a supervisor
-  manager: boolean // Indicates if the employee is a manager
-  salary: number // Salary of the employee
-  contract_date: Date // Date when the employee was contracted
-  removal_date: Date // Date when the employee was contracted
-  function: number // The function/role of the employee
-  address: Address // List of addresses associated with the employee
-  contact: Contact // List of contacts associated with the employee
-  bank: BankAccount // List of bank accounts associated with the employee
-  clothing: Clothing // List of clothing sizes or preferences associated with the employee
-}
+  id?: number;
+  name: string;
+  active: boolean;
+  fullName?: string;
+  dateOfBirth: string;
+  taxId: string;
+  nationalId: string;
+  issuingBody: string;
+  registration: string;
+  supervisor: boolean;
+  manager: boolean;
+  salary: number;
+  contractDate: Date;
+  removalDate?: Date;
+  positionId: number;
+  address?: Address;
+  contact?: Contact;
+  bank?: BankAccount;
+  clothing?: Clothing;
+  gender: string;
+  maritalStatus: string;
+};
 
 export interface EmployeeProps {
-  data: EmployeeType
-  onChange: (updatedData: EmployeeType) => void
-  isEditable: boolean
-  onNext: () => void
-  onPrev: () => void
+  data: EmployeeType;
+  onChange: (updatedData: EmployeeType) => void;
+  isEditable: boolean;
+  onNext: () => void;
+  onPrev: () => void;
 }
 
 export interface ContractFormProps {
-  mode: "edit" | "create"
-  employeeData?: EmployeeType | null
-  onSave: (updatedData: EmployeeType) => Promise<void>
-  onCancel: () => void
-  isEditable: boolean
+  mode: 'edit' | 'create';
+  employeeData?: EmployeeType | null;
+  onSave: (updatedData: EmployeeType) => Promise<void>;
+  onCancel: () => void;
+  isEditable: boolean;
 }
-
-// Masks
-
 
 export interface CpfMaskProps {
-  value: string // Valor atual do CPF vindo do componente pai
-  onChange: (value: string) => void // Callback para atualizar o CPF no componente pai
-  disabled?: boolean // Adiciona a propriedade opcional disabled
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-
-
 export interface BirthDayMaskProps {
-  value: string
-  onChange: (value: string) => void
+  value: string;
+  onChange: (value: string) => void;
 }
 
 export interface CepMaskProps {
-value: string
-  onChange: (value: string) => void
-  disabled?: boolean // Permite desabilitar o campo, se necessário
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-
-
 export interface PhoneMaskProps {
-  value: string // Valor do telefone vindo do componente pai
-  onChange: (value: string) => void // Função de callback para alterar o valor no componente pai
+  value: string;
+  onChange: (value: string) => void;
 }
 
 export interface QuantityMaskProps {
-  value: number // Valor inicial da quantidade
-  onChange: (newQuantity: number) => void // Função chamada quando a quantidade muda
-  min?: number // Valor mínimo permitido (opcional, padrão: 0)
-  max?: number // Valor máximo permitido (opcional, padrão: Infinity)
+  value: number;
+  onChange: (newQuantity: number) => void;
+  min?: number;
+  max?: number;
 }
 
 export interface RgMaskProps {
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  disabled?: boolean // Propriedade opcional para desativar o campo
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
 }
 
 export interface MoneyInputProps {
-  value: string
-  onChange: (newValue: string) => void
+  value: string;
+  onChange: (newValue: string) => void;
 }

@@ -16,7 +16,7 @@ export function PessoaFisica({
   isEditable,
   onNext,
   onPrev,
-  employee,
+  // employee,
 }: PersonProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string>>>({})
   const [isNextEnabled, setIsNextEnabled] = useState(false)
@@ -27,14 +27,14 @@ export function PessoaFisica({
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`; // ✅ Certifica que o formato é "dd-MM-yyyy"
+    return `${day}-${month}-${year}`;
   };
 
   const handleInputChange = (field: keyof PersonType, value: string | Date | null) => {
     let formattedValue = value;
 
     if (field === "date_of_birth" && value instanceof Date) {
-      formattedValue = formatDateForBackend(value); // ✅ Converte antes de atualizar o estado
+      formattedValue = formatDateForBackend(value);
     }
 
     const updatedData = { ...data, [field]: formattedValue };

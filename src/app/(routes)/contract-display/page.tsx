@@ -7,15 +7,14 @@ import { useRouter } from "next/navigation";
 import { Navigation } from "@/app/components/navigation/navigation";
 
 export default function Contract() {
-const router = useRouter("")
+const router = useRouter()
   return (
     <div
     style={{
       background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
-  }}
->
+      }}
+    >
       <Navigation />
-
       {/* Renderiza o formulário com as propriedades obrigatórias */}
       <ContractForm
         mode="create"

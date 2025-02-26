@@ -1,4 +1,4 @@
-import apiClient from "./api";
+import api from './api';
 
 /**
  * Service for job-related API operations.
@@ -10,12 +10,16 @@ import apiClient from "./api";
  * @param jobData - Object containing job details.
  * @returns Promise resolving with the created job data.
  */
-export const createJob = async (jobData: { title: string; description: string; salary: number }) => {
+export const createJob = async (jobData: {
+  title: string;
+  description: string;
+  salary: number;
+}) => {
   try {
-    const response = await apiClient.post("/jobs", jobData);
+    const response = await api.post('/jobs', jobData);
     return response.data;
   } catch (error) {
-    console.error("Error creating job:", error);
+    console.error('Error creating job:', error);
     throw error;
   }
 };
@@ -26,10 +30,10 @@ export const createJob = async (jobData: { title: string; description: string; s
  */
 export const fetchJobs = async () => {
   try {
-    const response = await apiClient.get("/jobs");
+    const response = await api.get('/jobs');
     return response.data;
   } catch (error) {
-    console.error("Error fetching jobs:", error);
+    console.error('Error fetching jobs:', error);
     throw error;
   }
 };
@@ -41,10 +45,10 @@ export const fetchJobs = async () => {
  */
 export const fetchJobById = async (jobId: string) => {
   try {
-    const response = await apiClient.get(`/jobs/${jobId}`);
+    const response = await api.get(`/jobs/${jobId}`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching job by ID:", error);
+    console.error('Error fetching job by ID:', error);
     throw error;
   }
 };
@@ -57,13 +61,13 @@ export const fetchJobById = async (jobId: string) => {
  */
 export const updateJob = async (
   jobId: string,
-  jobData: { title?: string; description?: string; salary?: number }
+  jobData: { title?: string; description?: string; salary?: number },
 ) => {
   try {
-    const response = await apiClient.put(`/jobs/${jobId}`, jobData);
+    const response = await api.put(`/jobs/${jobId}`, jobData);
     return response.data;
   } catch (error) {
-    console.error("Error updating job:", error);
+    console.error('Error updating job:', error);
     throw error;
   }
 };
@@ -75,10 +79,10 @@ export const updateJob = async (
  */
 export const deleteJob = async (jobId: string) => {
   try {
-    const response = await apiClient.delete(`/jobs/${jobId}`);
+    const response = await api.delete(`/jobs/${jobId}`);
     return response.data;
   } catch (error) {
-    console.error("Error deleting job:", error);
+    console.error('Error deleting job:', error);
     throw error;
   }
 };

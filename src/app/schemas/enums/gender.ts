@@ -1,6 +1,5 @@
 export enum GenderEnum {
-  male = 'Masculino',
-  female = 'Feminino',
-  other = 'Outro',
-  not_given = 'Não informado',
+  MALE = 'Masculino',
+  FEMALE = 'Feminino',
+  UNDEFINED = 'Outro/Não informado',
 }

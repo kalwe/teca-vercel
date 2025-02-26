@@ -5,26 +5,22 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState} from "react";
 import { userOutputSchema } from "@/app/schemas/userSchema";
 import { UserService } from "@/app/services/userService";
-import { z } from "zod";
+import { UserResponse } from "@/app/types/user"
 
-// Define o tipo do usuário baseado no `userOutputSchema`
-type UserOutput = z.infer<typeof userOutputSchema>;
 
 function UserList() {
   const { updateUser } = useUserContext();
   const router = useRouter();
-  const [userList, setUserList] = useState<UserOutput[]>([]);
+  const [userList, setUserList] = useState<UserResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const usersFromAPI = await UserService.getUsers();
-        const validatedUsers = userOutputSchema.array().parse(usersFromAPI);
+        const users = await UserService.getUsers();
+        const validatedUsers = userOutputSchema.array().parse(users);
         const uniqueUsers = Array.from(new Map(validatedUsers.map(user => [user.id, user])).values());
         setUserList(uniqueUsers);
       } catch (err) {
@@ -45,7 +41,7 @@ function UserList() {
 
   const toggleUserStatus = async (userId: number, isActive: boolean) => {
     try {
-      await updateUser(userId, { active: !isActive });
+      const updatedUser = await updateUser(userId, { active: !isActive });
       setUserList((prev) =>
         prev.map((user) =>
           user.id === userId ? { ...user, active: !isActive } : user
@@ -76,8 +72,6 @@ function UserList() {
       setError("Erro ao excluir usuário.");
     }
   };
-
-
 
   const handleAddUser = () => {
     router.push("/user-display/");

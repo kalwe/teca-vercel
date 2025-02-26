@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { ReminderInput, sanitizeReminder } from '@/app/schemas/reminderSchema'
+import { ReminderInput } from '@/app/schemas/reminderSchema'
 import axios from 'axios'
 
 const API_URL = "https://api.example.com/reminders"
@@ -19,9 +19,8 @@ export const ReminderProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const addReminder = async (reminder: ReminderInput) => {
         try {
-            const sanitizedReminder = sanitizeReminder(reminder)
             // Envia o lembrete para o backend
-            const response = await axios.post(API_URL, sanitizedReminder)
+            const response = await axios.post(API_URL, reminder)
             const validatedReminder = response.data // Considerando que a API retorna os dados validados
 
             // Atualiza o estado e salva no localStorage
@@ -35,14 +34,14 @@ export const ReminderProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
     }
 
-    useEffect(() => {
-        const storedReminders = localStorage.getItem('reminders')
-        if (storedReminders) {
-            const parsedReminders = JSON.parse(storedReminders)
-            const sanitizedReminders = parsedReminders.map((reminder) => sanitizeReminder(reminder))
-            setReminders(sanitizedReminders)
-        }
-    }, [])
+    // useEffect(() => {
+    //     const storedReminders = localStorage.getItem('reminders')
+    //     if (storedReminders) {
+    //         const parsedReminders = JSON.parse(storedReminders)
+    //         const Reminders = parsedReminders.map((reminder) => reminder)
+    //         setReminders(Reminders)
+    //     }
+    // }, [])
 
     useEffect(() => {
         const interval = setInterval(() => {

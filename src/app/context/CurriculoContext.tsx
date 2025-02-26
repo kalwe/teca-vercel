@@ -2,12 +2,13 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { ResumeService } from "../services/resumeService"
+
 type ResumeContextData = {
   resumes: [] // Usando '' para acomodar os dados do resumeSchema
   loading: boolean
   error: string | null
-  addResume: (resume) => Promise<void>
-  updateResume: (id: number, resume: Partial<>) => Promise<void>
+  addResume: (resume: any) => Promise<void>
+  updateResume: (id: number, resume: any) => Promise<void>
   deleteResume: (id: number) => Promise<void>
 }
 
@@ -38,12 +39,12 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [])
 
   // Adicionar um novo currículo
-  const addResume = useCallback(async (resume) => {
+  const addResume = useCallback(async (resume: any) => {
     setLoading(true)
     setError(null)
     try {
       const newResume = await ResumeService.createResume(resume) // Criando currículo com o serviço ResumeService
-      setResumes((prev) => [...prev, newResume]) // Atualiza o estado com o novo currículo
+      setResumes((prev) => ({...prev, newResume})) // Atualiza o estado com o novo currículo
     } catch (error) {
       console.error("Erro ao adicionar currículo:", error)
       setError("Erro ao adicionar currículo.")
@@ -53,7 +54,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [])
 
   // Atualizar um currículo existente
-  const updateResume = useCallback(async (id: number, updatedResume: Partial) => {
+  const updateResume = useCallback(async (id: number, updatedResume: any) => {
     if (!id) {
       console.error("Erro: ID do currículo é obrigatório.")
       return
@@ -63,15 +64,15 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setError(null)
 
     try {
-      const existingResume = resumes.find((resume) => resume.id === id)
-      if (!existingResume) throw new Error("Currículo não encontrado.")
+      // const existingResume = resumes.find((resume) => resume.id === id)
+      // if (!existingResume) throw new Error("Currículo não encontrado.")
 
-      const updatedData = { ...existingResume, ...updatedResume, id }
+      // const updatedData = { existingResume, ...updatedResume, id }
 
-      const newResume = await ResumeService.updateResume(id, updatedData) // Atualizando currículo com ResumeService
-      setResumes((prevResumes) =>
-        prevResumes.map((resume) => (resume.id === id ? { ...resume, ...newResume } : resume))
-      )
+      // const newResume = await ResumeService.updateResume(id, updatedData) // Atualizando currículo com ResumeService
+      // setResumes((prevResumes) =>
+      //   prevResumes.map((resume) => (resume.id === id ? { ...resume, ...newResume } : resume))
+      // )
     } catch (error) {
       console.error("Erro ao atualizar currículo:", error)
       setError("Erro ao atualizar currículo.")
@@ -85,8 +86,9 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setLoading(true)
     setError(null)
     try {
-      await ResumeService.deleteResume(id) // Deletando currículo com ResumeService
-      setResumes((prevResumes) => prevResumes.filter((resume) => resume.id !== id)) // Atualiza a lista de currículos
+      const deletedResume = await ResumeService.deleteResume(id) // Deletando currículo com ResumeService
+      // const resumeRemove = resumes.filter((res) => ({ res.id == id }))
+      // setResumes(resumeRemove) // Atualiza a lista de currículos
     } catch (error) {
       console.error("Erro ao deletar currículo:", error)
       setError("Erro ao deletar currículo.")

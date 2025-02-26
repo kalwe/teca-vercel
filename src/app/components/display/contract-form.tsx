@@ -37,9 +37,6 @@ export default function ContractForm({ mode, employeeData = {}, onSave, onCancel
   const CurrentComponent = tabs[selectedTab].component
   const currentKey = tabs[selectedTab].key
 
-  /**
-   * Atualiza os dados do formulário
-   */
   const handleInputChange = (data: Record<string, unknown>) => {
     setFormData((prev) => ({
       ...prev,
@@ -47,19 +44,10 @@ export default function ContractForm({ mode, employeeData = {}, onSave, onCancel
     }))
   }
 
-  /**
-   * Avança para a próxima aba
-   */
   const handleNextTab = () => setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))
 
-  /**
-   * Volta para a aba anterior
-   */
   const handlePrevTab = () => setSelectedTab((prev) => Math.max(prev - 1, 0))
 
-  /**
-   * Salva os dados do funcionário ao chegar na última aba e clicar em "Salvar"
-   */
   const handleSave = async () => {
     if (loading) return;
     setLoading(true);
@@ -72,7 +60,6 @@ export default function ContractForm({ mode, employeeData = {}, onSave, onCancel
       calcado: formData.calcado,
     };
 
-    // Verifica quais campos estão vazios
     const missingFields = Object.entries(requiredFields)
       .filter(([_, value]) => !value) // Filtra os campos vazios
       .map(([key]) => key); // Retorna os nomes dos campos faltando
@@ -84,19 +71,17 @@ export default function ContractForm({ mode, employeeData = {}, onSave, onCancel
     }
 
     try {
-      console.log("📤 Enviando os seguintes dados:", JSON.stringify(formData, null, 2));
+      console.log("Enviando os seguintes dados:", JSON.stringify(formData, null, 2));
 
       await EmployeeService.createEmployee(formData);
       router.push("/contract-display/employee-list");
     } catch (err) {
-      console.error("❌ Erro ao salvar funcionário:", err);
+      console.error("Erro ao salvar funcionário:", err);
       setError("Erro ao salvar funcionário. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">

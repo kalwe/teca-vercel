@@ -44,7 +44,7 @@ export default function UserDetailPage() {
         <UserForm
           mode="edit"
           isEditable={true}
-          userData={userData} // Alterado para garantir compatibilidade com o UserForm
+          userData={userData}
         />
       )}
     </div>

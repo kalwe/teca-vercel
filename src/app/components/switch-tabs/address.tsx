@@ -18,14 +18,13 @@ export function Address({
   const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof AddressType, string>>>({})
 
-  // TODO: identar corretamente
   const handleInputChange = (field: string, value: string) => {
-  const updatedData = { ...data, [field]: value } // TODO: remover linha vazia abaixo
+  const updatedData = { ...data, [field]: value }
 
     try {
-      const validatedAddress = addressSchema.parse(updatedData) // Valida os dados
+      const validatedAddress = addressSchema.parse(updatedData)
       data = validatedAddress
-      setErrors({}) // Limpa os erros ao pr eencher corretamente TODO: teria que limpar o erro corrigido
+      setErrors({})
       setIsNextEnabled(true)
     } catch (error) {
       if (error instanceof z.ZodError) {

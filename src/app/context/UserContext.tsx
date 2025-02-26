@@ -6,14 +6,6 @@ import { userOutputSchema, userInputSchema } from "../schemas/userSchema";
 
 const endpoint = "/user";
 
-type UserOutput = {
-  id: number;
-  name: string;
-  email: string;
-  active: boolean;
-  roles?: string[];
-};
-
 type UserContextType = {
   users: UserOutput[];
   loggedInUser: UserOutput | null;
@@ -32,37 +24,37 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [loggedInUser, setLoggedInUser] = useState<UserOutput | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        console.log("🔄 Buscando usuários...");
-        const response = await api.get(endpoint);
-
-        if (!response || !response.data) {
-          throw new Error("Resposta inválida da API");
-        }
-
-        const validatedUsers = userOutputSchema.array().parse(response.data);
-        setUsers(validatedUsers);
-      } catch (error) {
-        console.error(" Erro ao buscar usuários:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-
-    try {
-      const storedUser = localStorage.getItem("loggedInUser");
-      if (storedUser) {
-        setLoggedInUser(JSON.parse(storedUser));
-      }
-    } catch (error) {
-      console.error(" Erro ao recuperar usuário do localStorage:", error);
-    }
-  }, []);
+//   useEffect(() => {
+//     const fetchUsers = async () => {
+//       setLoading(true);
+//       try {
+//         console.log("🔄 Buscando usuários...");
+//         const response = await api.get(endpoint);
+//
+//         if (!response || !response.data) {
+//           throw new Error("Resposta inválida da API");
+//         }
+//
+//         const validatedUsers = userOutputSchema.array().parse(response.data);
+//         setUsers(validatedUsers);
+//       } catch (error) {
+//         console.error(" Erro ao buscar usuários:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//
+//     fetchUsers();
+//
+//     try {
+//       const storedUser = localStorage.getItem("loggedInUser");
+//       if (storedUser) {
+//         setLoggedInUser(JSON.parse(storedUser));
+//       }
+//     } catch (error) {
+//       console.error(" Erro ao recuperar usuário do localStorage:", error);
+//     }
+//   }, []);
 
   const addUser = async (userData: Omit<UserOutput, "id"> & { password: string }) => {
     try {

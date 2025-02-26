@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { userInputSchema } from "@/app/schemas/userSchema";
 import { UserService } from "@/app/services/userService";
-import { z } from "zod";
+import { ZodError } from "zod"
 
 export default function UserForm({ mode = "create", userData, onSave }) {
   const router = useRouter();
@@ -27,14 +27,11 @@ export default function UserForm({ mode = "create", userData, onSave }) {
       setFormData({
         name: userData.name || "",
         email: userData.email || "",
-        password: "", // Senha não deve ser carregada na edição
+        password: "",
       });
     }
   }, [isEditMode, userData]);
 
-  /**
-   * 🚀 Atualiza os campos e valida os dados em tempo real.
-   */
   const handleInputChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
 
@@ -42,8 +39,8 @@ export default function UserForm({ mode = "create", userData, onSave }) {
       userInputSchema.parse({ ...formData, [field]: value });
       setErrors({});
     } catch (err) {
-      if (err instanceof z.ZodError) {
-        const fieldErrors: Record<string> = {};
+      if (err instanceof ZodError) {
+        const fieldErrors: Record<string, string> = {};
         err.errors.forEach((e) => {
           if (e.path.length > 0) {
             fieldErrors[e.path[0] as string] = e.message;
@@ -54,23 +51,18 @@ export default function UserForm({ mode = "create", userData, onSave }) {
     }
   };
 
-  /**
-   * 🚀 Valida e salva/atualiza usuário
-   */
   const handleSave = async () => {
     if (loading) return;
 
-    // Validações básicas
     if (!formData.email || !formData.name) {
       setErrors((prev) => ({
         ...prev,
-        email: !formData.email ? "O email é obrigatório." : prev.email,
+        // email: !formData.email ? "O email é obrigatório." : prev.email,
         name: !formData.name ? "O nome é obrigatório." : prev.name,
       }));
       return;
     }
 
-    // Se for criação, a senha é obrigatória
     if (!isEditMode && (!formData.password || formData.password.length < 6)) {
       setErrors((prev) => ({
         ...prev,
@@ -79,7 +71,6 @@ export default function UserForm({ mode = "create", userData, onSave }) {
       return;
     }
 
-    // Em qualquer modo, se senha for preenchida, validar confirmação
     if (formData.password && formData.password !== confirmPassword) {
       setErrors((prev) => ({
         ...prev,
@@ -91,11 +82,10 @@ export default function UserForm({ mode = "create", userData, onSave }) {
     try {
       setLoading(true);
 
-      // Cria um objeto para envio
       const validatedData = {
         name: formData.name,
         email: formData.email,
-        ...(formData.password ? { password: formData.password } : {}), // Apenas inclui a senha se preenchida
+        ...(formData.password ? { password: formData.password } : {}),
       };
 
       if (isEditMode) {
@@ -109,20 +99,17 @@ export default function UserForm({ mode = "create", userData, onSave }) {
       }
 
       await onSave?.();
-      router.push("/user-display/user-list"); // Redireciona para a lista de usuários após salvar/atualizar
+      router.push("/user-display/user-list");
     } catch (error) {
-      console.error("❌ Erro ao salvar usuário:", error);
+      console.error("Erro ao salvar usuário:", error);
       alert("Erro ao salvar usuário. Verifique os campos.");
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * 🚀 Cancela a ação e retorna para a lista de usuários
-   */
   const handleCancel = () => {
-    router.push("/user-display/user-list"); // Redireciona para a lista de usuários ao cancelar
+    router.push("/user-display/user-list");
   };
 
   return (

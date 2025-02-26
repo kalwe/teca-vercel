@@ -6,8 +6,8 @@ import { VacancyProvider } from "@/app/context/VacancyContext";
 import { ResumeProvider } from "./context/CurriculoContext";
 import { ReminderProvider } from "@/app/context/ReminderContext";
 import { UserProvider } from "@/app/context/UserContext";
-import { HoursBankProvider } from "@/app/context/HoursBankContext"; // Added HoursBankProvider
-import { AuthProvider } from "./context/LoginContext";
+import { HoursBankProvider } from "@/app/context/HoursBankContext";
+import { LoginProvider } from "./context/LoginContext";
 import "./globals.css";
 
 // Font Configuration
@@ -29,9 +29,8 @@ export const metadata: Metadata = {
 
 // Encapsulate Providers
 const AppProviders = ({ children }: { children: React.ReactNode }) => (
-  <AuthProvider> {/* Added AuthProvider */}
+  <LoginProvider> {/* Added AuthProvider */}
     <UserProvider>
-
         <EmployeeProvider>
           <VacancyProvider>
             <ResumeProvider>
@@ -43,7 +42,7 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
         </EmployeeProvider>
 
     </UserProvider>
-  </AuthProvider>
+  </LoginProvider>
 );
 
 // Root Layout Component

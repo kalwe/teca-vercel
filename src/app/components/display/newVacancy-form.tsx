@@ -14,6 +14,8 @@ import DropdownCheckboxPosition from "../DropDown/dropdown-position";
 interface VacancyFormProps {
   vacancyData?: Vacancy;
   setVacancyData: React.Dispatch<React.SetStateAction<Vacancy>>;
+  onSave: any
+  isEditMode: any
 }
 
 const NewVacancyForm: React.FC<VacancyFormProps> = ({ vacancyData, setVacancyData }) => {
@@ -30,7 +32,7 @@ const NewVacancyForm: React.FC<VacancyFormProps> = ({ vacancyData, setVacancyDat
     requirements: '',
     benefits: '',
     salary: 0,
-    date: '',
+    // date: '',
   };
 
   const [localVacancyData, setLocalVacancyData] = useState<Vacancy>(initialVacancyData);
@@ -91,7 +93,6 @@ const NewVacancyForm: React.FC<VacancyFormProps> = ({ vacancyData, setVacancyDat
     try {
       setLoading(true);
 
-      // 🔥 Converte o salary para número e LOGA pra ter certeza do tipo
       const dataToValidate = {
         ...localVacancyData,
         salary: parseFloat(localVacancyData.salary.toString().replace(/\D/g, "")) / 100
@@ -100,10 +101,8 @@ const NewVacancyForm: React.FC<VacancyFormProps> = ({ vacancyData, setVacancyDat
       console.log("Tipo de salary antes de validar:", typeof dataToValidate.salary);
       console.log("Valor de salary antes de validar:", dataToValidate.salary);
 
-      // 🔥 Valida os dados antes de enviar
       const validatedData = vacancySchema.parse(dataToValidate);
 
-      // 🔥 Garantindo que vai como number
       validatedData.salary = Number(validatedData.salary);
 
       console.log("Tipo de salary antes de enviar:", typeof validatedData.salary);
@@ -221,7 +220,7 @@ useEffect(() => {
           )}
         </div>
 
-        <div>
+        {/* <div>
           <DatePicker
             selected={
               localVacancyData.date ? new Date(localVacancyData.date) : null
@@ -240,7 +239,7 @@ useEffect(() => {
           {errors.date && (
             <p className="text-red-500 text-sm">{errors.date}</p>
           )}
-        </div>
+        </div> */}
 
         <button
           onClick={handleSave}

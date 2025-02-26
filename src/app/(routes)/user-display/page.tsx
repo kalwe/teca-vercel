@@ -11,7 +11,7 @@ export default function Contract() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode") || "create";
-  const userId = searchParams.get("id"); // Obtém o ID do usuário (se houver)
+  const userId = searchParams.get("id");
 
   const [userData, setUserData] = useState(null);
   const isEditMode = mode === "edit";
@@ -19,7 +19,7 @@ export default function Contract() {
   // Carregar os dados do usuário se for modo edição
   useEffect(() => {
     if (isEditMode && userId) {
-      UserService.getUserById(userId).then(setUserData).catch((err) => {
+      UserService.getUserById(Number(userId)).then(setUserData).catch((err) => {
         console.error("Erro ao carregar usuário:", err);
       });
     }

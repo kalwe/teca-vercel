@@ -1,15 +1,15 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react"
-import { Employee } from "../types/employee"
+import { EmployeeType } from "../types/employee"
 import { EmployeeService } from "../services/employeeService"
 
-interface EmployeeContextProps { // TODO: outro EmployeeContextProps
-  employees: Employee[] //
-  addEmployee: (newEmployee: Employee) => Promise<void>
-  updateEmployee: (id: number, updates: Partial<Employee>) => Promise<void>
+interface EmployeeContextProps {
+  employees: EmployeeType[]
+  addEmployee: (newEmployee: EmployeeType) => Promise<void>
+  updateEmployee: (id: number, updates: Partial<EmployeeType>) => Promise<void>
   deactivateEmployee: (id: number) => Promise<void>
-  getEmployeeById: (id: number) => Employee | undefined
+  getEmployeeById: (id: number) => Promise<void>
   // TODO: voce criou os methods async, precisa declarar aqui, alem que defiunou retrun Promisse<void>
   // mas nenhum retorna Promise<void>
 }
@@ -17,14 +17,14 @@ interface EmployeeContextProps { // TODO: outro EmployeeContextProps
 const EmployeeContext = createContext<EmployeeContextProps | undefined>(undefined)
 
 export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
-  const [employees, setEmployees] = useState<Employee[]>([]) // TODO: array vai servir apenas
+  const [employees, setEmployees] = useState<EmployeeType[]>([])
 
   // Carregar funcionários da API ao iniciar o contexto
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         const data = await EmployeeService.getAllEmployees()
-        setEmployees(data) // TODO: useState<Employee[]>([]) esta definido como um array de employees
+        setEmployees(data)
       } catch (error) {
         console.error("Erro ao carregar funcionários da API:", error)
       }
@@ -34,7 +34,7 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   // Adicionar funcionário
-  const addEmployee = async (newEmployee: Employee) => {
+  const addEmployee = async (newEmployee: EmployeeType) => {
     try {
       const addedEmployee = await EmployeeService.createEmployee(newEmployee)
       setEmployees((prev) => [ ...prev, addedEmployee ])
@@ -45,8 +45,7 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // Atualizar funcionário
-  const updateEmployee = async (id: number, updates: Partial<Employee>) => {
+  const updateEmployee = async (id: number, updates: Partial<EmployeeType>) => {
     try {
       const updatedEmployee = await EmployeeService.updateEmployee(id, updates)
       setEmployees((prev) =>
@@ -59,14 +58,12 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // Desativar funcionário
-  // TODO: use deleteEmployee
   const deactivateEmployee = async (id: number) => {
     try {
-      await EmployeeService.updateEmployee(id, { active: false })
+      const inactiveEmployee = await EmployeeService.deleteEmployee(id)
       setEmployees((prev) =>
         prev.map((employee) =>
-          employee.id === id ? { ...employee, active: false } : employee
+          employee.id === id ? { ...employee, inactiveEmployee } : employee
         )
       )
       alert("Funcionário desativado com sucesso!")
@@ -76,9 +73,20 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // Buscar funcionário por ID
-  const getEmployeeById = (id: number): Employee | undefined => {
-    return employees.find((employee) => employee.id === id)
+  const getEmployeeById = async (id: number) => {
+    // return employees.find((employee) => employee.id === id)
+    try {
+      const employeeById = await EmployeeService.getEmployeeById(id)
+      setEmployees((prev) =>
+        prev.map((employee) =>
+          employee.id === id ? { ...employee, employeeById } : employee
+        )
+      )
+      alert("Funcionário desativado com sucesso!")
+    } catch (error) {
+      console.error("Erro ao desativar funcionário:", error)
+      alert("Erro ao desativar funcionário. Tente novamente.")
+    }
   }
 
   return (

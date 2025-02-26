@@ -5,12 +5,12 @@ import { useRouter, useParams } from "next/navigation"
 import ContractForm from "@/app/components/display/contract-form"
 import { useEmployeeContext } from "@/app/context/EmployeeContext"
 import { EmployeeService } from "@/app/services/employeeService"
-import { Employee } from "@/app/types/employee"
+import { EmployeeType } from "@/app/types/employee"
 import { Navigation } from "@/app/components/navigation/navigation"
 
 export default function EmployeeDetailPage() {
   const { employees, updateEmployee } = useEmployeeContext() // TODO: verificaruse EmployeeContext()
-  const [formData, setFormData] = useState<Employee | null>(null)
+  const [formData, setFormData] = useState<EmployeeType | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const router = useRouter()
   const { id } = useParams() // Captura o ID da URL
@@ -18,7 +18,7 @@ export default function EmployeeDetailPage() {
   useEffect(() => {
     const employeeId = Number(id)
 
-    if (isNaN(employeeId)) { // TODO:
+    if (isNaN(employeeId)) {
       alert("ID inválido. Redirecionando...")
       router.replace("/contract-display/employee")
       return
@@ -47,16 +47,14 @@ export default function EmployeeDetailPage() {
       }
     }
 
-    await fetchEmployee()
+    fetchEmployee()
   }, [id, employees, router])
 
-  const handleSave = async (updatedData: Employee) => {
+  const handleSave = async (updatedData: EmployeeType) => {
     setLoading(true)
     try {
-      // Atualiza funcionário via API
       const updatedEmployee = await EmployeeService.updateEmployee(updatedData.id, updatedData)
 
-      // Atualiza o contexto com os novos dados
       updateEmployee(updatedData.id, updatedEmployee)
 
       alert("Funcionário atualizado com sucesso.")

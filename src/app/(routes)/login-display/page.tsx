@@ -2,62 +2,55 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-// Importando corretamente os schemas e o serviço de autenticação
-import { useAuthInputSchema, AuthService } from "@/app/schemas/authSchema";
+import { userAuthInputSchema, UserAuthInput } from "@/app/schemas/authSchema";
+import { AuthService } from "@/app/services/authService"
 import "./style.css";
+import { ZodError } from "zod"
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
-  const [credentials, setCredentials] = useState({ name: "", password: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({}); // Armazena erros de validação
+  const [credentials, setCredentials] = useState<UserAuthInput>({ name: "", password: ""});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
 
-  // UseEffect para simular o carregamento da página
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle para atualizar as credenciais
+
   const handleChange = (field: string, value: string) => {
     setCredentials((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Função para login
+
   const handleLogin = async () => {
     try {
       setLoading(true);
 
-      // Validação com Zod antes de enviar para a API
-      useAuthInputSchema.parse(credentials); // Isso valida as credenciais usando o useAuthInputSchema
-      setErrors({}); // Limpa os erros se passar na validação
+      userAuthInputSchema.parse(credentials);
+      setErrors({});
 
-      // Envia para a API via Service
-      const response = await AuthService.login(credentials);
+      const authUser = await AuthService.login(credentials);
 
-      localStorage.setItem("token", response.token);
-
-      alert(`Bem-vindo(a), ${response.current_user_id}!`);
+      alert(`Bem-vindo(a), ${authUser.name}!`);
       router.push("/dashboard-display");
     } catch (error: any) {
       setLoading(false);
 
-      if (error.name === "ZodError") {
-        // Se o erro for de validação Zod
+      if (error instanceof ZodError) {
         const validationErrors: Record<string, string> = {};
         error.errors.forEach((err: any) => {
           validationErrors[err.path[0]] = err.message;
         });
-        setErrors(validationErrors); // Exibe os erros de validação
+        setErrors(validationErrors);
       } else {
-        // Se for um erro do AuthService ou qualquer outro erro
         alert("Erro ao conectar ao servidor. Verifique suas credenciais.");
       }
     }
   };
 
-  // Exibição de carregamento
+
   if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-[#4CAF50]">
@@ -93,7 +86,7 @@ export default function Home() {
             placeholder="Digite seu nome"
             className="w-full text-center bg-transparent border-none outline-none text-white placeholder-gray-300 text-lg"
             value={credentials.name}
-            onChange={(e) => handleChange("name", e.target.value)} // 'name' é esperado pelo schema
+            onChange={(e) => handleChange("name", e.target.value)}
           />
           <div className="border-t border-white w-full mt-1"></div>
           {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}

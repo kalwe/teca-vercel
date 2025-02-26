@@ -1,22 +1,21 @@
 "use client";
 
-
 import { Responsive, WidthProvider, Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Navigation } from "@/app/components/navigation/navigation";
-import { EmployeeService } from "@/app/services/EmployeeService";
 import { VacancyService } from "@/app/services/vacancyService";
-import { ResumeService } from "@/app/services/ResumeService";
-import { ReminderService } from "@/app/services/ReminderService";
-import { HoursBankService } from "@/app/services/HoursBankService";
 import { useEmployeeContext } from "@/app/context/EmployeeContext";
 import { useVacancyContext } from "@/app/context/VacancyContext";
 import { useResumeContext } from "@/app/context/CurriculoContext";
 import { useReminderContext } from "@/app/context/ReminderContext";
 import { useHoursBankContext } from "@/app/context/HoursBankContext";
+import { EmployeeService } from "@/app/services/employeeService"
+import { ResumeService } from "@/app/services/resumeService"
+import { ReminderService } from "@/app/services/reminderService"
+import { HoursBankService } from "@/app/services/hoursBankService"
 
 
 export default function DashboardDisplay() {
@@ -60,11 +59,11 @@ export default function DashboardDisplay() {
           HoursBankService.getAllHours(),
         ]);
 
-        setEmployees(empData);
-        setVacancies(vacData);
-        setResumes(resumeData);
-        setReminders(remData);
-        setHoursBank(hoursData);
+        // setEmployees(empData);
+        // setVacancies(vacData);
+        // setResumes(resumeData);
+        // setReminders(remData);
+        // setHoursBank(hoursData);
       } catch (error) {
         console.error("Erro ao carregar os dados do dashboard:", error);
       } finally {
@@ -105,8 +104,7 @@ export default function DashboardDisplay() {
     setIsDragging(false);
   };
 
-  const handleNavigation = (path) => {
-
+  const handleNavigation = (path: string) => {
     if (isDragging) {
       console.log("Ignorando clique, pois virou arrasto.");
       return;
@@ -138,145 +136,145 @@ export default function DashboardDisplay() {
           onLayoutChange={handleLayoutChange}
           useCSSTransforms={false}
           isDroppable={false}
-
         >
        {/* Banco de Horas */}
-<div
-  key="banco-de-horas"
-  className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-  onClick={() => handleNavigation("/hoursbank-display/")}
-  onMouseDown={onMouseDown}
-  onMouseUp={onMouseUp}
->
-  <h2 className="font-semibold text-xl mb-4 text-white">Banco de Horas</h2>
-  <ul>
-    {loading ? (
-      <p className="text-white text-sm">Carregando...</p>
-    ) : (
-      hoursBank.length > 0 ? (
-        hoursBank.slice(0, maxItemsToShow).map((entry, index) => (
-          <li key={index}>{entry.date} - {entry.hours_worked}h</li>
-        ))
-      ) : (
-        <p className="text-white text-sm">Nenhum dado encontrado.</p>
-      )
-    )}
-  </ul>
-</div>
-
-{/* Vacancy */}
-<div
-  key="vagas"
-  className="cursor-pointer bg-gradient-to-br from-[#434D36] to-[#555D4C] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-  onMouseDown={onMouseDown}
-  onMouseUp={onMouseUp}
-  onClick={() => handleNavigation("/vagas-display/")}
->
-  <h2 className="font-semibold text-xl mb-4 text-white">Vacancy</h2>
-  <ul
-  >
-    {loading ? (
-      <p className="text-white text-sm">Carregando...</p>
-    ) : (
-      vacancies.length > 0 ? (
-        vacancies.slice(0, maxItemsToShow).map((vacancy, index) => (
-          <li key={index}>{vacancy.position} - {vacancy.quantity} disponíveis</li>
-        ))
-      ) : (
-        <p className="text-white text-sm">Nenhuma vaga disponível.</p>
-      )
-    )}
-  </ul>
-</div>
-
-
-          {/* Funcionários */}
-          <div
-            key="funcionario"
-            className="cursor-pointer bg-gradient-to-br from-[#4A701C] to-[#88B257] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-            onClick={() => handleNavigation("/contract-display/employee/")}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-          >
-            <h2 className="font-semibold text-xl mb-4 text-white">Funcionários</h2>
-            <ul className="text-white text-sm">
+        <div
+          key="banco-de-horas"
+          className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
+          onClick={() => handleNavigation("/hoursbank-display/")}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+        >
+          <h2 className="font-semibold text-xl mb-4 text-white">Banco de Horas</h2>
+          <ul>
             {loading ? (
-  <p className="text-white text-sm">Carregando...</p>
-) : (
-  employees.length > 0 ? (
-    employees.slice(0, maxItemsToShow).map((employee, index) => (
-      <li key={index}>{employee.name} - {employee.role?.name || "Sem função"}</li>
-    ))
-  ) : (
-    <p className="text-white text-sm">Nenhum funcionário encontrado.</p>
-  )
-)}
+              <p className="text-white text-sm">Carregando...</p>
+            ) : (
+              hoursBank.length > 0 ? (
+                hoursBank.slice(0, maxItemsToShow).map((entry, index) => (
+                  <li key={index}>{entry.date} - {entry.hours_worked}h</li>
+                ))
+              ) : (
+                <p className="text-white text-sm">Nenhum dado encontrado.</p>
+              )
+            )}
+          </ul>
+        </div>
 
-            </ul>
-          </div>
-
-          {/* Currículos */}
-          <div
-            key="curriculos"
-            className="cursor-pointer bg-gradient-to-br from-[#284703] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-            onClick={() => handleNavigation("/curriculo-display/visualize-cv")}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
+        {/* Vacancy */}
+        <div
+          key="vagas"
+          className="cursor-pointer bg-gradient-to-br from-[#434D36] to-[#555D4C] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+          onClick={() => handleNavigation("/vagas-display/")}
+        >
+          <h2 className="font-semibold text-xl mb-4 text-white">Vacancy</h2>
+          <ul
           >
-            <h2 className="font-semibold text-xl mb-4 text-white">Currículos</h2>
-            <ul className="text-white text-sm">
             {loading ? (
-  <p className="text-white text-sm">Carregando...</p>
-) : (
-  resumes.length > 0 ? (
-    resumes.slice(0, maxItemsToShow).map((resume, index) => (
-      <li key={index}>{resume.full_name} - {resume.position}</li>
-    ))
-  ) : (
-    <p className="text-white text-sm">Nenhum currículo disponível.</p>
-  )
-)}
-            </ul>
-          </div>
+              <p className="text-white text-sm">Carregando...</p>
+            ) : (
+              vacancies.length > 0 ? (
+                vacancies.slice(0, maxItemsToShow).map((vacancy, index) => (
+                  <li key={index}>{vacancy.position} - {vacancy.quantity} disponíveis</li>
+                ))
+              ) : (
+                <p className="text-white text-sm">Nenhuma vaga disponível.</p>
+              )
+            )}
+          </ul>
+        </div>
 
-          {/* Lembretes */}
-          <div
-            key="lembretes"
-            className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-            onClick={() => handleNavigation("/reminder-display/")}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-          >
-            <h2 className="font-semibold text-xl mb-4 text-white">Lembretes</h2>
-            <ul className="text-white text-sm">
-            {loading ? (
-  <p className="text-white text-sm">Carregando...</p>
-) : (
-  reminders.length > 0 ? (
-    reminders.slice(0, maxItemsToShow).map((reminder, index) => (
-      <li key={index}>{reminder.reason} - {reminder.date}</li>
-    ))
-  ) : (
-    <p className="text-white text-sm">Nenhum lembrete cadastrado.</p>
-  )
-)}
-            </ul>
-          </div>
-           {/* Buttons to Add Employee/User */}
-           <div key="adicionar-funcionario" className="bg-gradient-to-br from-[#88B257] to-[#4A701C] rounded-2xl flex flex-col items-center justify-center shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]">
-            <button className="text-white bg-[#284703] hover:bg-[#4A701C] transition-all px-6 py-3 rounded-full font-bold text-lg shadow-md mb-4"
-              onClick={() => changePage('/contract-display/')}
 
-              >
-                Adicionar Funcionário
-            </button>
-            <button className="text-white bg-[#284703] hover:bg-[#4A701C] transition-all px-6 py-3 rounded-full font-bold text-lg shadow-md"
-              onClick={() => changePage('/user-display/')}
+        {/* Funcionários */}
+        <div
+          key="funcionario"
+          className="cursor-pointer bg-gradient-to-br from-[#4A701C] to-[#88B257] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
+          onClick={() => handleNavigation("/contract-display/employee/")}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+        >
+          <h2 className="font-semibold text-xl mb-4 text-white">Funcionários</h2>
+          <ul className="text-white text-sm">
+          {loading ? (
+            <p className="text-white text-sm">Carregando...</p>
+          ) : (
+            employees.length > 0 ? (
+              employees.slice(0, maxItemsToShow).map((employee, index) => (
+                <li key={index}>{employee.name} - {employee.role?.name || "Sem função"}</li>
+              ))
+            ) : (
+              <p className="text-white text-sm">Nenhum funcionário encontrado.</p>
+            )
+          )}
+          </ul>
+        </div>
 
-              >
-                Adicionar Usuário
-            </button>
-          </div>
+        {/* Currículos */}
+        {/* <div
+          key="curriculos"
+          className="cursor-pointer bg-gradient-to-br from-[#284703] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
+          onClick={() => handleNavigation("/curriculo-display/visualize-cv")}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+        >
+          <h2 className="font-semibold text-xl mb-4 text-white">Currículos</h2>
+          <ul className="text-white text-sm">
+          {loading ? (
+            <p className="text-white text-sm">Carregando...</p>
+          ) : (
+            resumes.length > 0 ? (
+              resumes.slice(0, maxItemsToShow).map((resume, index) => (
+                <li key={index}>{resume.full_name} - {resume.position}</li>
+              ))
+            ) : (
+              <p className="text-white text-sm">Nenhum currículo disponível.</p>
+            )
+          )}
+          </ul>
+        </div> */}
+
+        {/* Lembretes */}
+        <div
+          key="lembretes"
+          className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
+          onClick={() => handleNavigation("/reminder-display/")}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+        >
+          <h2 className="font-semibold text-xl mb-4 text-white">Lembretes</h2>
+          <ul className="text-white text-sm">
+          {loading ? (
+            <p className="text-white text-sm">Carregando...</p>
+          ) : (
+            reminders.length > 0 ? (
+              reminders.slice(0, maxItemsToShow).map((reminder, index) => (
+                <li key={index}>{reminder.reason} - {reminder.date}</li>
+              ))
+            ) : (
+              <p className="text-white text-sm">Nenhum lembrete cadastrado.</p>
+            )
+          )}
+          </ul>
+        </div>
+
+        {/* Buttons to Add Employee/User */}
+        <div
+          key="adicionar-funcionario"
+          className="bg-gradient-to-br from-[#88B257] to-[#4A701C] rounded-2xl flex flex-col items-center justify-center shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
+        >
+          <button className="text-white bg-[#284703] hover:bg-[#4A701C] transition-all px-6 py-3 rounded-full font-bold text-lg shadow-md mb-4"
+            onClick={() => changePage('/contract-display/')}
+            >
+              Adicionar Funcionário
+          </button>
+          <button className="text-white bg-[#284703] hover:bg-[#4A701C] transition-all px-6 py-3 rounded-full font-bold text-lg shadow-md"
+            onClick={() => changePage('/user-display/')}
+            >
+              Adicionar Usuário
+          </button>
+        </div>
         </ResponsiveGridLayout>
       </div>
     </div>

@@ -2,8 +2,8 @@
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./(routes)/login-display/page";
-import { EmployeeProvider } from "./context/EmployeeContext"; // Adjust the path to your context
-import { LoginProvider } from "./context/LoginContext"; // Import LoginProvider
+import { EmployeeProvider } from "./context/EmployeeContext";
+import { LoginProvider } from "./context/LoginContext";
 
 export default function App() {
   return (
