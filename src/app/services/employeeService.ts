@@ -30,9 +30,9 @@ export const EmployeeService = {
       console.error('Erro ao buscar funcionário por ID:', error);
     }
   },
-  async getAllEmployees(page: number) {
+  async getAllEmployees() {
     try {
-      const response = await api.get(`${endpoint}?page=${page}`);
+      const response = await api.get(`${endpoint}`);
       if (response.status === 200) {
         return response.data;
       }
@@ -41,7 +41,7 @@ export const EmployeeService = {
       return [];
     }
   },
-  
+
   async updateEmployee(id: number, employeeData: Partial<EmployeeType>) {
     try {
       const response = await api.put(`${endpoint}/${id}`, employeeData);
