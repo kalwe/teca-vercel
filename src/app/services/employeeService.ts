@@ -32,18 +32,18 @@ export const EmployeeService = {
       console.error('Erro ao buscar funcionário por ID:', error);
     }
   },
-
-  async getAllEmployees() {
+  async getAllEmployees(page: number) {
     try {
-      const response = await api.get(endpoint);
+      const response = await api.get(`${endpoint}?page=${page}`);
       if (response.status === 200) {
         return response.data;
       }
     } catch (error) {
       console.error('Erro ao buscar todos os funcionários:', error);
+      return [];
     }
   },
-
+  
   async updateEmployee(id: number, employeeData: Partial<EmployeeType>) {
     try {
       const response = await api.put(`${endpoint}/${id}`, employeeData);

@@ -40,8 +40,7 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
             </ResumeProvider>
           </VacancyProvider>
         </EmployeeProvider>
-
-    </UserProvider>
+      </UserProvider>
   </LoginProvider>
 );
 

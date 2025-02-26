@@ -10,7 +10,7 @@ import { Clothing } from "../switch-tabs/clothing"
 import { EmployeeService } from "@/app/services/employeeService"
 import { useRouter } from "next/navigation"
 
-export default function ContractForm({ mode, employeeData = {}, onSave, onCancel, isEditable = true }) {
+export default function ContractForm({employeeData = {}, isEditable = true }) {
   const router = useRouter()
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(false)

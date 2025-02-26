@@ -10,7 +10,8 @@ export const emailMixinSchema = z.object({
     .trim()
     .toLowerCase()
     .email('O email deve ser válido.')
-    .max(255, 'O email não pode ter mais de 255 caracteres.'),
+    .max(255, 'O email não pode ter mais de 255 caracteres.')
+    .nonempty('O email é obrigatório.'),
 });
 
 export const userBaseSchema = baseSchema.extend({
