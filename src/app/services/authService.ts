@@ -4,9 +4,26 @@ import {
   UserAuthResponse,
   userAuthResponseSchema,
 } from '../schemas/authSchema';
+import { UserResponse, userResponseSchema } from '../schemas/userSchema';
 import api from './api';
 
 export const AuthService = {
+  async register(userInput: UserAuthInput): Promise<UserResponse> {
+    try {
+      const validCredentials = userAuthInputSchema.parse(userInput);
+
+      const response = await api.post('/auth/register', validCredentials);
+      if (!response.data.sucess) {
+        console.error(response.data.errors);
+      }
+      const registeredUser = userResponseSchema.parse(response.data);
+      return registeredUser;
+    } catch (error) {
+      console.error('Erro ao autenticar:', error);
+      throw new Error('Falha no login. Verifique suas credenciais.');
+    }
+  },
+
   async login(credentials: UserAuthInput): Promise<UserAuthResponse> {
     try {
       const validCredentials = userAuthInputSchema.parse(credentials);

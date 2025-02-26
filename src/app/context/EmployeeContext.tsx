@@ -10,8 +10,6 @@ interface EmployeeContextProps {
   updateEmployee: (id: number, updates: Partial<EmployeeType>) => Promise<void>
   deactivateEmployee: (id: number) => Promise<void>
   getEmployeeById: (id: number) => Promise<void>
-  // TODO: voce criou os methods async, precisa declarar aqui, alem que defiunou retrun Promisse<void>
-  // mas nenhum retorna Promise<void>
 }
 
 const EmployeeContext = createContext<EmployeeContextProps | undefined>(undefined)
@@ -19,12 +17,11 @@ const EmployeeContext = createContext<EmployeeContextProps | undefined>(undefine
 export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
   const [employees, setEmployees] = useState<EmployeeType[]>([])
 
-  // Carregar funcionários da API ao iniciar o contexto
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const data = await EmployeeService.getAllEmployees()
-        setEmployees(data)
+        const employees = await EmployeeService.getAllEmployees()
+        setEmployees(employees)
       } catch (error) {
         console.error("Erro ao carregar funcionários da API:", error)
       }

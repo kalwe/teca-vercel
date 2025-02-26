@@ -15,18 +15,16 @@ function Employees() {
   const lastEmployeeRef = useRef<HTMLTableRowElement | null>(null);
   const router = useRouter();
 
-  /**
-   * 🚀 Carrega os funcionários automaticamente ao abrir a página
-   */
+
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const employeeList = await EmployeeService.getAllEmployees(page);
+        const employeeList = await EmployeeService.getAllEmployees();
         if (!Array.isArray(employeeList)) throw new Error("Dados inválidos recebidos.");
 
         setEmployees((prev) => [...prev, ...employeeList]);
       } catch (error) {
-        console.error("❌ Erro ao carregar funcionários:", error);
+        console.error("Erro ao carregar funcionários:", error);
         setError("Erro ao carregar funcionários.");
       } finally {
         setLoading(false);
@@ -36,16 +34,10 @@ function Employees() {
     fetchEmployees();
   }, [page]);
 
-  /**
-   * 🚀 Incrementa a página para buscar mais funcionários quando necessário
-   */
   const fetchMoreEmployees = useCallback(() => {
     setPage((prevPage) => prevPage + 1);
   }, []);
 
-  /**
-   * 🚀 Configura o IntersectionObserver para paginação infinita
-   */
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
 
@@ -61,10 +53,7 @@ function Employees() {
     if (lastEmployeeRef.current) observerRef.current.observe(lastEmployeeRef.current);
   }, [fetchMoreEmployees]);
 
-  /**
-   * 🚀 Atualiza o status do funcionário (Ativar/Desativar)
-   */
-  const toggleEmployeeStatus = async (employeeId: number, isActive: boolean) => {
+  const toggleEmployeeStatus = async (employeeId: number | any, isActive: boolean | any) => {
     try {
       const updatedEmployee = await EmployeeService.updateEmployee(employeeId, {
         active: !isActive,
@@ -79,18 +68,15 @@ function Employees() {
     }
   };
 
-  /**
-   * 🚀 Filtragem de funcionários conforme o termo digitado
-   */
   const filteredEmployees = useMemo(() => {
     if (!searchTerm) return employees;
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     return employees.filter(
       (employee) =>
         employee.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        employee.function?.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        employee.position?.name.toLowerCase().includes(lowerCaseSearchTerm) ||
         employee.registration?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        employee.person?.tax_id?.toLowerCase().includes(lowerCaseSearchTerm)
+        employee.taxId?.toLowerCase().includes(lowerCaseSearchTerm)
     );
   }, [searchTerm, employees]);
 
@@ -159,13 +145,13 @@ function Employees() {
                         {employee.name || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
-                        {employee.function?.name || "Não informado"}
+                        {employee.position?.name || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
                         {employee.registration || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
-                        {employee.person?.tax_id || "Não informado"}
+                        {employee?.taxId || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
                         {employee.active ? "Ativo" : "Inativo"}

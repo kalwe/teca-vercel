@@ -3,9 +3,9 @@
 import { useUserContext } from "@/app/context/UserContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState} from "react";
-import { userOutputSchema } from "@/app/schemas/userSchema";
+import { UserInput, userResponseSchema } from "@/app/schemas/userSchema";
 import { UserService } from "@/app/services/userService";
-import { UserResponse } from "@/app/types/user"
+import { UserResponse } from "@/app/schemas/userSchema"
 
 
 function UserList() {
@@ -20,7 +20,7 @@ function UserList() {
       try {
         setLoading(true);
         const users = await UserService.getUsers();
-        const validatedUsers = userOutputSchema.array().parse(users);
+        const validatedUsers = userResponseSchema.array().parse(users);
         const uniqueUsers = Array.from(new Map(validatedUsers.map(user => [user.id, user])).values());
         setUserList(uniqueUsers);
       } catch (err) {
@@ -35,7 +35,7 @@ function UserList() {
     fetchUsers();
   }, []);
 
-  const handleEditUser = (user: UserOutput) => {
+  const handleEditUser = (user: UserInput) => {
     router.push(`/user-display/${user.id}`);
   };
 

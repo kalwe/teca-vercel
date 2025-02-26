@@ -2,40 +2,41 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import api from "../services/api";
-import { userOutputSchema, userInputSchema } from "../schemas/userSchema";
+import { userResponseSchema, userInputSchema, UserResponse, UserInput } from "@/app/schemas/userSchema";
+import { UserAuthInput } from "../schemas/authSchema"
+import { UserService } from "../services/userService"
+import { AuthService } from "../services/authService"
 
 const endpoint = "/user";
 
 type UserContextType = {
-  users: UserOutput[];
-  loggedInUser: UserOutput | null;
+  users: UserResponse[];
+  loggedInUser: UserAuthInput | null;
   loading: boolean;
-  addUser: (user: Omit<UserOutput, "id"> & { password: string }) => Promise<void>;
-  updateUser: (id: number, updatedData: Partial<UserOutput>) => Promise<void>;
+  addUser: (user: UserInput) => Promise<void>;
+  updateUser: (id: number, updatedData: UserInput) => Promise<void>;
   deleteUser: (id: number) => Promise<void>;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [users, setUsers] = useState<UserOutput[]>([]);
-  const [loggedInUser, setLoggedInUser] = useState<UserOutput | null>(null);
+  const [users, setUsers] = useState<UserResponse[]>([]);
+  const [loggedInUser, setLoggedInUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
 //   useEffect(() => {
 //     const fetchUsers = async () => {
 //       setLoading(true);
 //       try {
-//         console.log("🔄 Buscando usuários...");
+//         console.log("Buscando usuários...");
 //         const response = await api.get(endpoint);
 //
 //         if (!response || !response.data) {
 //           throw new Error("Resposta inválida da API");
 //         }
 //
-//         const validatedUsers = userOutputSchema.array().parse(response.data);
+//         const validatedUsers = UserResponseSchema.array().parse(response.data);
 //         setUsers(validatedUsers);
 //       } catch (error) {
 //         console.error(" Erro ao buscar usuários:", error);
@@ -56,23 +57,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 //     }
 //   }, []);
 
-  const addUser = async (userData: Omit<UserOutput, "id"> & { password: string }) => {
+  const addUser = async (userData: Omit<UserInput, "id">) => {
     try {
       const validatedData = userInputSchema.parse(userData);
-      const response = await api.post(endpoint, validatedData);
+      const createdUser = await AuthService.register(endpoint, validatedData);
 
       if (!response || !response.data) {
         throw new Error("Erro ao adicionar usuário: Resposta inválida da API");
       }
 
-      const newUser = userOutputSchema.parse(response.data);
+      const newUser = userResponseSchema.parse(response.data);
       setUsers((prevUsers) => [...prevUsers, newUser]);
     } catch (error) {
       console.error(" Erro ao adicionar usuário:", error);
     }
   };
 
-  const updateUser = async (id: number, updatedData: Partial<UserOutput>) => {
+  const updateUser = async (id: number, updatedData: Partial<UserInput>) => {
     try {
       const response = await api.put(`${endpoint}/${id}`, updatedData);
 
@@ -80,7 +81,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Erro ao atualizar usuário: Resposta inválida da API");
       }
 
-      const updatedUser = userOutputSchema.parse(response.data);
+      const updatedUser = userResponseSchema.parse(response.data);
       setUsers((prevUsers) => prevUsers.map((user) => (user.id === id ? updatedUser : user)));
 
       if (loggedInUser?.id === id) {
@@ -114,7 +115,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Erro ao fazer login: Resposta inválida da API");
       }
 
-      const user = userOutputSchema.parse(response.data);
+      const user = userResponseSchema.parse(response.data);
       setLoggedInUser(user);
       localStorage.setItem("loggedInUser", JSON.stringify(user));
 

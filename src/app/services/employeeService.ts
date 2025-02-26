@@ -13,8 +13,6 @@ export const EmployeeService = {
       if (response.status === 201) {
         console.log(' Funcionário criado com sucesso!', response.data);
         return response.data;
-      } else {
-        console.warn(' Resposta inesperada:', response);
       }
     } catch (error) {
       console.error(' Erro ao salvar funcionário:', error);
