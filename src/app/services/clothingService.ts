@@ -1,3 +1,4 @@
+import { ClothingType } from "../types/clothing";
 import api from "./api"; // 🔥 Importa a instância do Axios configurada
 
 const endpoint = "/clothing"; // 🔥 Define o endpoint base
@@ -59,7 +60,7 @@ export const ClothingService = {
    * @param {object} clothingData - Novos dados do vestuário
    * @returns {Promise<any>} - Dados atualizados
    */
-  async updateClothing(id: number, clothingData){
+  async updateClothing(id: number, clothingData: any){
     try {
       const response = await api.put(`${endpoint}/${id}`, clothingData);
       return response.data;

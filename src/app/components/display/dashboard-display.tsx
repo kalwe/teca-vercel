@@ -202,7 +202,7 @@ export default function DashboardDisplay() {
           ) : (
             employees.length > 0 ? (
               employees.slice(0, maxItemsToShow).map((employee, index) => (
-                <li key={index}>{employee.name} - {employee.role?.name || "Sem função"}</li>
+                <li key={index}>{employee.name} - {employee.positionId || "Sem função"}</li>
               ))
             ) : (
               <p className="text-white text-sm">Nenhum funcionário encontrado.</p>

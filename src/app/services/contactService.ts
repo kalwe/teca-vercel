@@ -1,4 +1,7 @@
+import { ContactType } from "../types/contact";
 import api from "./api"; // Importa a instância do Axios configurada
+
+const endpoint = '/contact'
 
 export const ContactService = {
   /**
