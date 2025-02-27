@@ -14,7 +14,7 @@ interface VacancyContextProps {
   removeVacancy: (id: number) => Promise<void>;
 }
 
-const VacancyContext = createContext({} as VacancyContextProps);
+const VacancyContext = createContext<VacancyContextProps | undefined>(undefined);
 
 export const VacancyProvider = ({ children }: { children: ReactNode }) => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
