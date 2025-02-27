@@ -3,29 +3,25 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 export function DropdownCheckboxWithPassword() {
-  const [selectedOption, setSelectedOption] = useState<string>(""); // State to store selected option
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to control dropdown visibility
+  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // Handle checkbox change and update selected option
   const handleCheckboxChange = (option: string) => {
-    setSelectedOption(option === selectedOption ? "" : option); // Toggle selection
-    setIsDropdownOpen(false); // Close the dropdown after selection
-
-    // Toggle visibility of "show-password" div
+    setSelectedOption(option === selectedOption ? "" : option);
+    setIsDropdownOpen(false);
     const passwordDiv = document.getElementById("show-password");
     if (passwordDiv) {
       passwordDiv.style.display = option === "Cargo1" ? "block" : "none";
     }
   };
 
-  // Toggle the dropdown visibility
   const toggleDropdown = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default behavior
-    setIsDropdownOpen((prevState) => !prevState); // Toggle dropdown state
+    e.preventDefault();
+    setIsDropdownOpen((prevState) => !prevState);
   };
 
-  // Handle clicks outside the dropdown
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -35,7 +31,6 @@ export function DropdownCheckboxWithPassword() {
         setIsDropdownOpen(false);
       }
     };
-
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -140,7 +135,7 @@ export function DropdownCheckboxWithPassword() {
       )}
 
       {/* Password Field */}
-      <div 
+      <div
       id="show-password"
       className="w-full"
       style={{display:'none'}}>

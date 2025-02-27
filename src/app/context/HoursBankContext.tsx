@@ -7,7 +7,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 interface HoursBankEntry {
   date: ReactNode;
   hours_worked: ReactNode;
-  full_name: ReactNode;
+  fullName: ReactNode;
   id: string;
   name: string;
   hours: number;

@@ -90,7 +90,7 @@ function Employees() {
         employee.name.toLowerCase().includes(lowerCaseSearchTerm) ||
         employee.function?.name.toLowerCase().includes(lowerCaseSearchTerm) ||
         employee.registration?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        employee.person?.tax_id?.toLowerCase().includes(lowerCaseSearchTerm)
+        employee.person?.taxId?.toLowerCase().includes(lowerCaseSearchTerm)
     );
   }, [searchTerm, employees]);
 
@@ -165,7 +165,7 @@ function Employees() {
                         {employee.registration || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
-                        {employee.person?.tax_id || "Não informado"}
+                        {employee.person?.taxId || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
                         {employee.active ? "Ativo" : "Inativo"}

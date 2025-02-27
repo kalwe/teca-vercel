@@ -11,7 +11,7 @@ import resumeImage from "../assets/cvImage.png";
 // Defina o tipo Resume conforme sua implementação, por exemplo:
 interface Resume {
   id: number;
-  full_name: string;
+  fullName: string;
   email: string;
   position: string;
   region: string;
@@ -105,7 +105,7 @@ export function VisualizeCV() {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     return resumes.filter(
       (resume) =>
-        resume.full_name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        resume.fullName.toLowerCase().includes(lowerCaseSearchTerm) ||
         resume.email.toLowerCase().includes(lowerCaseSearchTerm) ||
         resume.position.toLowerCase().includes(lowerCaseSearchTerm) ||
         resume.region.toLowerCase().includes(lowerCaseSearchTerm) ||
@@ -165,7 +165,7 @@ export function VisualizeCV() {
                   onClick={() => navigateToEdit(resume.id)}
                   ref={index === filteredResumes.length - 1 ? lastResumeRef : null}
                 >
-                  <h1 className="text-gray-300 font-semibold">{resume.full_name}</h1>
+                  <h1 className="text-gray-300 font-semibold">{resume.fullName}</h1>
                   <Image alt="Currículo" src={resumeImage} width={20} height={20} />
                 </div>
               ))}

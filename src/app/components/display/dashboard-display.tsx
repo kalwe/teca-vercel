@@ -22,14 +22,14 @@ export default function DashboardDisplay() {
   const ResponsiveGridLayout = WidthProvider(Responsive);
   const router = useRouter();
 
-  // Contextos
+
   const { employees } = useEmployeeContext();
   const { vacancies } = useVacancyContext();
   const { resumes } = useResumeContext();
   const { reminders } = useReminderContext();
   const { hoursBank } = useHoursBankContext();
 
-  // Layout inicial padrão
+
   const defaultLayout: Layout[] = [
     { i: "vagas", x: 0, y: 0, w: 3, h: 3 },
     { i: "funcionario", x: 3, y: 0, w: 3, h: 3 },
@@ -59,11 +59,11 @@ export default function DashboardDisplay() {
           HoursBankService.getAllHours(),
         ]);
 
-        // setEmployees(empData);
-        // setVacancies(vacData);
-        // setResumes(resumeData);
-        // setReminders(remData);
-        // setHoursBank(hoursData);
+
+
+
+
+
       } catch (error) {
         console.error("Erro ao carregar os dados do dashboard:", error);
       } finally {
@@ -84,7 +84,7 @@ export default function DashboardDisplay() {
   const onMouseDown = () => {
     console.log("Pressionou, iniciando contagem...");
 
-    // Aguarda 2 segundos antes de ativar o arrasto
+
     dragTimeout.current = setTimeout(() => {
       console.log("Agora é arrasto!");
       setIsDragging(true);
@@ -94,13 +94,13 @@ export default function DashboardDisplay() {
   const onMouseUp = () => {
     console.log("Soltou!");
 
-    // Cancela o timeout se o usuário soltar antes dos 2 segundos
+
     if (dragTimeout.current) {
       clearTimeout(dragTimeout.current);
       dragTimeout.current = null;
     }
 
-    // Reseta `isDragging` para permitir cliques normais
+
     setIsDragging(false);
   };
 
@@ -116,7 +116,7 @@ export default function DashboardDisplay() {
 
   const maxItemsToShow = 5;
 
-  // Dados atualizados dinamicamente nos widgets
+
   const [loading, setLoading] = useState(true);
 
   function changePage(path: string): void {
@@ -148,29 +148,26 @@ export default function DashboardDisplay() {
           <h2 className="font-semibold text-xl mb-4 text-white">Banco de Horas</h2>
           <ul>
             {loading ? (
-              <p className="text-white text-sm">Carregando...</p>
-            ) : (
-              hoursBank.length > 0 ? (
-                hoursBank.slice(0, maxItemsToShow).map((entry, index) => (
-                  <li key={index}>{entry.date} - {entry.hours_worked}h</li>
-                ))
-              ) : (
-                <p className="text-white text-sm">Nenhum dado encontrado.</p>
-              )
-            )}
-          </ul>
-        </div>
+  <p className="text-white text-sm">Carregando...</p>
+) : (
+  resumes.length > 0 ? (
+    resumes.slice(0, maxItemsToShow).map((resume, index) => (
+      <li key={index}>{resume.fullName} - {resume.position}</li>
+    ))
+  ) : (
+    <p className="text-white text-sm">Nenhum currículo disponível.</p>
+  )
+)}
+            </ul>
+          </div>
 
-        {/* Vacancy */}
-        <div
-          key="vagas"
-          className="cursor-pointer bg-gradient-to-br from-[#434D36] to-[#555D4C] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-          onClick={() => handleNavigation("/vagas-display/")}
-        >
-          <h2 className="font-semibold text-xl mb-4 text-white">Vacancy</h2>
-          <ul
+          {/* Lembretes */}
+          <div
+            key="lembretes"
+            className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
+            onClick={() => handleNavigation("/reminder-display/")}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
           >
             {loading ? (
               <p className="text-white text-sm">Carregando...</p>

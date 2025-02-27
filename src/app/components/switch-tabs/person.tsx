@@ -16,12 +16,12 @@ export function PessoaFisica({
   isEditable,
   onNext,
   onPrev,
-  // employee,
+
 }: PersonProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string>>>({})
   const [isNextEnabled, setIsNextEnabled] = useState(false)
 
-  // Converte a data do formato do DatePicker para "dd-MM-yyyy"
+
   const formatDateForBackend = (date: Date | null) => {
     if (!date) return "";
     const day = String(date.getDate()).padStart(2, "0");
@@ -33,7 +33,7 @@ export function PessoaFisica({
   const handleInputChange = (field: keyof PersonType, value: string | Date | null) => {
     let formattedValue = value;
 
-    if (field === "date_of_birth" && value instanceof Date) {
+    if (field === "dateOfBirth" && value instanceof Date) {
       formattedValue = formatDateForBackend(value);
     }
 
@@ -74,10 +74,10 @@ export function PessoaFisica({
       <h2 className="text-white text-xl font-bold">Pessoa Física</h2>
 
       {[
-  { key: "full_name", name: "full_name", label: "Nome Completo", placeholder: "Digite o nome completo" },
-  { key: "tax_id", name: "tax_id", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
-  { key: "national_id", name: "national_id", label: "RG", placeholder: "Digite o RG" },
-  { key: "issuing_body", name: "issuing_body", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
+  { key: "fullName", name: "fullName", label: "Nome Completo", placeholder: "Digite o nome completo" },
+  { key: "taxId", name: "taxId", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
+  { key: "nationalId", name: "nationalId", label: "RG", placeholder: "Digite o RG" },
+  { key: "issuingBody", name: "issuingBody", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
 ].map((field) => (
   <div key={field.key} className="w-full">
 
@@ -101,16 +101,16 @@ export function PessoaFisica({
       <div className="w-full">
 
         <DatePicker
-          selected={data.date_of_birth ? new Date(data.date_of_birth.split("-").reverse().join("-")) : null}
-          onChange={(date) => handleInputChange("date_of_birth", date)}
+          selected={data.dateOfBirth ? new Date(data.dateOfBirth.split("-").reverse().join("-")) : null}
+          onChange={(date) => handleInputChange("dateOfBirth", date)}
           dateFormat="dd/MM/yyyy"
           placeholderText="Data de Nascimento"
           className={`w-full bg-gray-700 text-white border ${
-            errors.date_of_birth ? "border-red-500" : "border-gray-600"
+            errors.dateOfBirth ? "border-red-500" : "border-gray-600"
           } rounded-lg py-2 px-3`}
           disabled={!isEditable}
         />
-        {errors.date_of_birth && <p className="text-red-500 text-sm mt-1">{errors.date_of_birth}</p>}
+        {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
       </div>
 
       {/* Gênero */}
@@ -128,11 +128,11 @@ export function PessoaFisica({
       <div className="w-full">
 
         <DropdownCheckboxMaritalStatus
-          value={data.marital_status || ""}
-          onChange={(value) => handleInputChange("marital_status", value)}
+          value={data.maritalStatus || ""}
+          onChange={(value) => handleInputChange("maritalStatus", value)}
           disabled={!isEditable}
         />
-        {errors.marital_status && <p className="text-red-500 text-sm mt-1">{errors.marital_status}</p>}
+        {errors.maritalStatus && <p className="text-red-500 text-sm mt-1">{errors.maritalStatus}</p>}
       </div>
 
       {/* Botões */}

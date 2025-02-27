@@ -54,7 +54,7 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
     const handleDateChange = (date: Date | null) => {
         setSelectedDate(date);
         if (date) {
-            const formattedDate = format(date, "yyyy-MM-dd HH:mm:ss");
+            const formattedDate = format(date, "dd-mm-yyyy HH:mm:ss");
             handleChange("date", formattedDate); // 🔥 Salva a data completa no estado
         }
     };
