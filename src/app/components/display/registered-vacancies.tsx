@@ -130,6 +130,6 @@ const VacancyList: React.FC = () => {
       </div>
     </div>
   );
-};
+}
 
 export default VacancyList;

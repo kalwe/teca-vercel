@@ -32,12 +32,11 @@ export default function Contract() {
     <div
     style={{
       background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
-  }}
+    }}
     >
       {/* Componente de navegação */}
       <Navigation />
 
-      {/* ✅ Agora passa corretamente os dados para o formulário */}
       <VacancyForm vacancyData={{ ...vacancyData, id: undefined }} setVacancyData={setVacancyData} />
 
       {/* Botão "Voltar" */}
