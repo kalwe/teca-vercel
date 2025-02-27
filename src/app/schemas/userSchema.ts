@@ -25,11 +25,6 @@ export const userBaseSchema = baseSchema.extend({
     .email('O email deve ser válido.')
     .max(63, 'O email não pode ter mais de 63 caracteres.')
     .optional(),
-  password: z
-    .string()
-    .trim()
-    .min(6, 'A senha deve ter pelo menos 6 caracteres.')
-    .max(32, 'A senha não pode ter mais de 32 caracteres.'),
   role: z.nativeEnum(Role),
 });
 
@@ -37,6 +32,11 @@ export const userInputSchema = userBaseSchema.extend({
   id: z.number().optional(),
   active: z.boolean().optional(),
   createdAt: z.string().optional(),
+  password: z
+    .string()
+    .trim()
+    .min(6, 'A senha deve ter pelo menos 6 caracteres.')
+    .max(32, 'A senha não pode ter mais de 32 caracteres.'),
   role: z.nativeEnum(Role).optional(),
 });
 
@@ -45,10 +45,5 @@ export const userResponseSchema = userBaseSchema.extend({
   deletedAt: z.string().optional(),
 });
 
-export const userDeletedSchema = baseSchema.extend({
-  deletedAt: z.string(),
-});
-
-const omitPassword = userResponseSchema.omit({ password: true });
 export type UserInput = z.infer<typeof userInputSchema>;
-export type UserResponse = z.infer<typeof omitPassword>;
+export type UserResponse = z.infer<typeof userResponseSchema>;

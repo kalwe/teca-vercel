@@ -35,16 +35,17 @@ function UserList() {
     fetchUsers();
   }, []);
 
-  const handleEditUser = (user: UserInput) => {
-    router.push(`/user-display/${user.id}`);
+  const handleEditUser = (id: number) => {
+    router.push(`/user-display/${id}`);
   };
 
-  const toggleUserStatus = async (userId: number, isActive: boolean) => {
+  const toggleUserStatus = async (userId: number, user: Omit<UserInput, "password">) => {
     try {
-      const updatedUser = await updateUser(userId, { active: !isActive });
+      const userUpdate = { ...user }
+      const updatedUser = await updateUser(userId, userUpdate);
       setUserList((prev) =>
         prev.map((user) =>
-          user.id === userId ? { ...user, active: !isActive } : user
+          user.id === userId ? { ...user, active: !user.active } : user
         )
       );
     } catch (err) {
@@ -126,7 +127,7 @@ function UserList() {
                     </td>
                     <td className="px-4 py-3 border border-gray-600 space-x-2">
                       <button
-                        onClick={() => toggleUserStatus(user.id, user.active)}
+                        onClick={() => toggleUserStatus(user.id, user)}
                         className={`px-3 py-1 rounded-lg ${
                           user.active
                             ? "bg-red-500 hover:bg-red-600"
@@ -142,7 +143,7 @@ function UserList() {
                         Excluir
                       </button>
                       <button
-                      onClick={() => handleEditUser(user)}
+                      onClick={() => handleEditUser(user.id)}
                       className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg"
                     >
                       Editar

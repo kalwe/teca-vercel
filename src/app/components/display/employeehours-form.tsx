@@ -102,7 +102,7 @@ function EmployeeHours() {
           },
         ],
       });
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || "Erro ao carregar dados.");
     } finally {
       setLoading(false);
@@ -134,7 +134,6 @@ function EmployeeHours() {
       }}
     >
       <Navigation />
-
       <div className="flex-1 overflow-y-auto">
         <div className="container mx-auto px-4 py-8 flex flex-col gap-8">
           <h1 className="text-white text-3xl font-bold">Banco de Horas</h1>

@@ -9,7 +9,7 @@ import { Navigation } from "@/app/components/navigation/navigation";
 import { VacancyService } from "@/app/services/vacancyService";
 import { useEmployeeContext } from "@/app/context/EmployeeContext";
 import { useVacancyContext } from "@/app/context/VacancyContext";
-import { useResumeContext } from "@/app/context/CurriculoContext";
+// import { useResumeContext } from "@/app/context/CurriculoContext";
 import { useReminderContext } from "@/app/context/ReminderContext";
 import { useHoursBankContext } from "@/app/context/HoursBankContext";
 import { EmployeeService } from "@/app/services/employeeService"
@@ -25,7 +25,7 @@ export default function DashboardDisplay() {
   // Contextos
   const { employees } = useEmployeeContext();
   const { vacancies } = useVacancyContext();
-  const { resumes } = useResumeContext();
+  // const { resumes } = useResumeContext();
   const { reminders } = useReminderContext();
   const { hoursBank } = useHoursBankContext();
 
@@ -70,7 +70,6 @@ export default function DashboardDisplay() {
         setLoading(false);
       }
     }
-
     fetchData();
   }, []);
 
@@ -82,9 +81,6 @@ export default function DashboardDisplay() {
 
 
   const onMouseDown = () => {
-    console.log("Pressionou, iniciando contagem...");
-
-    // Aguarda 2 segundos antes de ativar o arrasto
     dragTimeout.current = setTimeout(() => {
       console.log("Agora é arrasto!");
       setIsDragging(true);
@@ -93,14 +89,10 @@ export default function DashboardDisplay() {
 
   const onMouseUp = () => {
     console.log("Soltou!");
-
-    // Cancela o timeout se o usuário soltar antes dos 2 segundos
     if (dragTimeout.current) {
       clearTimeout(dragTimeout.current);
       dragTimeout.current = null;
     }
-
-    // Reseta `isDragging` para permitir cliques normais
     setIsDragging(false);
   };
 
@@ -109,8 +101,6 @@ export default function DashboardDisplay() {
       console.log("Ignorando clique, pois virou arrasto.");
       return;
     }
-
-    console.log("Navegando para:", path);
     router.push(path);
   };
 
@@ -185,7 +175,6 @@ export default function DashboardDisplay() {
             )}
           </ul>
         </div>
-
 
         {/* Funcionários */}
         <div
