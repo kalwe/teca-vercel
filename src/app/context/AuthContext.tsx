@@ -5,41 +5,39 @@ import { User, AuthContextType } from "@/app/types/authType";
 import { AuthService } from "../services/authService"
 import { UserAuthInput } from "../schemas/authSchema"
 
-// Criando o contexto de autenticação
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Provider para autenticação e gerenciamento de usuários
-export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-
-    if (storedUser && token) {
-      try {
-        const parsedUser: User = JSON.parse(storedUser);
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Erro ao recuperar usuário:", error);
-        logout();
-      }
-    }
-  }, []);
+//   useEffect(() => {
+//     const storedUser = localStorage.getItem("user");
+//     const token = localStorage.getItem("token");
+//
+//     if (storedUser && token) {
+//       try {
+//         const parsedUser: User = JSON.parse(storedUser);
+//         setUser(parsedUser);
+//         setIsAuthenticated(true);
+//       } catch (error) {
+//         console.error("Erro ao recuperar usuário:", error);
+//         logout();
+//       }
+//     }
+//   }, []);
 
   const login = async (credentials: UserAuthInput): Promise<void> => {
     try {
-      const response = await AuthService.login(credentials);
+      const userAuth = await AuthService.login(credentials);
 
       setUser({
-        id: response.id,
-        name: response.name,
+        id: userAuth.id,
+        name: userAuth.name,
         // email: response.email,
         // role: response.role,
       });
-      setIsAuthenticated(true);
+      setIsAuthenticated(userAuth.authenticated);
     } catch (error) {
       console.error("Erro ao fazer login:", error);
       throw new Error("Credenciais inválidas ou erro na autenticação.");

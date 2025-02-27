@@ -1,9 +1,5 @@
+import { Role } from '@/app/schemas/authSchema';
 import { UserAuthInput } from '../schemas/authSchema';
-
-enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
 
 export type AuthResponse = {
   id: number;

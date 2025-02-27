@@ -2,31 +2,31 @@
 
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Employee } from "@/app/types/employee";
+import { EmployeeType } from "@/app/types/employee";
 import { EmployeeService } from "@/app/services/employeeService";
 
 function Employees() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employees, setEmployees] = useState<EmployeeType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastEmployeeRef = useRef<HTMLTableRowElement | null>(null);
   const router = useRouter();
 
-  /**
-   * 🚀 Carrega os funcionários automaticamente ao abrir a página
-   */
   useEffect(() => {
     const fetchEmployees = async () => {
+      setLoading(true);
       try {
-        const employeeList = await EmployeeService.getAllEmployees(page);
-        if (!Array.isArray(employeeList)) throw new Error("Dados inválidos recebidos.");
-
+        const employeeList = await EmployeeService.getAllEmployees();
+        if (!Array.isArray(employeeList)) {
+          throw new Error("Dados inválidos recebidos do servidor.");
+        }
         setEmployees((prev) => [...prev, ...employeeList]);
       } catch (error) {
-        console.error("❌ Erro ao carregar funcionários:", error);
+        console.error("Erro ao carregar funcionários:", error);
         setError("Erro ao carregar funcionários.");
       } finally {
         setLoading(false);
@@ -36,16 +36,10 @@ function Employees() {
     fetchEmployees();
   }, [page]);
 
-  /**
-   * 🚀 Incrementa a página para buscar mais funcionários quando necessário
-   */
   const fetchMoreEmployees = useCallback(() => {
     setPage((prevPage) => prevPage + 1);
   }, []);
 
-  /**
-   * 🚀 Configura o IntersectionObserver para paginação infinita
-   */
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
 
@@ -61,10 +55,7 @@ function Employees() {
     if (lastEmployeeRef.current) observerRef.current.observe(lastEmployeeRef.current);
   }, [fetchMoreEmployees]);
 
-  /**
-   * 🚀 Atualiza o status do funcionário (Ativar/Desativar)
-   */
-  const toggleEmployeeStatus = async (employeeId: number, isActive: boolean) => {
+  const toggleEmployeeStatus = async (employeeId: number | any, isActive: boolean | any) => {
     try {
       const updatedEmployee = await EmployeeService.updateEmployee(employeeId, {
         active: !isActive,
@@ -79,18 +70,15 @@ function Employees() {
     }
   };
 
-  /**
-   * 🚀 Filtragem de funcionários conforme o termo digitado
-   */
   const filteredEmployees = useMemo(() => {
     if (!searchTerm) return employees;
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     return employees.filter(
       (employee) =>
         employee.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        employee.function?.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        employee.registration?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        employee.person?.taxId?.toLowerCase().includes(lowerCaseSearchTerm)
+        employee.registration.toLowerCase().includes(lowerCaseSearchTerm) ||
+        employee.taxId.toLowerCase().includes(lowerCaseSearchTerm) ||
+        employee.position?.toString().includes(lowerCaseSearchTerm)
     );
   }, [searchTerm, employees]);
 
@@ -103,7 +91,6 @@ function Employees() {
     >
       <div className="w-full max-w-7xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
-          {/* Título e Botão Adicionar Funcionário */}
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-extrabold text-white">Funcionários</h1>
             <button
@@ -114,7 +101,6 @@ function Employees() {
             </button>
           </div>
 
-          {/* Campo de Busca */}
           <div className="mb-6">
             <input
               type="text"
@@ -129,7 +115,6 @@ function Employees() {
 
           {loading && <div className="p-6 text-center text-gray-300">Carregando funcionários...</div>}
 
-          {/* Tabela de Funcionários */}
           <div className="overflow-y-auto border-t border-gray-600" style={{ maxHeight: "400px" }}>
             <table className="w-full table-auto border-collapse border border-gray-700 text-gray-300 rounded-lg">
               <thead className="bg-gray-900">
@@ -159,13 +144,13 @@ function Employees() {
                         {employee.name || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
-                        {employee.function?.name || "Não informado"}
+                        {employee.position?.name || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
                         {employee.registration || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
-                        {employee.person?.taxId || "Não informado"}
+                        {employee?.taxId || "Não informado"}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
                         {employee.active ? "Ativo" : "Inativo"}
@@ -174,12 +159,11 @@ function Employees() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleEmployeeStatus(employee.id, employee.active);
+                            {employee.id && toggleEmployeeStatus(employee.id, employee.active);}
+
                           }}
                           className={`px-3 py-1 rounded ${
-                            employee.active
-                              ? "bg-red-500 hover:bg-red-600"
-                              : "bg-green-500 hover:bg-green-600"
+                            employee.active ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
                           } text-white`}
                         >
                           {employee.active ? "Desativar" : "Ativar"}

@@ -11,8 +11,8 @@ export const EmployeeService = {
       const response = await api.post(endpoint, EmployeeData)
 
       if (response.status === 201) {
-        console.log(' Funcionário criado com sucesso!', response.data)
-        return response.data
+        console.log(' Funcionário criado com sucesso!', response.data);
+        return response.data;
       }
     } catch (error) {
       console.error('Erro ao salvar funcionário:', error)
@@ -30,15 +30,23 @@ export const EmployeeService = {
       console.error('Erro ao buscar funcionário por ID:', error)
     }
   },
-
   async getAllEmployees() {
     try {
+<<<<<<< HEAD
       const response = await api.get(endpoint)
+=======
+      const response = await api.get(`${endpoint}`);
+>>>>>>> fix_employee
       if (response.status === 200) {
         return response.data
       }
     } catch (error) {
+<<<<<<< HEAD
       console.error('Erro ao buscar todos os funcionários:', error)
+=======
+      console.error('Erro ao buscar todos os funcionários:', error);
+      return [];
+>>>>>>> fix_employee
     }
   },
 

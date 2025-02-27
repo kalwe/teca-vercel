@@ -25,7 +25,7 @@ export const VacancyProvider = ({ children }: { children: ReactNode }) => {
   const loadVacancies = async () => {
     try {
       const response = await axios.get(API_URL);
-      const validatedVacancies = response.data.map((vacancy) =>
+      const validatedVacancies = response.data.map((vacancy: any) =>
         vacancySchema.parse(vacancy)
       ); // Validando com o schema principal
       setVacancies(validatedVacancies);

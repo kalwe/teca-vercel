@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios';
+import { UserInput } from '../schemas/userSchema';
 import api from './api';
 
 const endpoint = '/user';
@@ -34,11 +35,9 @@ export const UserService = {
     }
   },
 
-  async updateUser(id: number, userData: any) {
+  async updateUser(id: number, userData: Partial<UserInput>) {
     if (!id) throw new Error('ID inválido fornecido para atualizar usuário.');
-
     try {
-      // const validatedData = userInputSchema.partial().parse(userData);
       const response = await api.put(`${endpoint}/${id}`, userData);
       if (response.status == 200) {
         return response.data;

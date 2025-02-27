@@ -1,9 +1,13 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Schema de validação para Function
 export const positionSchema = z.object({
+  id: z.number().optional(),
   name: z
     .string()
-    .max(120, "O nome da função não pode ter mais de 120 caracteres.")
-    .nonempty("O nome da função é obrigatório."),
+    .max(120, 'O nome da função não pode ter mais de 120 caracteres.')
+    .nonempty('O nome da função é obrigatório.'),
+  active: z.boolean().optional(),
 });
+
+export type Position = z.infer<typeof positionSchema>;

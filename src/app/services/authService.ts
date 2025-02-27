@@ -1,12 +1,38 @@
+import { AxiosError } from 'axios';
 import {
   UserAuthInput,
   userAuthInputSchema,
   UserAuthResponse,
   userAuthResponseSchema,
 } from '../schemas/authSchema';
+import {
+  UserInput,
+  userInputSchema,
+  UserResponse,
+  userResponseSchema,
+} from '../schemas/userSchema';
 import api from './api';
 
 export const AuthService = {
+  async register(userInput: UserInput): Promise<UserResponse> {
+    try {
+      const validUser = userInputSchema.parse(userInput);
+
+      const response = await api.post('/auth/register', validUser);
+      if (!response.data.sucess) {
+        console.error(response.data.errors);
+      }
+      const registeredUser = userResponseSchema.parse(response.data);
+      return registeredUser;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data);
+      }
+      console.error('Erro ao autenticar:', error);
+      throw new Error('Falha no login. Verifique suas credenciais.');
+    }
+  },
+
   async login(credentials: UserAuthInput): Promise<UserAuthResponse> {
     try {
       const validCredentials = userAuthInputSchema.parse(credentials);
@@ -29,6 +55,9 @@ export const AuthService = {
 
       return authResponse;
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data);
+      }
       console.error('Erro ao autenticar:', error);
       throw new Error('Falha no login. Verifique suas credenciais.');
     }

@@ -6,20 +6,20 @@ import { Position } from './position'
 
 export type EmployeeType = {
   id?: number
+  active?: boolean
   name: string
-  active: boolean
   fullName?: string
   dateOfBirth: string
   taxId: string
   nationalId: string
   issuingBody: string
   registration: string
-  supervisor: boolean
-  manager: boolean
+  supervisor?: boolean
+  manager?: boolean
   salary: number
   contractDate: Date
   removalDate?: Date
-  positionId: number
+  positionId?: number
   position?: Position
   address?: Address
   contact?: Contact
@@ -28,6 +28,8 @@ export type EmployeeType = {
   gender: string
   maritalStatus: string
 }
+
+export type Employee = EmployeeType
 
 export interface EmployeeProps {
   data: EmployeeType
