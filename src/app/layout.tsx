@@ -7,7 +7,7 @@ import { ResumeProvider } from "./context/CurriculoContext";
 import { ReminderProvider } from "@/app/context/ReminderContext";
 import { UserProvider } from "@/app/context/UserContext";
 import { HoursBankProvider } from "@/app/context/HoursBankContext";
-import { LoginProvider } from "./context/LoginContext";
+import { AuthProvider } from "@/app/context/AuthContext";
 import "./globals.css";
 
 // Font Configuration
@@ -29,20 +29,24 @@ export const metadata: Metadata = {
 
 // Encapsulate Providers
 const AppProviders = ({ children }: { children: React.ReactNode }) => (
-  <LoginProvider> {/* Added AuthProvider */}
+  <><EmployeeProvider>
+    { children }
+  </EmployeeProvider>
+    <ResumeProvider>
+    { children }
+    </ResumeProvider>
+    <ReminderProvider>
+    { children }
+    </ReminderProvider>
+    <HoursBankProvider>
+      {children}
+    </HoursBankProvider>
     <UserProvider>
-        <EmployeeProvider>
-          <VacancyProvider>
-            <ResumeProvider>
-              <ReminderProvider>
-                <HoursBankProvider>{children}</HoursBankProvider>
-              </ReminderProvider>
-            </ResumeProvider>
-          </VacancyProvider>
-        </EmployeeProvider>
-
+    { children }
     </UserProvider>
-  </LoginProvider>
+    <AuthProvider>
+    { children }
+    </AuthProvider></>
 );
 
 // Root Layout Component

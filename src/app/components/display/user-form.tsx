@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { userInputSchema } from "@/app/schemas/userSchema";
+import { UserInput, userInputSchema } from "@/app/schemas/userSchema";
 import { UserService } from "@/app/services/userService";
 import { ZodError } from "zod"
+import { AuthService } from "@/app/services/authService"
 
 export default function UserForm({ mode = "create", userData, onSave }) {
   const router = useRouter();
@@ -95,7 +96,11 @@ export default function UserForm({ mode = "create", userData, onSave }) {
         }
         await UserService.updateUser(userId, validatedData);
       } else {
-        await UserService.createUser(validatedData);
+        const userRegister: UserInput = {
+          password: formData.password,
+          ...validatedData
+        }
+        await AuthService.register(userRegister);
       }
 
       await onSave?.();

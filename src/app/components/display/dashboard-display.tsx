@@ -6,29 +6,21 @@ import "react-resizable/css/styles.css";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Navigation } from "@/app/components/navigation/navigation";
-import { VacancyService } from "@/app/services/vacancyService";
+import {  } from "@/app/services/vacancyService";
 import { useEmployeeContext } from "@/app/context/EmployeeContext";
 import { useVacancyContext } from "@/app/context/VacancyContext";
 import { useResumeContext } from "@/app/context/CurriculoContext";
 import { useReminderContext } from "@/app/context/ReminderContext";
-import { useHoursBankContext } from "@/app/context/HoursBankContext";
-import { EmployeeService } from "@/app/services/employeeService"
-import { ResumeService } from "@/app/services/resumeService"
-import { ReminderService } from "@/app/services/reminderService"
-import { HoursBankService } from "@/app/services/hoursBankService"
-
+// import { HoursBankService } from "@/app/services/hoursBankService"
 
 export default function DashboardDisplay() {
   const ResponsiveGridLayout = WidthProvider(Responsive);
   const router = useRouter();
-
-
   const { employees } = useEmployeeContext();
   const { vacancies } = useVacancyContext();
-  const { resumes } = useResumeContext();
+  // const { resumes } = useResumeContext();
   const { reminders } = useReminderContext();
-  const { hoursBank } = useHoursBankContext();
-
+  // const { hoursBank } = useHoursBankContext();
 
   const defaultLayout: Layout[] = [
     { i: "vagas", x: 0, y: 0, w: 3, h: 3 },
@@ -42,38 +34,30 @@ export default function DashboardDisplay() {
   const [layout, setLayout] = useState<Layout[]>(defaultLayout);
   const [isDragging, setIsDragging] = useState(false);
   const dragTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    const savedLayout = localStorage.getItem("dashboardLayout");
-    if (savedLayout) {
-      setLayout(JSON.parse(savedLayout));
-    }
-
-    async function fetchData() {
-      try {
-        const [empData, vacData, resumeData, remData, hoursData] = await Promise.all([
-          EmployeeService.getAllEmployees(),
-          VacancyService.getAllVacancies(),
-          ResumeService.getAllResumes(),
-          ReminderService.getAllReminders(),
-          HoursBankService.getAllHours(),
-        ]);
-
-
-
-
-
-
-      } catch (error) {
-        console.error("Erro ao carregar os dados do dashboard:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
-
+//
+//   useEffect(() => {
+//     const savedLayout = localStorage.getItem("dashboardLayout");
+//     if (savedLayout) {
+//       setLayout(JSON.parse(savedLayout));
+//     }
+//
+//     async function fetchData() {
+//       try {
+//         const [empData, vacData, resumeData, remData] = await Promise.all([
+//           EmployeeService.getAllEmployees(),
+//           VacancyService.getAllVacancies(),
+//           ResumeService.getAllResumes(),
+//           ReminderService.getAllReminders(),
+//           // HoursBankService.getAllHours(),
+//         ]);
+//       } catch (error) {
+//         console.error("Erro ao carregar os dados do dashboard:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+//     fetchData();
+//   }, []);
 
   const handleLayoutChange = useCallback((newLayout: Layout[]) => {
     setLayout(newLayout);
@@ -82,9 +66,6 @@ export default function DashboardDisplay() {
 
 
   const onMouseDown = () => {
-    console.log("Pressionou, iniciando contagem...");
-
-
     dragTimeout.current = setTimeout(() => {
       console.log("Agora é arrasto!");
       setIsDragging(true);
@@ -93,14 +74,10 @@ export default function DashboardDisplay() {
 
   const onMouseUp = () => {
     console.log("Soltou!");
-
-
     if (dragTimeout.current) {
       clearTimeout(dragTimeout.current);
       dragTimeout.current = null;
     }
-
-
     setIsDragging(false);
   };
 
@@ -109,13 +86,10 @@ export default function DashboardDisplay() {
       console.log("Ignorando clique, pois virou arrasto.");
       return;
     }
-
-    console.log("Navegando para:", path);
     router.push(path);
   };
 
   const maxItemsToShow = 5;
-
 
   const [loading, setLoading] = useState(true);
 
@@ -137,38 +111,39 @@ export default function DashboardDisplay() {
           useCSSTransforms={false}
           isDroppable={false}
         >
-       {/* Banco de Horas */}
-        <div
-          key="banco-de-horas"
-          className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-          onClick={() => handleNavigation("/hoursbank-display/")}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-        >
-          <h2 className="font-semibold text-xl mb-4 text-white">Banco de Horas</h2>
-          <ul>
-            {loading ? (
-  <p className="text-white text-sm">Carregando...</p>
-) : (
-  resumes.length > 0 ? (
-    resumes.slice(0, maxItemsToShow).map((resume, index) => (
-      <li key={index}>{resume.fullName} - {resume.position}</li>
-    ))
-  ) : (
-    <p className="text-white text-sm">Nenhum currículo disponível.</p>
-  )
-)}
-            </ul>
-          </div>
-
-          {/* Lembretes */}
+          {/* Banco de Horas */}
           <div
-            key="lembretes"
+            key="banco-de-horas"
             className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-            onClick={() => handleNavigation("/reminder-display/")}
+            onClick={() => handleNavigation("/hoursbank-display/")}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
           >
+            <h2 className="font-semibold text-xl mb-4 text-white">Banco de Horas</h2>
+            <ul>
+              {/* {loading ? (
+              <p className="text-white text-sm">Carregando...</p>
+              ) : (
+              resumes.length > 0 ? (
+                resumes.slice(0, maxItemsToShow).map((resume, index) => (
+                  <li key={index}>{resume.fullName} - {resume.position}</li>
+                ))
+              ) : (
+                <p className="text-white text-sm">Nenhum currículo disponível.</p>
+              )
+            )} */}
+            </ul>
+          </div>
+
+        {/* Lembretes */}
+        <div
+          key="lembretes"
+          className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
+          onClick={() => handleNavigation("/reminder-display/")}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+        >
+          <ul>
             {loading ? (
               <p className="text-white text-sm">Carregando...</p>
             ) : (
@@ -182,7 +157,6 @@ export default function DashboardDisplay() {
             )}
           </ul>
         </div>
-
 
         {/* Funcionários */}
         <div
@@ -199,7 +173,7 @@ export default function DashboardDisplay() {
           ) : (
             employees.length > 0 ? (
               employees.slice(0, maxItemsToShow).map((employee, index) => (
-                <li key={index}>{employee.name} - {employee.role?.name || "Sem função"}</li>
+                <li key={index}>{employee.name} - {employee.positionId || "Sem função"}</li>
               ))
             ) : (
               <p className="text-white text-sm">Nenhum funcionário encontrado.</p>

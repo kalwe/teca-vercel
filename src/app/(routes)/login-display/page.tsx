@@ -18,11 +18,9 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-
   const handleChange = (field: string, value: string) => {
     setCredentials((prev) => ({ ...prev, [field]: value }));
   };
-
 
   const handleLogin = async () => {
     try {
@@ -49,7 +47,6 @@ export default function Home() {
       }
     }
   };
-
 
   if (loading) {
     return (

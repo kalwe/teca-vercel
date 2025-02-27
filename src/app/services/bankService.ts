@@ -1,10 +1,11 @@
-import api from "./api"; // 🔥 Importa a instância do Axios configurada
+import { BankAccountType } from "../types/BankAccount";
+import api from "./api"; //  Importa a instância do Axios configurada
 
-const endpoint = "/bank-account"; // 🔥 Define o endpoint base
+const endpoint = "/bank-account"; //  Define o endpoint base
 
 export const BankService = {
   /**
-   * 🔥 Cria uma nova conta bancária para um funcionário
+   *  Cria uma nova conta bancária para um funcionário
    * @param {object} bankData - Dados da conta bancária
    * @returns {Promise<any>} - Resposta da API
    */

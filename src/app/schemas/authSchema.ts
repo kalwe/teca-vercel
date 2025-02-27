@@ -2,6 +2,10 @@
 
 import { z } from 'zod';
 
+export enum Role {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}
 export const userAuthInputSchema = z.object({
   name: z
     .string()

@@ -30,7 +30,6 @@ export const EmployeeService = {
       console.error('Erro ao buscar funcionário por ID:', error)
     }
   },
-
   async getAllEmployees() {
     try {
       const response = await api.get(endpoint)
@@ -39,6 +38,7 @@ export const EmployeeService = {
       }
     } catch (error) {
       console.error('Erro ao buscar todos os funcionários:', error)
+      return []
     }
   },
 

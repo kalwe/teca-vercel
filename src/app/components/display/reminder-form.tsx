@@ -1,13 +1,19 @@
 "use client";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
-import { reminderSchema, ReminderInput, ReminderFormProps } from "@/app/schemas/reminderSchema";
+import { reminderSchema, ReminderInput } from "@/app/schemas/reminderSchema";
 import { z } from "zod";
 import { ReminderService } from "@/app/services/reminderService";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
+
+interface ReminderFormProps {
+    mode: "create" | "edit";
+    reminderData?: ReminderInput;
+    onSave?: (data: any) => void;
+}
 
 const ReminderForm: React.FC<ReminderFormProps> = ({
     mode,
@@ -16,13 +22,22 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
 }) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState<ReminderInput>(reminderData || {
-        date: "", // 🔥 Agora só tem `date`
-        reason: "",
-        description: "",
+    const [formData, setFormData] = useState<ReminderInput>({
+        date: reminderData?.date || "",
+        time: reminderData?.time || "",
+        reason: reminderData?.reason || "",
+        description: reminderData?.description || "",
     });
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null); // 🔥 Estado para o DatePicker
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [selectedTime, setSelectedTime] = useState<Date | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        if (reminderData) {
+            setSelectedDate(reminderData.date ? new Date(reminderData.date) : null);
+            setSelectedTime(reminderData.time ? new Date(`1970-01-01T${reminderData.time}:00`) : null);
+        }
+    }, [reminderData]);
 
     /**
      * Atualiza os campos e valida os dados em tempo real.
@@ -49,31 +64,35 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
     };
 
     /**
-     *  Manipula a mudança no DatePicker
+     * Manipula a mudança na Data
      */
     const handleDateChange = (date: Date | null) => {
         setSelectedDate(date);
         if (date) {
-            const formattedDate = format(date, "dd-mm-yyyy HH:mm:ss");
-            handleChange("date", formattedDate); // 🔥 Salva a data completa no estado
+            const formattedDate = format(date, "yyyy-MM-dd");
+            handleChange("date", formattedDate);
+        }
+    };
+
+    const handleTimeChange = (time: Date | null) => {
+        setSelectedTime(time);
+        if (time) {
+            const formattedTime = format(time, "HH:mm");
+            handleChange("time", formattedTime);
         }
     };
 
     /**
-     *  Criar ou Atualizar um Lembrete (POST ou PUT)
+     * Criar ou Atualizar um Lembrete (POST ou PUT)
      */
     const handleSubmit = async () => {
         try {
             setLoading(true);
             const dataToSubmit = { ...formData };
-
-            // 🔥 Valida os dados usando o reminderSchema
             const validatedData = reminderSchema.parse(dataToSubmit);
-
-            // 🔥 Faz o POST para criar o lembrete
             const savedReminder = await ReminderService.createReminder(validatedData);
 
-            alert("✅ Lembrete criado com sucesso!");
+            alert("Lembrete criado com sucesso!");
             onSave?.(savedReminder);
             router.push("/dashboard-display/");
         } catch (error) {
@@ -86,7 +105,7 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
                 });
                 setErrors(fieldErrors);
             } else {
-                console.error("❌ Erro ao criar lembrete:", error);
+                console.error("Erro ao criar lembrete:", error);
                 alert("Erro ao criar lembrete. Tente novamente.");
             }
         } finally {
@@ -101,27 +120,39 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
                     {mode === "edit" ? "Editar Lembrete" : "Novo Lembrete"}
                 </h1>
 
-                {/* Formulário */}
                 <div className="space-y-6">
-                    {/* DatePicker - Combina Data e Hora */}
                     <div>
                         <label htmlFor="date" className="text-white block mb-1">
-                            Selecione Data e Hora:
+                            Selecione a Data:
                         </label>
                         <DatePicker
                             selected={selectedDate}
                             onChange={handleDateChange}
-                            showTimeSelect
-                            timeFormat="HH:mm"
-                            timeIntervals={30}
-                            dateFormat="dd/MM/yyyy HH:mm"
+                            dateFormat="dd/MM/yyyy"
                             className="w-full px-4 py-2 rounded-md border border-gray-600 bg-gray-700 text-white"
-                            placeholderText="Selecione Data e Hora"
+                            placeholderText="Selecione a Data"
                         />
                         {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
                     </div>
 
-                    {/* Campo de Motivo */}
+                    <div>
+                        <label htmlFor="time" className="text-white block mb-1">
+                            Selecione o Horário:
+                        </label>
+                        <DatePicker
+                            selected={selectedTime}
+                            onChange={handleTimeChange}
+                            showTimeSelect
+                            showTimeSelectOnly
+                            timeIntervals={30}
+                            timeCaption="Hora"
+                            dateFormat="HH:mm"
+                            className="w-full px-4 py-2 rounded-md border border-gray-600 bg-gray-700 text-white"
+                            placeholderText="Selecione o Horário"
+                        />
+                        {errors.time && <p className="text-red-500 text-sm">{errors.time}</p>}
+                    </div>
+
                     <div>
                         <label htmlFor="reason" className="text-white block mb-1">
                             Motivo do lembrete:
@@ -139,7 +170,6 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
                         {errors.reason && <p className="text-red-500 text-sm">{errors.reason}</p>}
                     </div>
 
-                    {/* Campo de Descrição */}
                     <div>
                         <label htmlFor="description" className="text-white block mb-1">
                             Descrição:
@@ -156,14 +186,13 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
                         {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
                     </div>
 
-                    {/* Botões de Ação */}
                     <div className="flex justify-between">
                         <button className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-500">
                             Cancelar
                         </button>
                         <button
-                        onClick={handleSubmit}
-                        className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500">
+                            onClick={handleSubmit}
+                            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500">
                             Salvar Lembrete
                         </button>
                         {loading && (

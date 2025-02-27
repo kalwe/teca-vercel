@@ -1,21 +1,29 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { PessoaFisica } from "../switch-tabs/person";
-import { Funcionario } from "../switch-tabs/employee";
-import { Address } from "../switch-tabs/address";
-import { Contact } from "../switch-tabs/contact";
-import { Bank } from "../switch-tabs/bank";
-import { Clothing } from "../switch-tabs/clothing";
+import { useState } from "react"
+import { PessoaFisica } from "../switch-tabs/person"
+import { Funcionario } from "../switch-tabs/employee"
+import { Address } from "../switch-tabs/address"
+import { Contact } from "../switch-tabs/Contact"
+import { Bank } from "../switch-tabs/bank"
+import { Clothing } from "../switch-tabs/clothing"
+import { useRouter } from "next/navigation"
 
-export default function ContractForm({ mode, isEditable = true }) {
-  // State to manage the currently selected tab index.
-  const [selectedTab, setSelectedTab] = useState(0);
-  // State to store the form data for each tab. Using a Record for flexibility.
-  const [formData, setFormData] = useState<Record<string, unknown>>({});
-  const [error] = useState<string | null>(null);
+export default function ContractForm({employeeData = {}, isEditable = true }) {
+  const router = useRouter()
+  const [selectedTab, setSelectedTab] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Define the tabs with their respective components and keys.
+  const [formData, setFormData] = useState({
+    pessoaFisica: employeeData ?? {},
+    funcionario: employeeData ?? {},
+    address: employeeData?.address ?? {},
+    contact: employeeData?.contact ?? {},
+    bankAccount: employeeData?.bank_account ?? {},
+    clothing: employeeData?.clothing ?? {},
+  })
+
   const tabs = [
     { name: "PESSOA FÍSICA", component: PessoaFisica, key: "pessoaFisica" },
     { name: "FUNCIONÁRIO", component: Funcionario, key: "funcionario" },
@@ -67,7 +75,6 @@ export default function ContractForm({ mode, isEditable = true }) {
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             <CurrentComponent
-              // Pass the current form data to the child component for controlled inputs.
               data={formData[currentKey] || {}}
               onChange={handleInputChange}
               isEditable={isEditable}
