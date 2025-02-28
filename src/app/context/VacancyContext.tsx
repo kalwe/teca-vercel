@@ -14,7 +14,7 @@ interface VacancyContextProps {
   removeVacancy: (id: number) => Promise<void>;
 }
 
-const VacancyContext = createContext<VacancyContextProps | undefined>(undefined);
+const VacancyContext = createContext({} as VacancyContextProps);
 
 export const VacancyProvider = ({ children }: { children: ReactNode }) => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
@@ -109,8 +109,5 @@ export const VacancyProvider = ({ children }: { children: ReactNode }) => {
  */
 export const useVacancyContext = () => {
   const context = useContext(VacancyContext);
-  if (!context) {
-    throw new Error('useVacancyContext must be used within a VacancyProvider');
-  }
   return context;
 };

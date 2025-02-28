@@ -20,7 +20,7 @@ interface HoursBankContextType {
   removeEntry: (id: string) => void;
 }
 
-const HoursBankContext = createContext<HoursBankContextType | undefined>(undefined);
+const HoursBankContext = createContext({} as HoursBankContextType);
 
 export const HoursBankProvider = ({ children }: { children: ReactNode }) => {
   const [hoursBank, setHoursBank] = useState<HoursBankEntry[]>([]);
@@ -48,8 +48,5 @@ export const HoursBankProvider = ({ children }: { children: ReactNode }) => {
 
 export const useHoursBankContext = (): HoursBankContextType => {
   const context = useContext(HoursBankContext);
-  if (!context) {
-    throw new Error("useHoursBankContext must be used within a HoursBankProvider");
-  }
   return context;
 };

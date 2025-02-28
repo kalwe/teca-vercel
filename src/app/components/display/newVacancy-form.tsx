@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+ import "react-datepicker/dist/react-datepicker.css";
 import { useRouter, useParams } from "next/navigation";
 
 import { vacancySchema, Vacancy } from "@/app/schemas/vacancySchema";
@@ -15,13 +14,13 @@ interface VacancyFormProps {
   vacancyData?: Vacancy;
   setVacancyData: React.Dispatch<React.SetStateAction<Vacancy>>;
   onSave: any
-  isEditMode: any
+  // isEditMode: boolean
 }
 
 const NewVacancyForm: React.FC<VacancyFormProps> = ({ vacancyData, setVacancyData }) => {
   const router = useRouter();
   const params = useParams();
-  const isEditMode = !!params.id; // Verifica se tem ID na URL
+  const isEditMode = !!params?.id;
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -57,7 +56,7 @@ const NewVacancyForm: React.FC<VacancyFormProps> = ({ vacancyData, setVacancyDat
     };
 
     fetchVacancy();
-  }, [isEditMode, params.id]);
+  }, [isEditMode, params?.id]);
 
   /**
    * Atualiza os valores do formulário e faz validação em tempo real.
