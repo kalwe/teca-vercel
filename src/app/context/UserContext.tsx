@@ -17,7 +17,7 @@ type UserContextType = {
   deleteUser: (id: number) => Promise<void>;
 };
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+const UserContext = createContext({} as UserContextType);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<UserResponse[]>([]);
@@ -99,8 +99,5 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
 export const useUserContext = (): UserContextType => {
   const context = useContext(UserContext);
-  if (!context) {
-    throw new Error("useUserContext deve ser usado dentro de um UserProvider.");
-  }
   return context;
 };

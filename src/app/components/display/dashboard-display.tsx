@@ -18,7 +18,7 @@ export default function DashboardDisplay() {
   const router = useRouter();
   const { employees } = useEmployeeContext();
   const { vacancies } = useVacancyContext();
-  // const { resumes } = useResumeContext();
+  const { resumes } = useResumeContext();
   const { reminders } = useReminderContext();
   // const { hoursBank } = useHoursBankContext();
 
@@ -111,7 +111,7 @@ export default function DashboardDisplay() {
           useCSSTransforms={false}
           isDroppable={false}
         >
-          {/* Banco de Horas */}
+          {/* Banco de Horas
           <div
             key="banco-de-horas"
             className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
@@ -121,7 +121,7 @@ export default function DashboardDisplay() {
           >
             <h2 className="font-semibold text-xl mb-4 text-white">Banco de Horas</h2>
             <ul>
-              {/* {loading ? (
+              {loading ? (
               <p className="text-white text-sm">Carregando...</p>
               ) : (
               resumes.length > 0 ? (
@@ -131,15 +131,15 @@ export default function DashboardDisplay() {
               ) : (
                 <p className="text-white text-sm">Nenhum currículo disponível.</p>
               )
-            )} */}
+            )}
             </ul>
-          </div>
+          </div> */}
 
         {/* Lembretes */}
         <div
           key="lembretes"
           className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
-          onClick={() => handleNavigation("/reminder-display/")}
+          onClick={() => handleNavigation("/vagas-display/")}
           onMouseDown={onMouseDown}
           onMouseUp={onMouseUp}
         >

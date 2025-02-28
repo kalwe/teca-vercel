@@ -8,7 +8,6 @@ import { vacancySchema } from "@/app/schemas/vacancySchema";
 import { VacancyService } from "@/app/services/vacancyService";
 import { z } from "zod";
 
-// 🔹 Define o tipo baseado no Schema do Zod
 type Vacancy = z.infer<typeof vacancySchema>;
 
 export default function Contract() {
@@ -88,7 +87,7 @@ export default function Contract() {
         vacancyData={vacancyData}
         setVacancyData={setVacancyData}
         onSave={handleSaveOrUpdate}
-        isEditMode={isEditMode}
+        // isEditMode={isEditMode}
       />
 
       <div

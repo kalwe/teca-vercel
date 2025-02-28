@@ -12,7 +12,7 @@ type ResumeContextData = {
   deleteResume: (id: number) => Promise<void>
 }
 
-const ResumeContext = createContext<ResumeContextData | undefined>(undefined)
+const ResumeContext = createContext({} as ResumeContextData)
 
 export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [resumes, setResumes] = useState<[]>([])
@@ -106,8 +106,5 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
 export const useResumeContext = (): ResumeContextData => {
   const context = useContext(ResumeContext)
-  if (!context) {
-    throw new Error("useResumeContext deve ser usado dentro de um ResumeProvider.")
-  }
   return context
 }

@@ -12,7 +12,7 @@ interface ReminderContextData {
     setReminders: React.Dispatch<React.SetStateAction<ReminderInput[]>>
 }
 
-const ReminderContext = createContext<ReminderContextData | undefined>(undefined)
+const ReminderContext = createContext({} as ReminderContextData)
 
 export const ReminderProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [reminders, setReminders] = useState<ReminderInput[]>([])
@@ -70,8 +70,5 @@ export const ReminderProvider: React.FC<{ children: ReactNode }> = ({ children }
 
 export const useReminderContext = (): ReminderContextData => {
     const context = useContext(ReminderContext)
-    if (!context) {
-        throw new Error('useReminderContext deve ser usado dentro de um ReminderProvider')
-    }
     return context
 }
