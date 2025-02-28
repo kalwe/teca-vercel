@@ -135,9 +135,9 @@ export default function DashboardDisplay() {
             </ul>
           </div> */}
 
-        {/* Lembretes */}
+        {/* Vacancy */}
         <div
-          key="lembretes"
+          key="vacancy"
           className="cursor-pointer bg-gradient-to-br from-[#555D4C] to-[#434D36] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 min-h-[200px]"
           onClick={() => handleNavigation("/vagas-display/")}
           onMouseDown={onMouseDown}
