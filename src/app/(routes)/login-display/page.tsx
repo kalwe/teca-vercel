@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { userAuthInputSchema, UserAuthInput } from "@/app/schemas/authSchema";
 import { AuthService } from "@/app/services/authService"
 import "./style.css";
-import { ZodError } from "zod"
+import { ZodError, ZodIssue } from "zod"
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
