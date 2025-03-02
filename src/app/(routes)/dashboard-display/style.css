@@ -4,7 +4,7 @@ body {
     height: 100vh;
     overflow: hidden;
   }
-  
+
   /* Pseudo-elemento para o fundo */
   body::before {
     content: "";
@@ -12,17 +12,13 @@ body {
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-  
+
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-  
+
     filter: blur(8px); /* Aplica o blur somente ao background */
     z-index: -1; /* Coloca atrás do conteúdo */
   }
-  
-
-  
-  

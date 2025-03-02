@@ -1,70 +1,63 @@
-import { AxiosError } from 'axios';
-import { UserInput } from '../schemas/userSchema';
-import api from './api';
+import { AxiosError } from 'axios'
+import { UserInput } from '../schemas/userSchema'
+import api from './api'
 
-const endpoint = '/user';
+const endpoint = '/user'
 
 export const UserService = {
   async getUsers() {
     try {
-      const response = await api.get(endpoint);
+      const response = await api.get(endpoint)
       if (response.status == 200) {
-        return response.data;
+        return response.data
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof AxiosError) {
-        console.error(' Erro ao buscar usuário:', error.response?.data || error.message);
-        throw new Error(error.response?.data?.message || 'Erro ao buscar usuário.');
+        console.error('Erro ao buscar usuário: ', error.response?.data)
       }
+      throw new Error('Erro ao buscar usuário: ', error.message)
     }
   },
 
   async getUserById(id: number) {
-    if (!id) throw new Error('ID inválido fornecido para buscar usuário.');
-
     try {
-      const response = await api.get(`${endpoint}/${id}`);
+      const response = await api.get(`${endpoint}/${id}`)
       if (response.status == 200) {
-        return response.data;
+        return response.data
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof AxiosError) {
-        console.error(' Erro ao buscar usuário:', error.response?.data || error.message);
-        throw new Error(error.response?.data?.message || 'Erro ao buscar usuário.');
+        console.error('Erro ao buscar usuário: ', error.response?.data)
       }
+      throw new Error('Erro ao buscar usuário: ', error.message)
     }
   },
 
   async updateUser(id: number, userData: Partial<UserInput>) {
-    if (!id) throw new Error('ID inválido fornecido para atualizar usuário.');
     try {
-      const response = await api.put(`${endpoint}/${id}`, userData);
+      const response = await api.put(`${endpoint}/${id}`, userData)
       if (response.status == 200) {
-        return response.data;
+        return response.data
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof AxiosError) {
-        console.error(
-          ' Erro ao atualizar usuário:',
-          error.response?.data || error.message,
-        );
-        throw new Error(error.response?.data?.message || 'Erro ao atualizar usuário.');
+        console.error('Erro ao atualizar usuário: ', error.response?.data)
       }
+      throw new Error('Erro ao atualizar usuário: ', error.message)
     }
   },
 
   async deleteUser(id: number) {
-    if (!id) throw new Error('ID inválido fornecido para deletar usuário.');
     try {
-      const response = await api.delete(`${endpoint}/${id}`);
+      const response = await api.delete(`${endpoint}/${id}`)
       if (response.status == 204) {
-        return response.data;
+        return response.data
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof AxiosError) {
-        console.error(' Erro ao excluir usuário:', error.response?.data || error.message);
-        throw new Error(error.response?.data?.message || 'Erro ao excluir usuário.');
+        console.error('Erro ao excluir usuário: ', error.response?.data)
       }
+      throw new Error('Erro ao excluir usuário: ', error.message)
     }
   },
-};
+}

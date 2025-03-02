@@ -1,43 +1,35 @@
-import { AxiosError } from "axios";
-import { ReminderInput } from "../schemas/reminderSchema";
-import api from "./api";
+import { AxiosError } from 'axios'
+import { ReminderInput } from '../schemas/reminderSchema'
+import api from './api'
 
-const endpoint = '/reminder';
+const endpoint = '/reminder'
 
 export const ReminderService = {
-   /**
-   *  Cria um novo lembrete com validação
-   * @param {ReminderInput} _reminderData - Dados do lembrete
-   */
-   async createReminder(_reminderData: ReminderInput) {
+  async createReminder(reminderData: ReminderInput) {
     try {
-
-
-      const response = await api.post(endpoint, {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      return response.data;
+      const response = await api.post(endpoint, reminderData)
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error("Erro ao criar lembrete:", AxiosError);
-      throw new Error("Erro ao criar lembrete");
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data)
+      }
+      console.error('Erro ao criar lembrete:', error)
     }
   },
 
   async getAllReminders() {
     try {
-      const response = await api.get(endpoint, {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      return response.data;
+      const response = await api.get(endpoint)
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error("Erro ao buscar todos os lembretes:", AxiosError);
-      throw new Error("Erro ao buscar lembretes");
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data)
+      }
+      console.error('Erro ao buscar todos os lembretes:', error)
     }
   },
-
-};
+}
