@@ -1,8 +1,7 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
-//  Esquema de validação para Vacancy
 export const vacancySchema = z.object({
-  id: z.number().optional(), // Permite ID opcional para criação
+  id: z.number().optional(),
   quantity: z.number().min(1, 'A quantidade deve ser pelo menos 1'),
   position: z
     .string()
@@ -31,18 +30,6 @@ export const vacancySchema = z.object({
     .optional()
     .default(''),
   salary: z.number().positive('O salário deve ser um valor positivo.'),
-});
+})
 
-//  Tipo inferido do esquema de vaga
-export type Vacancy = z.infer<typeof vacancySchema>;
-
-//  Definição do Contexto de Vacancy
-// TODO: duplicado em vacancyType
-export interface VacancyContextProps {
-  vacancies: Vacancy[];
-  set_vacancies: React.Dispatch<React.SetStateAction<Vacancy[]>>; // TODO: oq isso faz exatamente? "React.Dispatch<React.SetStateAction<Vacancy[]>>"
-  add_vacancy: (vacancy: Vacancy) => Promise<void>;
-  update_vacancy: (id: number, updates: Partial<Vacancy>) => Promise<void>;
-  remove_vacancy: (id: number) => Promise<void>;
-  // TODO: add_vacancy, update_vacancy e remove_vacancy nunca sao usados
-}
+export type Vacancy = z.infer<typeof vacancySchema>

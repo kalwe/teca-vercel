@@ -39,9 +39,6 @@ export const AuthService = {
 
       const response = await api.post('/auth/login', validCredentials)
 
-      // if (!response.data.success) {
-      //   console.error(response.data.errors)
-      // }
       const authResponse = userAuthResponseSchema.parse(response.data)
 
       if (authResponse.name == validCredentials.name) {

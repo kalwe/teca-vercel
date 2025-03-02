@@ -2,10 +2,7 @@
 
 import DashboardDisplay from "@/app/components/display/dashboard-display";
 
-
-
 export default function Home() {
-
   return (
     <div
       className="p-0 overflow-auto h-screen"
@@ -13,7 +10,7 @@ export default function Home() {
         background: "linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))",
       }}
     >
-     <DashboardDisplay/>
+      <DashboardDisplay />
     </div>
   );
 }
