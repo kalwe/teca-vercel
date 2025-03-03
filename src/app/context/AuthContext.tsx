@@ -5,7 +5,7 @@ import { User, AuthContextType } from "@/app/types/authType";
 import { AuthService } from "../services/authService"
 import { UserAuthInput } from "../schemas/authSchema"
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>;
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -60,8 +60,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 // Hook customizado para consumir o contexto de autenticação
 export const useAuthContext = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuthContext deve ser usado dentro de um AuthProvider");
-  }
-  return context;
+
 };

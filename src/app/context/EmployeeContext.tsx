@@ -12,7 +12,7 @@ interface EmployeeContextProps {
   getEmployeeById: (id: number) => Promise<void>
 }
 
-const EmployeeContext = createContext<EmployeeContextProps | undefined>(undefined)
+const EmployeeContext = createContext<EmployeeContextProps>
 
 export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
   const [employees, setEmployees] = useState<EmployeeType[]>([])
@@ -97,8 +97,5 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
 
 export const useEmployeeContext = () => {
   const context = useContext(EmployeeContext)
-  if (!context) {
-    throw new Error("useEmployeeContext deve ser usado dentro de um EmployeeProvider.")
-  }
-  return context
+
 }

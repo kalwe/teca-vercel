@@ -14,7 +14,7 @@ interface VacancyContextProps {
   removeVacancy: (id: number) => Promise<void>;
 }
 
-const VacancyContext = createContext<VacancyContextProps | undefined>(undefined);
+const VacancyContext = createContext({} as VacancyContextProps);
 
 export const VacancyProvider = ({ children }: { children: ReactNode }) => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
@@ -40,7 +40,7 @@ export const VacancyProvider = ({ children }: { children: ReactNode }) => {
    */
   const addVacancy = async (newVacancy: Vacancy) => {
     try {
-      const validatedVacancy = vacancySchema.parse(newVacancy); // 🔥 Validando antes de enviar
+      const validatedVacancy = vacancySchema.parse(newVacancy); // Validando antes de enviar
       const response = await axios.post(API_URL, validatedVacancy);
       setVacancies((prev) => [...prev, vacancySchema.parse(response.data)]);
       console.log('New vacancy added:', response.data);
@@ -104,13 +104,7 @@ export const VacancyProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-/**
- * Custom hook to access the Vacancies context.
- */
 export const useVacancyContext = () => {
   const context = useContext(VacancyContext);
-  if (!context) {
-    throw new Error('useVacancyContext must be used within a VacancyProvider');
-  }
-  return context;
+
 };
