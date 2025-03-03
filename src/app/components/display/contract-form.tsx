@@ -9,11 +9,12 @@ import { Bank } from "../switch-tabs/bank"
 import { Clothing } from "../switch-tabs/clothing"
 import { useRouter } from "next/navigation"
 
-export default function ContractForm({employeeData = {}, isEditable = true }) {
+export default function ContractForm({ employeeData = {}, isEditable = true, mode = "edit" }) {
   const router = useRouter()
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isNextEnabled, setIsNextEnabled] = useState(false);
 
   const [formData, setFormData] = useState({
     pessoaFisica: employeeData ?? {},
@@ -25,8 +26,8 @@ export default function ContractForm({employeeData = {}, isEditable = true }) {
   })
 
   const tabs = [
-    { name: "PESSOA FÍSICA", component: PessoaFisica, key: "pessoaFisica" },
-    { name: "FUNCIONÁRIO", component: Funcionario, key: "funcionario" },
+    { name: "PESSOA FÍSICA", component: PessoaFisica, key: "employee" },
+    { name: "FUNCIONÁRIO", component: Funcionario, key: "employee" },
     { name: "ENDEREÇO", component: Address, key: "address" },
     { name: "CONTATO", component: Contact, key: "contact" },
     { name: "DADOS BANCÁRIOS", component: Bank, key: "bankAccount" },
@@ -81,6 +82,7 @@ export default function ContractForm({employeeData = {}, isEditable = true }) {
               mode={mode}
               onNext={handleNextTab}
               onPrev={handlePrevTab}
+              setNextEnabled={setIsNextEnabled}
             />
           </div>
         </div>

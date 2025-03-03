@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { employeeSchema } from "@/app/schemas/employeeSchema";
-import { Employee } from "@/app/types/old/employee";
 import { EmployeeService } from "@/app/services/employeeService";
 import { z } from "zod";
 import DropdownCheckboxPosition from "../DropDown/dropdown-position";
@@ -16,51 +15,34 @@ export function Funcionario({
   isEditable,
   onNext,
   onPrev,
+  setNextEnabled, // ADICIONADO PARA CONTROLAR O BOTÃO PRÓXIMO
 }: EmployeeProps) {
-  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
   const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
 
-  const formatDateForBackend = (value: string | Date | null): string => {
-    if (!value) return "";
-    if (typeof value === "string") {
-      return value.includes("-") ? value : value.replace(/\//g, "-");
-    }
-    if (value instanceof Date) {
-      const day = String(value.getDate()).padStart(2, "0");
-      const month = String(value.getMonth() + 1).padStart(2, "0");
-      const year = value.getFullYear();
-      return `${day}-${month}-${year}`;
-    }
-    return "";
-  };
+  // Comunica o estado do botão para o ContractForm
+  useEffect(() => {
+    setNextEnabled(isNextEnabled);
+  }, [isNextEnabled, setNextEnabled]);
 
-  const parseDateFromBackend = (dateStr?: string): Date | null => {
-    if (!dateStr) return null;
-    const parts = dateStr.split("-");
-    if (parts.length !== 3) return null;
-    const [day, month, year] = parts;
-    return new Date(Number(year), Number(month) - 1, Number(day));
-  };
-
+  /**
+   * Manipula mudanças nos inputs e faz a validação do formulário
+   */
   const handleInputChange = (field: keyof Employee, value: unknown) => {
-    let formattedValue = value;
-    if ((field === "contractDate" || field === "removalDate") && value instanceof Date) {
-      formattedValue = formatDateForBackend(value);
-    }
-    const updatedData = { ...data, [field]: formattedValue };
+    const updatedData = { ...data, [field]: value };
 
     try {
-      employeeSchema.parse(updatedData);
-      setErrors({});
-      setIsNextEnabled(true);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
+      employeeSchema.parse(updatedData); // Valida os dados
+      setErrors({}); // Limpa os erros ao preencher corretamente
+      setIsNextEnabled(true); // Habilita o botão "Próximo"
+    } catch (error) {
+      if (error instanceof z.ZodError) {
         const newErrors: Partial<Record<keyof Employee, string>> = {};
-        err.errors.forEach((e) => {
+        error.errors.forEach((e) => {
           newErrors[e.path[0] as keyof Employee] = e.message;
         });
         setErrors(newErrors);
-        setIsNextEnabled(false);
+        setIsNextEnabled(false); // Desabilita o botão "Próximo" se houver erros
       }
     }
 
@@ -68,7 +50,7 @@ export function Funcionario({
   };
 
   /**
-   * Calls the EmployeeService to save the employee data and then proceeds to the next step.
+   * Faz o POST na API e avança para a próxima etapa
    */
   const handleSave = async () => {
     try {
@@ -94,9 +76,9 @@ export function Funcionario({
           value={data.registration || ""}
           onChange={(e) => handleInputChange("registration", e.target.value)}
           placeholder="Digite a matrícula"
-          className={`w-full bg-gray-700 text-white border ${
+          className={w-full bg-gray-700 text-white border ${
             errors.registration ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
+          } rounded-lg py-2 px-3}
           disabled={!isEditable}
         />
         {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
@@ -135,41 +117,16 @@ export function Funcionario({
           <p className="text-red-500 text-sm mt-1">{errors.removalDate}</p>
         )}
       </div>
-
-      {/* Dropdown for Position (using positionId as per schema) */}
+      {/* Dropdown for Position */}
       <div className="w-full">
         <DropdownCheckboxPosition
-          value={data.positionId || ""}
-          onChange={(value) => handleInputChange("positionId", value)}
+          id={data.position?.name ?? ''}
+          onChange={(id, name) => handleInputChange("position", { id: id, name: name })}
           disabled={!isEditable}
         />
         {errors.positionId && (
           <p className="text-red-500 text-sm mt-1">{errors.positionId}</p>
         )}
-      </div>
-
-      {/* Supervisor Checkbox */}
-      <div className="w-full flex items-center">
-        <input
-          type="checkbox"
-          checked={!!data.supervisor}
-          onChange={(e) => handleInputChange("supervisor", e.target.checked)}
-          className="mr-2"
-          disabled={!isEditable}
-        />
-        <label className="text-gray-400">Encarregado</label>
-      </div>
-
-      {/* Manager Checkbox */}
-      <div className="w-full flex items-center">
-        <input
-          type="checkbox"
-          checked={!!data.manager}
-          onChange={(e) => handleInputChange("manager", e.target.checked)}
-          className="mr-2"
-          disabled={!isEditable}
-        />
-        <label className="text-gray-400">Gerente</label>
       </div>
 
       {/* Navigation Buttons */}

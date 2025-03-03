@@ -1,40 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import DropdownCheckboxMaritalStatus from "../DropDown/dropdown-marital-status"
-import DropdownCheckboxGender from "../DropDown/dropdown-gender"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-import { PersonProps, PersonType } from "@/app/types/person"
-import { personSchema } from "@/app/schemas/personSchema"
-import { EmployeeService } from "@/app/services/employeeService"
-import { z } from "zod"
+import { useState } from "react";
+import DropdownCheckboxMaritalStatus from "../DropDown/dropdown-marital-status";
+import DropdownCheckboxGender from "../DropDown/dropdown-gender";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { PersonProps, PersonType } from "@/app/types/person";
+import { personSchema } from "@/app/schemas/personSchema";
+import { z } from "zod";
 
 export function PessoaFisica({
   data = {} as PersonType,
   onChange,
-  isEditable,
+  isEditable, // Certifique-se de que está recebendo essa prop corretamente
   onNext,
   onPrev,
-
 }: PersonProps) {
-  const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string>>>({})
-  const [isNextEnabled, setIsNextEnabled] = useState(false)
-
+  const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string>>>({});
+  const [isNextEnabled, setIsNextEnabled] = useState(false);
 
   const formatDateForBackend = (date: Date | null) => {
     if (!date) return "";
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   const handleInputChange = (field: keyof PersonType, value: string | Date | null) => {
     let formattedValue = value;
 
     if (field === "dateOfBirth" && value instanceof Date) {
-      formattedValue = formatDateForBackend(value);
+      formattedValue = formatDateForBackend(value); // Vai salvar no formato YYYY-MM-DD
     }
 
     const updatedData = { ...data, [field]: formattedValue };
@@ -59,8 +56,6 @@ export function PessoaFisica({
 
   const handleSave = async () => {
     try {
-      const createdPerson = await EmployeeService.createEmployee({ ...data, employee });
-      console.log(createdPerson);
       onNext();
     } catch (error) {
       alert("Erro ao salvar dados pessoais. Verifique os campos.");
@@ -68,20 +63,18 @@ export function PessoaFisica({
     }
   };
 
-
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Pessoa Física</h2>
 
       {[
-  { key: "fullName", name: "fullName", label: "Nome Completo", placeholder: "Digite o nome completo" },
-  { key: "taxId", name: "taxId", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
-  { key: "nationalId", name: "nationalId", label: "RG", placeholder: "Digite o RG" },
-  { key: "issuingBody", name: "issuingBody", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
-].map((field) => (
-  <div key={field.key} className="w-full">
-
-
+        { key: "name", name: "name", label: "Nome", placeholder: "Digite o nome" },
+        { key: "fullName", name: "fullName", label: "Nome Completo", placeholder: "Digite o sobrenome" },
+        { key: "taxId", name: "taxId", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
+        { key: "nationalId", name: "nationalId", label: "RG", placeholder: "Digite o RG" },
+        { key: "issuingBody", name: "issuingBody", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
+      ].map((field) => (
+        <div key={field.key} className="w-full">
           <input
             type="text"
             name={field.name}
@@ -99,9 +92,12 @@ export function PessoaFisica({
 
       {/* Data de nascimento */}
       <div className="w-full">
-
         <DatePicker
-          selected={data.dateOfBirth ? new Date(data.dateOfBirth.split("-").reverse().join("-")) : null}
+          selected={
+            data.dateOfBirth
+              ? new Date(data.dateOfBirth.replace(/-/g, "/"))
+              : null
+          }
           onChange={(date) => handleInputChange("dateOfBirth", date)}
           dateFormat="dd/MM/yyyy"
           placeholderText="Data de Nascimento"
@@ -115,7 +111,6 @@ export function PessoaFisica({
 
       {/* Gênero */}
       <div className="w-full">
-
         <DropdownCheckboxGender
           value={data.gender || ""}
           onChange={(value) => handleInputChange("gender", value)}
@@ -126,7 +121,6 @@ export function PessoaFisica({
 
       {/* Estado Civil */}
       <div className="w-full">
-
         <DropdownCheckboxMaritalStatus
           value={data.maritalStatus || ""}
           onChange={(value) => handleInputChange("maritalStatus", value)}
@@ -137,13 +131,15 @@ export function PessoaFisica({
 
       {/* Botões */}
       <div className="flex justify-between mt-6">
-        <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+        <button
+          onClick={onPrev}
+          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+        >
           Voltar
         </button>
         <button
           onClick={handleSave}
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={!isNextEnabled}
         >
           Próximo
         </button>

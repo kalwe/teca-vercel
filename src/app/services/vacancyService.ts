@@ -88,14 +88,7 @@ export const VacancyService = {
   },
 
   async deleteVacancy(id: number): Promise<void> {
-    if (!id) throw new Error('ID inválido fornecido para deletar vaga.');
-    try {
-      const response = await api.delete(`${endpoint}/${id}`);
-      if (response.status == 204) {
-        return response.data;
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  response = await api.delete(`${endpoint}/${id}`);
+  return response.data;
   },
 };
