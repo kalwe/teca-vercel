@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios'
 import { EmployeeType } from '../types/employee'
 import api from './api'
 
@@ -6,15 +7,14 @@ const endpoint = '/employee'
 export const EmployeeService = {
   async createEmployee(EmployeeData: EmployeeType) {
     try {
-      console.log(' Enviando dados para criação:', EmployeeData)
-
       const response = await api.post(endpoint, EmployeeData)
-
       if (response.status === 201) {
-        console.log(' Funcionário criado com sucesso!', response.data)
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data)
+      }
       console.error('Erro ao salvar funcionário:', error)
     }
   },
@@ -22,21 +22,27 @@ export const EmployeeService = {
   async getEmployeeById(id: number) {
     try {
       const response = await api.get(`${endpoint}/${id}`)
-
       if (response.status === 200) {
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data)
+      }
       console.error('Erro ao buscar funcionário por ID:', error)
     }
   },
+
   async getAllEmployees() {
     try {
-      const response = await api.get(endpoint)
+      const response = await api.get(`${endpoint}`)
       if (response.status === 200) {
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data)
+      }
       console.error('Erro ao buscar todos os funcionários:', error)
       return []
     }
@@ -45,11 +51,13 @@ export const EmployeeService = {
   async updateEmployee(id: number, employeeData: Partial<EmployeeType>) {
     try {
       const response = await api.put(`${endpoint}/${id}`, employeeData)
-
       if (response.status === 200) {
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data)
+      }
       console.error('Erro ao atualizar funcionário:', error)
     }
   },
@@ -57,11 +65,13 @@ export const EmployeeService = {
   async deleteEmployee(id: number) {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
-
       if (response.status === 204) {
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error.response?.data)
+      }
       console.error('Erro ao deletar funcionário:', error)
     }
   },
