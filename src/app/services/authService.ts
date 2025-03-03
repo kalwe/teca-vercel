@@ -39,8 +39,6 @@ export const AuthService = {
 
       const response = await api.post('/auth/login', validCredentials)
 
-      if (!response.data.success) {
-      }
       const authResponse = userAuthResponseSchema.parse(response.data)
 
       if (authResponse.name == validCredentials.name) {
@@ -64,7 +62,11 @@ export const AuthService = {
   },
 
   getToken(): string | null {
-    return localStorage.getItem('token')
+    const token = localStorage.getItem('token')
+    if (!token) {
+      return null
+    }
+    return token
   },
 
   isAuthenticated(): boolean {

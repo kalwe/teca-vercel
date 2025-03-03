@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Navigation } from "@/app/components/navigation/navigation";
 
 export default function Contract() {
-const router = useRouter()
+  const router = useRouter()
   return (
     <div
     style={{
@@ -17,9 +17,6 @@ const router = useRouter()
       <Navigation />
       {/* Renderiza o formulário com as propriedades obrigatórias */}
       <ContractForm
-        mode="create"
-        onSave
-        onCancel
         isEditable={true}
       />
 

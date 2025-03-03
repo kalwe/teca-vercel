@@ -1,17 +1,7 @@
-"use client";
+'use client'
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./(routes)/login-display/page";
-import { AuthProvider } from "./context/AuthContext";
+import Login from './(routes)/login-display/page'
 
 export default function App() {
-  return (
-    <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </BrowserRouter>
-    </AuthProvider>
-  );
+  return <Login />
 }

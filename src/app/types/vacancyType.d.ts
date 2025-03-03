@@ -1,34 +1,15 @@
+import { Position } from './position'
+
 export interface Vacancy {
-  id?: number;
-  quantity: number;
-  position: string;
-  description: string;
-  requirements: string;
-  benefits: string;
-  salary: number;
-  active: boolean;
+  id?: number
+  quantity: number
+  positionId: number
+  position: Position
+  description: string
+  requirements: string
+  benefits: string
+  salary: number
+  active: boolean
 }
 
-// TODO: nunca usado
-export interface VacancyResponse {
-  id: number;
-  quantity: number;
-  position: string;
-  description: string;
-  requirements: string;
-  benefits: string;
-  salary: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export type Vacancies = Vacancy[];
-
-// TODO: temos redundancia de 'VacancyContextProps' em vacancySchema
-export interface VacancyContextProps {
-  vacancies: Vacancy[];
-  set_vacancies: React.Dispatch<React.SetStateAction<Vacancy[]>>;
-  add_vacancy: (vacancy: Vacancy) => Promise<void>;
-  update_vacancy: (id: number, updates: Partial<Vacancy>) => Promise<void>;
-  remove_vacancy: (id: number) => Promise<void>;
-}
+export type Vacancies = Vacancy[]

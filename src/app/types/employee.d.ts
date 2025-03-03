@@ -30,6 +30,7 @@ export type EmployeeType = {
 }
 
 export type Employee = EmployeeType
+export type Employees = EmployeeType[]
 
 export interface EmployeeProps {
   data: EmployeeType

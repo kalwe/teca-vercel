@@ -1,52 +1,54 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { userAuthInputSchema, UserAuthInput } from "@/app/schemas/authSchema";
-import { AuthService } from "@/app/services/authService"
-import "./style.css";
-import { ZodError } from "zod"
+import { UserAuthInput, userAuthInputSchema } from '@/app/schemas/authSchema'
+import { AuthService } from '@/app/services/authService'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { ZodError } from 'zod'
+import './style.css'
 
-export default function Home() {
-  const [loading, setLoading] = useState(true);
-  const [credentials, setCredentials] = useState<UserAuthInput>({ name: "", password: ""});
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const router = useRouter();
+export default function Login() {
+  const [loading, setLoading] = useState(true)
+  const [credentials, setCredentials] = useState<UserAuthInput>({
+    name: '',
+    password: '',
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const router = useRouter()
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
+    const timer = setTimeout(() => setLoading(false), 2000)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleChange = (field: string, value: string) => {
-    setCredentials((prev) => ({ ...prev, [field]: value }));
-  };
+    setCredentials((prev) => ({ ...prev, [field]: value }))
+  }
 
   const handleLogin = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
 
-      userAuthInputSchema.parse(credentials);
-      setErrors({});
+      userAuthInputSchema.parse(credentials)
+      setErrors({})
 
-      const authUser = await AuthService.login(credentials);
+      const authUser = await AuthService.login(credentials)
 
-      alert(`Bem-vindo(a), ${authUser.name}!`);
-      router.push("/dashboard-display");
+      alert(`Bem-vindo(a), ${authUser.name}!`)
+      router.push('/dashboard-display')
     } catch (error: any) {
-      setLoading(false);
-
+      setLoading(false)
       if (error instanceof ZodError) {
-        const validationErrors: Record<string, string> = {};
+        const validationErrors: Record<string, string> = {}
         error.errors.forEach((err: any) => {
-          validationErrors[err.path[0]] = err.message;
-        });
-        setErrors(validationErrors);
+          validationErrors[err.path[0]] = err.message
+        })
+        setErrors(validationErrors)
       } else {
-        alert("Erro ao conectar ao servidor. Verifique suas credenciais.");
+        alert('Erro ao conectar ao servidor. Verifique suas credenciais.')
       }
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -61,7 +63,7 @@ export default function Home() {
           <span className="text-white text-4xl font-bold">R</span>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -69,7 +71,10 @@ export default function Home() {
       {/* Green background */}
       <div
         className="absolute top-0 left-0 w-full h-full"
-        style={{ background: "linear-gradient(90deg,rgb(11, 20, 11),rgb(79, 116, 82))", zIndex: -1 }}
+        style={{
+          background: 'linear-gradient(90deg,rgb(11, 20, 11),rgb(79, 116, 82))',
+          zIndex: -1,
+        }}
       ></div>
 
       {/* Login Form */}
@@ -80,10 +85,10 @@ export default function Home() {
         <div className="w-full relative mb-4">
           <input
             type="text"
-            placeholder="Digite seu nome"
+            placeholder="Digite seu usuário"
             className="w-full text-center bg-transparent border-none outline-none text-white placeholder-gray-300 text-lg"
             value={credentials.name}
-            onChange={(e) => handleChange("name", e.target.value)}
+            onChange={(e) => handleChange('name', e.target.value)}
           />
           <div className="border-t border-white w-full mt-1"></div>
           {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -96,10 +101,12 @@ export default function Home() {
             placeholder="Digite sua senha"
             className="w-full text-center bg-transparent border-none outline-none text-white placeholder-gray-300 text-lg"
             value={credentials.password}
-            onChange={(e) => handleChange("password", e.target.value)}
+            onChange={(e) => handleChange('password', e.target.value)}
           />
           <div className="border-t border-white w-full mt-1"></div>
-          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+          {errors.password && (
+            <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+          )}
         </div>
 
         {/* Login Button */}
@@ -108,9 +115,9 @@ export default function Home() {
           className="bg-gradient-to-r from-[#2E7D32] to-[#388E3C] text-white py-2 px-8 rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
           disabled={loading}
         >
-          {loading ? "Entrando..." : "Entrar"}
+          {loading ? 'Entrando...' : 'Entrar'}
         </button>
       </div>
     </div>
-  );
+  )
 }

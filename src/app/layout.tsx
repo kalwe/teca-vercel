@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { EmployeeProvider } from "@/app/context/EmployeeContext";
-// import { VacancyProvider } from "@/app/context/VacancyContext";
-// import { ResumeProvider } from "./context/CurriculoContext";
-// import { ReminderProvider } from "@/app/context/ReminderContext";
-// import { UserProvider } from "@/app/context/UserContext";
-// import { HoursBankProvider } from "@/app/context/HoursBankContext";
-// import { AuthProvider } from "@/app/context/AuthContext";
 import "./globals.css";
 
 // Font Configuration
@@ -27,14 +20,6 @@ export const metadata: Metadata = {
   description: "Centralized dashboard for employees, reminders, and tasks.",
 };
 
-// Encapsulate Providers
-const AppProviders = ({ children }: { children: React.ReactNode }) => (
-  <EmployeeProvider children={children}></EmployeeProvider>
-    // <AuthProvider>
-    //   { children }
-    // </AuthProvider>
-);
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -43,9 +28,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 text-gray-900`}
       >
-        {/* Wrapping the entire application */}
-        <AppProviders>{children}</AppProviders>
+        {children}
       </body>
     </html>
-  );
+  )
 }

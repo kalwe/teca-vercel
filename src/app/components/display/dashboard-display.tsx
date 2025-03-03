@@ -1,44 +1,85 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Navigation } from "@/app/components/navigation/navigation";
-import { EmployeeService } from "@/app/services/employeeService";
-import { VacancyService } from "@/app/services/vacancyService";
-import { ResumeService } from "@/app/services/resumeService";
-import { ReminderService } from "@/app/services/reminderService";
-import { HoursBankService } from "@/app/services/hoursBankService";
+import { Navigation } from '@/app/components/navigation/navigation'
+import { EmployeeService } from '@/app/services/employeeService'
+import { ReminderService } from '@/app/services/reminderService'
+import { VacancyService } from '@/app/services/vacancyService'
+import { Employees } from '@/app/types/employee'
+import { Reminders } from '@/app/types/reminderType'
+import { Vacancies } from '@/app/types/vacancyType'
+import { useRouter } from 'next/navigation'
+import { useRef, useState } from 'react'
+import { Layout } from 'react-grid-layout'
+import 'react-grid-layout/css/styles.css'
+import 'react-resizable/css/styles.css'
 
-export default async function DashboardDisplay() {
-  const router = useRouter();
-  const maxItemsToShow = 5;
+export default function DashboardDisplay() {
+  // const ResponsiveGridLayout = WidthProvider(Responsive);
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [fetchData, setFetchData] = useState(true)
+  const [employees, setEmployees] = useState<Employees>([])
+  const [vacancies, setVacancies] = useState<Vacancies>([])
+  const [reminders, setReminders] = useState<Reminders>([])
 
-  // Busca os dados direto da API sem useEffect
-  let employees = [];
-  let vacancies = [];
-  let resumes = [];
-  let reminders = [];
-  let hoursBank = [];
-  let loading = true;
+  const defaultLayout: Layout[] = [
+    { i: 'vagas', x: 0, y: 0, w: 3, h: 3 },
+    { i: 'funcionario', x: 3, y: 0, w: 3, h: 3 },
+    { i: 'banco-de-horas', x: 6, y: 0, w: 3, h: 3 },
+    { i: 'curriculos', x: 0, y: 3, w: 6, h: 3 },
+    { i: 'lembretes', x: 6, y: 3, w: 6, h: 3 },
+    { i: 'adicionar-funcionario', x: 9, y: 0, w: 3, h: 3 },
+  ]
 
-  try {
-    const [empAPI, vacAPI, resAPI, remAPI, hoursAPI] = await Promise.all([
-      EmployeeService.getAllEmployees(1),
-      VacancyService.getAllVacancies(),
-      ResumeService.getAllResumes(),
-      ReminderService.getAllReminders(),
+  const [layout, setLayout] = useState<Layout[]>(defaultLayout)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragTimeout = useRef<NodeJS.Timeout | null>(null)
 
-    ]);
+  const fetchingData = async () => {
+    try {
+      const employeesData: Employees = await EmployeeService.getAllEmployees()
+      const vacanciesData: Vacancies = await VacancyService.getAllVacancies()
+      const remindersData: Reminders = await ReminderService.getAllReminders()
 
-    employees = empAPI;
-    vacancies = vacAPI;
-    resumes = resAPI;
-    reminders = remAPI;
-    hoursBank = hoursAPI;
-    loading = false;
-  } catch (error) {
-    console.error("Erro ao carregar dados:", error);
-    loading = false;
+      setEmployees(employeesData)
+      setVacancies(vacanciesData)
+      setReminders(remindersData)
+    } catch (err) {
+      console.error('Erro ao carregar os dados do dashboard:', err)
+    } finally {
+      setLoading(true)
+      setFetchData(false)
+    }
+  }
+  if (fetchData) {
+    fetchingData()
+  }
+
+  const onMouseDown = () => {
+    dragTimeout.current = setTimeout(() => {
+      setIsDragging(true)
+    }, 2000)
+  }
+
+  const onMouseUp = () => {
+    if (dragTimeout.current) {
+      clearTimeout(dragTimeout.current)
+      dragTimeout.current = null
+    }
+    setIsDragging(false)
+  }
+
+  const handleNavigation = (path: string) => {
+    if (isDragging) {
+      return
+    }
+    router.push(path)
+  }
+
+  const maxItemsToShow = 5
+
+  function changePage(path: string): void {
+    router.push(path)
   }
 
   return (
@@ -109,7 +150,7 @@ export default async function DashboardDisplay() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
