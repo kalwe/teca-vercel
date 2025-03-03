@@ -8,10 +8,6 @@ import { Contact } from "../switch-tabs/Contact"
 import { Bank } from "../switch-tabs/bank"
 import { Clothing } from "../switch-tabs/clothing"
 import { useRouter } from "next/navigation"
-<<<<<<< HEAD
-
-export default function ContractForm({employeeData = {}, isEditable = true }) {
-=======
 import { ContractFormProps } from "@/app/types/employee"
 
 export default function ContractForm({
@@ -21,7 +17,6 @@ export default function ContractForm({
   onSave,
   onCancel,
 }: ContractFormProps)  {
->>>>>>> fix_context
   const router = useRouter()
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -99,24 +94,6 @@ export default function ContractForm({
                     </div>
                 </div>
             </div>
-<<<<<<< HEAD
-          </div>
-
-          {/* Content Area */}
-          <div className="w-full md:w-3/4 p-6">
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-            <CurrentComponent
-              data={formData[currentKey] || {}}
-              onChange={handleInputChange}
-              isEditable={isEditable}
-              mode={mode}
-              onNext={handleNextTab}
-              onPrev={handlePrevTab}
-            />
-          </div>
-=======
->>>>>>> fix_context
         </div>
     </>
 );

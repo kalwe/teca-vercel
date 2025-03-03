@@ -17,11 +17,7 @@ type UserContextType = {
   deleteUser: (id: number) => Promise<void>;
 };
 
-<<<<<<< HEAD
-const UserContext = createContext<UserContextType>
-=======
 const UserContext = createContext({} as UserContextType);
->>>>>>> fix_context
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<UserResponse[]>([]);
@@ -103,9 +99,5 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
 export const useUserContext = (): UserContextType => {
   const context = useContext(UserContext);
-<<<<<<< HEAD
-
-=======
   return context;
->>>>>>> fix_context
 };

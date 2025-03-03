@@ -106,9 +106,5 @@ export const VacancyProvider = ({ children }: { children: ReactNode }) => {
 
 export const useVacancyContext = () => {
   const context = useContext(VacancyContext);
-<<<<<<< HEAD
-
-=======
   return context;
->>>>>>> fix_context
 };
