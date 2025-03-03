@@ -12,7 +12,11 @@ interface EmployeeContextProps {
   getEmployeeById: (id: number) => Promise<void>
 }
 
+<<<<<<< HEAD
 const EmployeeContext = createContext<EmployeeContextProps>
+=======
+const EmployeeContext = createContext({} as EmployeeContextProps)
+>>>>>>> fix_context
 
 export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
   const [employees, setEmployees] = useState<EmployeeType[]>([])
@@ -97,5 +101,9 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
 
 export const useEmployeeContext = () => {
   const context = useContext(EmployeeContext)
+<<<<<<< HEAD
 
+=======
+  return context
+>>>>>>> fix_context
 }

@@ -12,7 +12,11 @@ type ResumeContextData = {
   deleteResume: (id: number) => Promise<void>
 }
 
+<<<<<<< HEAD
 const ResumeContext = createContext<ResumeContextData>
+=======
+const ResumeContext = createContext({} as ResumeContextData)
+>>>>>>> fix_context
 
 export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [resumes, setResumes] = useState<[]>([])
@@ -106,5 +110,9 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
 export const useResumeContext = (): ResumeContextData => {
   const context = useContext(ResumeContext)
+<<<<<<< HEAD
 
+=======
+  return context
+>>>>>>> fix_context
 }

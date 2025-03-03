@@ -1,19 +1,20 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 
+
 const DropdownCheckboxPosition = ({
-  value = "",
+  id,
   onChange
 }: {
-  value: string;
-  onChange: (value: string) => void;
+  id: number | undefined
+  onChange: (id: number, name: string) => void;
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [positions, setPositions] = useState<{ id: number; name: string }[]>([]);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const fetchPositions = async () => { // TODO: use axios and call endpoint getAllPositions (é pra usar a porra do ID ao invés do nome)
+    const fetchPositions = async () => {
       try {
         const response = await fetch("/data/positions.json");
         if (!response.ok) {
@@ -29,8 +30,11 @@ const DropdownCheckboxPosition = ({
     fetchPositions();
   }, []);
 
-  const handleSelect = (option: string) => {
-    onChange(option);
+  const handleSelect = (
+    id: number,
+    name: string
+  ) => {
+    onChange(id, name);
     setIsDropdownOpen(false);
   };
 
@@ -53,7 +57,7 @@ const DropdownCheckboxPosition = ({
         onClick={() => setIsDropdownOpen((prev) => !prev)}
         className="bg-gray-200 hover:bg-gray-300 p-2 rounded-md w-full flex justify-between items-center text-left"
       >
-        <span>{value || "Escolha um cargo"}</span>
+        <span>{id || "Escolha um cargo"}</span>
         <svg
           className="w-2.5 h-2.5 ms-3"
           aria-hidden="true"
@@ -82,9 +86,9 @@ const DropdownCheckboxPosition = ({
                 <li
                   key={position.id}
                   className={`p-2 cursor-pointer ${
-                    value === position.id ? "bg-gray-300" : "hover:bg-gray-200"
+                    id === position.id ? "bg-gray-300" : "hover:bg-gray-200"
                   }`}
-                  onClick={() => handleSelect(position.name)}
+                  onClick={() => handleSelect(position.id, position.name)}
                 >
                   {position.name}
                 </li>

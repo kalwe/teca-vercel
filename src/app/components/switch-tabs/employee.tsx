@@ -1,66 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { employeeSchema } from "@/app/schemas/employeeSchema";
-import { Employee } from "@/app/types/old/employee";
+import { EmployeeType } from "@/app/types/employee";
 import { EmployeeService } from "@/app/services/employeeService";
 import { z } from "zod";
 import DropdownCheckboxPosition from "../DropDown/dropdown-position";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { EmployeeProps } from "@/app/types/employee";
+import { FuncionarioProps } from "@/app/types/funcionario";
 
 export function Funcionario({
-  data,
+  data = {} as EmployeeType,
   onChange,
   isEditable,
   onNext,
   onPrev,
-}: EmployeeProps) {
-  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
-  const [isNextEnabled, setIsNextEnabled] = useState(false);
+}: FuncionarioProps) {
+  const [errors, setErrors] = useState<Partial<Record<keyof EmployeeType, string>>>({});
 
-  const formatDateForBackend = (value: string | Date | null): string => {
-    if (!value) return "";
-    if (typeof value === "string") {
-      return value.includes("-") ? value : value.replace(/\//g, "-");
-    }
-    if (value instanceof Date) {
-      const day = String(value.getDate()).padStart(2, "0");
-      const month = String(value.getMonth() + 1).padStart(2, "0");
-      const year = value.getFullYear();
-      return `${day}-${month}-${year}`;
-    }
-    return "";
-  };
+  // Comunica o estado do botão para o ContractForm
+  useEffect(() => {
+    setNextEnabled(isNextEnabled);
+  }, [isNextEnabled, setNextEnabled]);
 
-  const parseDateFromBackend = (dateStr?: string): Date | null => {
-    if (!dateStr) return null;
-    const parts = dateStr.split("-");
-    if (parts.length !== 3) return null;
-    const [day, month, year] = parts;
-    return new Date(Number(year), Number(month) - 1, Number(day));
-  };
-
-  const handleInputChange = (field: keyof Employee, value: unknown) => {
+  const handleInputChange = (field: keyof EmployeeType, value: unknown) => {
     let formattedValue = value;
     if ((field === "contractDate" || field === "removalDate") && value instanceof Date) {
       formattedValue = formatDateForBackend(value);
     }
+    data.positionId = data.position?.id
+    console.log(data.position)
     const updatedData = { ...data, [field]: formattedValue };
-
     try {
-      employeeSchema.parse(updatedData);
+      EmployeeType.parse(updatedData);
       setErrors({});
-      setIsNextEnabled(true);
+
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const newErrors: Partial<Record<keyof Employee, string>> = {};
+        const newErrors: Partial<Record<keyof EmployeeType, string>> = {};
         err.errors.forEach((e) => {
-          newErrors[e.path[0] as keyof Employee] = e.message;
+          newErrors[e.path[0] as keyof EmployeeType] = e.message;
         });
         setErrors(newErrors);
-        setIsNextEnabled(false);
+
       }
     }
 
@@ -68,7 +51,7 @@ export function Funcionario({
   };
 
   /**
-   * Calls the EmployeeService to save the employee data and then proceeds to the next step.
+   * Faz o POST na API e avança para a próxima etapa
    */
   const handleSave = async () => {
     try {
@@ -94,9 +77,9 @@ export function Funcionario({
           value={data.registration || ""}
           onChange={(e) => handleInputChange("registration", e.target.value)}
           placeholder="Digite a matrícula"
-          className={`w-full bg-gray-700 text-white border ${
+          className={w-full bg-gray-700 text-white border ${
             errors.registration ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
+          } rounded-lg py-2 px-3}
           disabled={!isEditable}
         />
         {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
@@ -135,41 +118,16 @@ export function Funcionario({
           <p className="text-red-500 text-sm mt-1">{errors.removalDate}</p>
         )}
       </div>
-
-      {/* Dropdown for Position (using positionId as per schema) */}
+      {/* Dropdown for Position */}
       <div className="w-full">
         <DropdownCheckboxPosition
-          value={data.positionId || ""}
-          onChange={(value) => handleInputChange("positionId", value)}
+          id={data.position?.name ?? ''}
+          onChange={(id, name) => handleInputChange("position", {id: id, name: name})}
           disabled={!isEditable}
         />
         {errors.positionId && (
           <p className="text-red-500 text-sm mt-1">{errors.positionId}</p>
         )}
-      </div>
-
-      {/* Supervisor Checkbox */}
-      <div className="w-full flex items-center">
-        <input
-          type="checkbox"
-          checked={!!data.supervisor}
-          onChange={(e) => handleInputChange("supervisor", e.target.checked)}
-          className="mr-2"
-          disabled={!isEditable}
-        />
-        <label className="text-gray-400">Encarregado</label>
-      </div>
-
-      {/* Manager Checkbox */}
-      <div className="w-full flex items-center">
-        <input
-          type="checkbox"
-          checked={!!data.manager}
-          onChange={(e) => handleInputChange("manager", e.target.checked)}
-          className="mr-2"
-          disabled={!isEditable}
-        />
-        <label className="text-gray-400">Gerente</label>
       </div>
 
       {/* Navigation Buttons */}
@@ -181,12 +139,12 @@ export function Funcionario({
           Voltar
         </button>
         <button
-          onClick={handleSave}
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={!isNextEnabled}
-        >
-          Próximo
-        </button>
+  onClick={handleSave}
+  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+>
+  Próximo
+</button>
+
       </div>
     </div>
   );

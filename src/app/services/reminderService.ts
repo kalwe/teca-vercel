@@ -27,17 +27,14 @@ export const ReminderService = {
   },
 
   async getAllReminders() {
-    try {
+
       const response = await api.get(endpoint, {
         headers: {
           "Content-Type": "application/json"
         }
       });
       return response.data;
-    } catch (error) {
-      console.error("Erro ao buscar todos os lembretes:", AxiosError);
-      throw new Error("Erro ao buscar lembretes");
-    }
+
   },
 
 };
