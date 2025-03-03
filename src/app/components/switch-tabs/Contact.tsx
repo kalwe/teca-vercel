@@ -12,7 +12,7 @@ export function Contact({
   isEditable,
   onNext,
   onPrev,
-  employee, // Mantendo mesmo padrão do Address.tsx
+  employee,
 }: ContactProps) {
 
   const [isNextEnabled, setIsNextEnabled] = useState(false)
@@ -41,14 +41,17 @@ export function Contact({
 
   const handleSave = async () => {
     try {
-      const createdContact = await ContactService.createContact({ ...data, employee })
-      console.log(createdContact)
-      onNext()
+      // Adicione o console.log() para ver o que está sendo enviado
+      console.log("Enviando dados para criação:", { ...data, employee });
+      // Continua com a lógica normal do handleSave
+      const createdContact = await ContactService.createContact({ ...data, employee });
+      console.log(createdContact);
+      onNext();
     } catch (error) {
-      alert("Erro ao criar contato. Verifique os campos.")
-      console.error(error)
+      alert("Erro ao criar contato. Verifique os campos.");
+      console.error(error);
     }
-  }
+  };
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">

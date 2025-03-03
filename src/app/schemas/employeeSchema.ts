@@ -26,16 +26,17 @@ export const employeeSchema = personSchema.extend({
     .string()
     .nonempty('A data de contratação é obrigatória.')
     .regex(
-      /^\d{4}-\d{2}-\d{2}$/,
+      /^\d{2}-\d{2}-\d{4}$/,
       'A data de contratação deve estar no formato DD-MM-AAAA.',
     ),
   removalDate: z
     .string()
     .regex(
-      /^\d{4}-\d{2}-\d{2}$/,
+      /^\d{2}-\d{2}-\d{4}$/,
       'A data de contratação deve estar no formato DD-MM-AAAA.',
-    ),
-  positionId: z.number().optional(),
+    )
+    .optional(),
+  positionId: z.number(),
   position: positionSchema.optional(),
   address: addressSchema.optional(),
   contact: contactSchema.optional(),

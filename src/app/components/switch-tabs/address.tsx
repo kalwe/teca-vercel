@@ -1,6 +1,6 @@
 "use client"
 
-import { useState} from "react"
+import { useState } from "react"
 import type { AddressType, AddressProps } from "@/app/types/address"
 import { AddressService } from "@/app/services/addressService"
 import { addressSchema } from "@/app/schemas/addressSchema"
@@ -15,17 +15,16 @@ export function Address({
   employee,
 }: AddressProps) {
 
-  const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof AddressType, string>>>({})
 
   const handleInputChange = (field: string, value: string) => {
-  const updatedData = { ...data, [field]: value }
+    const updatedData = { ...data, [field]: value }
 
     try {
       const validatedAddress = addressSchema.parse(updatedData)
       data = validatedAddress
       setErrors({})
-      setIsNextEnabled(true)
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: Record<string, string> = {}
@@ -33,7 +32,6 @@ export function Address({
           newErrors[e.path[0]] = e.message
         })
         setErrors(newErrors)
-        setIsNextEnabled(false)
       }
     }
 
@@ -42,9 +40,9 @@ export function Address({
 
   const handleSave = async () => {
     try {
-      // TODO: 'data' nunca eh validada, pode ser feito no handleInputChange() de preferencia
+      // ** Adicionado o console.log() para ver o que está indo pra API
+      console.log("Enviando dados para criação:", { ...data, employee })
       const createdAddress = await AddressService.createAddress({ ...data, employee })
-      // TODO: poderia usar onChange() para atribuir o novo valor, dessa forma continua com o antigo
       onChange(createdAddress)
       onNext()
     } catch (error) {
@@ -109,7 +107,6 @@ export function Address({
         <button
           onClick={handleSave}
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={!isNextEnabled}
         >
           Próximo
         </button>

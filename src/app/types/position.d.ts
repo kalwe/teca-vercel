@@ -1,4 +1,4 @@
 export type Position = {
-  id?: string
+  id?: number
   name: string
 }

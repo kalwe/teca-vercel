@@ -43,14 +43,14 @@ export function Clothing({
 
   const handleSave = async () => {
     try {
-      const createdClothing = await ClothingService.createClothing({ ...data, employee })
-      console.log(createdClothing)
-
+      console.log("Enviando dados para criação:", { ...data, employee });
+      const createdClothing = await BankService.createClothing({ ...data, employee });
+      console.log("Resposta da API:", createdClothing);
       router.push("/contract-display/employee");
-
+      onNext();
     } catch (error) {
-      alert("Erro ao cadastrar vestuário. Verifique os campos.")
-      console.error(error)
+      alert("Erro ao cadastrar conta bancária. Verifique os campos.");
+      console.error(error);
     }
   }
 

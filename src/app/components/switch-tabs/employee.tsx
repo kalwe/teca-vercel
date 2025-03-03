@@ -2,47 +2,48 @@
 
 import { useState, useEffect } from "react";
 import { employeeSchema } from "@/app/schemas/employeeSchema";
+import { EmployeeType } from "@/app/types/employee";
 import { EmployeeService } from "@/app/services/employeeService";
 import { z } from "zod";
 import DropdownCheckboxPosition from "../DropDown/dropdown-position";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { EmployeeProps } from "@/app/types/employee";
+import { FuncionarioProps } from "@/app/types/funcionario";
 
 export function Funcionario({
-  data,
+  data = {} as EmployeeType,
   onChange,
   isEditable,
   onNext,
   onPrev,
-  setNextEnabled, // ADICIONADO PARA CONTROLAR O BOTÃO PRÓXIMO
-}: EmployeeProps) {
-  const [isNextEnabled, setIsNextEnabled] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
+}: FuncionarioProps) {
+  const [errors, setErrors] = useState<Partial<Record<keyof EmployeeType, string>>>({});
 
   // Comunica o estado do botão para o ContractForm
   useEffect(() => {
     setNextEnabled(isNextEnabled);
   }, [isNextEnabled, setNextEnabled]);
 
-  /**
-   * Manipula mudanças nos inputs e faz a validação do formulário
-   */
-  const handleInputChange = (field: keyof Employee, value: unknown) => {
-    const updatedData = { ...data, [field]: value };
-
+  const handleInputChange = (field: keyof EmployeeType, value: unknown) => {
+    let formattedValue = value;
+    if ((field === "contractDate" || field === "removalDate") && value instanceof Date) {
+      formattedValue = formatDateForBackend(value);
+    }
+    data.positionId = data.position?.id
+    console.log(data.position)
+    const updatedData = { ...data, [field]: formattedValue };
     try {
-      employeeSchema.parse(updatedData); // Valida os dados
-      setErrors({}); // Limpa os erros ao preencher corretamente
-      setIsNextEnabled(true); // Habilita o botão "Próximo"
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Partial<Record<keyof Employee, string>> = {};
-        error.errors.forEach((e) => {
-          newErrors[e.path[0] as keyof Employee] = e.message;
+      EmployeeType.parse(updatedData);
+      setErrors({});
+
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const newErrors: Partial<Record<keyof EmployeeType, string>> = {};
+        err.errors.forEach((e) => {
+          newErrors[e.path[0] as keyof EmployeeType] = e.message;
         });
         setErrors(newErrors);
-        setIsNextEnabled(false); // Desabilita o botão "Próximo" se houver erros
+
       }
     }
 
@@ -121,7 +122,7 @@ export function Funcionario({
       <div className="w-full">
         <DropdownCheckboxPosition
           id={data.position?.name ?? ''}
-          onChange={(id, name) => handleInputChange("position", { id: id, name: name })}
+          onChange={(id, name) => handleInputChange("position", {id: id, name: name})}
           disabled={!isEditable}
         />
         {errors.positionId && (
@@ -138,12 +139,12 @@ export function Funcionario({
           Voltar
         </button>
         <button
-          onClick={handleSave}
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={!isNextEnabled}
-        >
-          Próximo
-        </button>
+  onClick={handleSave}
+  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+>
+  Próximo
+</button>
+
       </div>
     </div>
   );

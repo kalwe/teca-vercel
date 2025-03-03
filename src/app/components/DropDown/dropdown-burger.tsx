@@ -37,7 +37,7 @@ export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
             className="hover:text-gray-300 transition duration-300 cursor-pointer"
             onClick={() => router.push('/vagas-display/')} // Absolute path
           >
-            Vacancy
+            Vagas
           </li>
           <li
             className="hover:text-gray-300 transition duration-300 cursor-pointer"
@@ -56,11 +56,7 @@ export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
           >
             Banco de Currículos
           </li>
-          <li
-            className="hover:text-gray-300 transition duration-300 cursor-pointer"
-          >
-            Suporte
-          </li>
+
           <li
             className="hover:text-red-500 transition duration-300 cursor-pointer"
             onClick={() => router.push('/login-display/')}

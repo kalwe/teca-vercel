@@ -16,8 +16,12 @@ export function PessoaFisica({
   onNext,
   onPrev,
 }: PersonProps) {
-  const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string>>>({});
-  const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string>>>({})
+  const [isNextEnabled, setIsNextEnabled] = useState(false)
+
+  interface PersonProps {
+    employee: PersonType
+  }
 
   const formatDateForBackend = (date: Date | null) => {
     if (!date) return "";
@@ -26,6 +30,8 @@ export function PessoaFisica({
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+
+
 
   const handleInputChange = (field: keyof PersonType, value: string | Date | null) => {
     let formattedValue = value;
@@ -68,27 +74,27 @@ export function PessoaFisica({
       <h2 className="text-white text-xl font-bold">Pessoa Física</h2>
 
       {[
-        { key: "name", name: "name", label: "Nome", placeholder: "Digite o nome" },
-        { key: "fullName", name: "fullName", label: "Nome Completo", placeholder: "Digite o sobrenome" },
-        { key: "taxId", name: "taxId", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
-        { key: "nationalId", name: "nationalId", label: "RG", placeholder: "Digite o RG" },
-        { key: "issuingBody", name: "issuingBody", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
-      ].map((field) => (
-        <div key={field.key} className="w-full">
-          <input
-            type="text"
-            name={field.name}
-            value={data[field.name] || ""}
-            onChange={(e) => handleInputChange(field.name as keyof PersonType, e.target.value)}
-            placeholder={field.placeholder}
-            className={`w-full bg-gray-700 text-white border ${
-              errors[field.name] ? "border-red-500" : "border-gray-600"
-            } rounded-lg py-2 px-3`}
-            disabled={!isEditable}
-          />
-          {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
-        </div>
-      ))}
+  { key: "name", name: "name", label: "Nome", placeholder: "Digite o nome" },
+  { key: "fullName", name: "fullName", label: "Nome Completo", placeholder: "Digite o sobrenome" },
+  { key: "taxId", name: "taxId", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
+  { key: "nationalId", name: "nationalId", label: "RG", placeholder: "Digite o RG" },
+  { key: "issuingBody", name: "issuingBody", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
+].map((field) => (
+  <div key={field.key} className="w-full">
+    <input
+      type="text"
+      name={field.name}
+      value={data[field.name] || ""}
+      onChange={(e) => handleInputChange(field.name as keyof PersonType, e.target.value)}
+      placeholder={field.placeholder}
+      className={`w-full bg-gray-700 text-white border ${
+        errors[field.name] ? "border-red-500" : "border-gray-600"
+      } rounded-lg py-2 px-3`}
+      disabled={!isEditable}
+    />
+    {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
+  </div>
+))}
 
       {/* Data de nascimento */}
       <div className="w-full">
