@@ -49,7 +49,7 @@ export default function DashboardDisplay() {
     } catch (err) {
       console.error('Erro ao carregar os dados do dashboard:', err)
     } finally {
-      setLoading(true)
+      setLoading(false)
       setFetchData(false)
     }
   }
@@ -92,14 +92,14 @@ export default function DashboardDisplay() {
             loading={loading}
             bgGradient="from-[#314B38] to-[#203225]"
           />
-          <DashboardWidget
+          {/* <DashboardWidget
             title="Currículos"
             data={resumes}
             maxItems={maxItemsToShow}
             navigateTo="/curriculo-display/"
             loading={loading}
             bgGradient="from-[#3A3B38] to-[#2B2C25]"
-          />
+          /> */}
         </div>
 
         {/* Card de Ações Rápidas - Ocupando bem o espaço */}
