@@ -1,55 +1,51 @@
-"use client";
-import React, { useState, useEffect, useRef } from "react";
-
+'use client'
+import { useEffect, useRef, useState } from 'react'
 
 const DropdownCheckboxPosition = ({
   id,
-  onChange
+  onChange,
 }: {
-  id: number | undefined
-  onChange: (id: number, name: string) => void;
+  id: number | null
+  onChange: (id: number, name: string) => void
 }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [positions, setPositions] = useState<{ id: number; name: string }[]>([]);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [positions, setPositions] = useState<{ id: number; name: string }[]>([])
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const response = await fetch("/data/positions.json");
+        const response = await fetch('/data/positions.json')
         if (!response.ok) {
-          throw new Error("Erro ao carregar cargos.");
+          throw new Error('Erro ao carregar cargos.')
         }
-        const data = await response.json();
-        setPositions(data);
+        const data = await response.json()
+        setPositions(data)
       } catch (error) {
-        console.error("Erro ao carregar cargos:", error);
+        console.error('Erro ao carregar cargos:', error)
       }
-    };
+    }
 
-    fetchPositions();
-  }, []);
+    fetchPositions()
+  }, [])
 
-  const handleSelect = (
-    id: number,
-    name: string
-  ) => {
-    onChange(id, name);
-    setIsDropdownOpen(false);
-  };
+  const handleSelect = (id: number, name: string) => {
+    onChange(id, name)
+    setIsDropdownOpen(false)
+  }
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsDropdownOpen(false);
+        setIsDropdownOpen(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
@@ -57,7 +53,7 @@ const DropdownCheckboxPosition = ({
         onClick={() => setIsDropdownOpen((prev) => !prev)}
         className="bg-gray-200 hover:bg-gray-300 p-2 rounded-md w-full flex justify-between items-center text-left"
       >
-        <span>{id || "Escolha um cargo"}</span>
+        <span>{id || 'Escolha um cargo'}</span>
         <svg
           className="w-2.5 h-2.5 ms-3"
           aria-hidden="true"
@@ -78,7 +74,7 @@ const DropdownCheckboxPosition = ({
       {isDropdownOpen && (
         <div
           className="absolute z-50 w-full bg-white border rounded-md mt-1 shadow-md"
-          style={{ maxHeight: "300px", overflowY: "auto" }}
+          style={{ maxHeight: '300px', overflowY: 'auto' }}
         >
           <ul className="p-2">
             {positions.length > 0 ? (
@@ -86,7 +82,7 @@ const DropdownCheckboxPosition = ({
                 <li
                   key={position.id}
                   className={`p-2 cursor-pointer ${
-                    id === position.id ? "bg-gray-300" : "hover:bg-gray-200"
+                    id === position.id ? 'bg-gray-300' : 'hover:bg-gray-200'
                   }`}
                   onClick={() => handleSelect(position.id, position.name)}
                 >
@@ -102,7 +98,7 @@ const DropdownCheckboxPosition = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default DropdownCheckboxPosition;
+export default DropdownCheckboxPosition

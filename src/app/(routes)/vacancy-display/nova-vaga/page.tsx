@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import NewVacancyForm from "@/app/components/display/newVacancy-form";
+import NewVacancyForm from "@/app/components/display/vacancy-form";
 import { Navigation } from "@/app/components/navigation/navigation";
 import { vacancySchema } from "@/app/schemas/vacancySchema";
 import { VacancyService } from "@/app/services/vacancyService";

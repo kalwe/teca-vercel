@@ -15,7 +15,7 @@ export const EmployeeService = {
       if (error instanceof AxiosError) {
         console.error(error.response?.data)
       }
-      console.error('Erro ao salvar funcionário:', error)
+      console.error('Erro ao salvar funcionário: ', error)
     }
   },
 
@@ -29,7 +29,7 @@ export const EmployeeService = {
       if (error instanceof AxiosError) {
         console.error(error.response?.data)
       }
-      console.error('Erro ao buscar funcionário por ID:', error)
+      console.error('Erro ao buscar funcionário por ID: ', error)
     }
   },
 
@@ -40,10 +40,10 @@ export const EmployeeService = {
         return response.data
       }
     } catch (error) {
-
+      if (error instanceof AxiosError) {
         console.error(error.response?.data)
-      console.error('Erro ao buscar todos os funcionários:', error)
-      return []
+      }
+      console.error('Erro ao buscar todos os funcionários: ', error)
     }
   },
 
@@ -57,7 +57,7 @@ export const EmployeeService = {
       if (error instanceof AxiosError) {
         console.error(error.response?.data)
       }
-      console.error('Erro ao atualizar funcionário:', error)
+      console.error('Erro ao atualizar funcionário: ', error)
     }
   },
 

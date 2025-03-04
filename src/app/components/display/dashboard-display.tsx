@@ -6,7 +6,6 @@ import { ReminderService } from '@/app/services/reminderService'
 import { VacancyService } from '@/app/services/vacancyService'
 import { Employees } from '@/app/types/employee'
 import { Reminders } from '@/app/types/reminderType'
-import { Resumes } from "@/app/types/resume"
 import { Vacancies } from '@/app/types/vacancyType'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -14,7 +13,7 @@ import { useState } from 'react'
 // import { Layout } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
-import { DashboardWidget } from "../dashboardWidget/page"
+import { DashboardWidget } from '../dashboardWidget/page'
 
 export default function DashboardDisplay() {
   // const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -24,7 +23,7 @@ export default function DashboardDisplay() {
   const [employees, setEmployees] = useState<Employees>([])
   const [vacancies, setVacancies] = useState<Vacancies>([])
   const [reminders, setReminders] = useState<Reminders>([])
-  const [resumes, _setResumes] = useState<Resumes>([])
+  // const [resumes, _setResumes] = useState<Resumes>([])
 
   const fetchingData = async () => {
     try {

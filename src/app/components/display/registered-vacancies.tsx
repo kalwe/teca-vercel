@@ -1,65 +1,42 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useVacancyContext } from "@/app/context/VacancyContext";
-import { VacancyService } from "@/app/services/vacancyService";
+import { VacancyService } from '@/app/services/vacancyService'
+import { Vacancies } from '@/app/types/vacancyType'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 const VacancyList: React.FC = () => {
-  const { vacancies = [], setVacancies } = useVacancyContext();
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [vacancies, setVacancies] = useState<Vacancies>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
-  /**
-   * Carrega as vagas automaticamente ao abrir a página
-   */
-  useEffect(() => {
-    const fetchVacancies = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const fetchedVacancies = await VacancyService.getAllVacancies();
-
-        if (!Array.isArray(fetchedVacancies)) {
-          throw new Error("Dados inválidos recebidos.");
-        }
-
-        // Remove duplicatas com base no ID da vaga
-        const uniqueVacancies = fetchedVacancies.filter(
-          (v, index, self) =>
-            index === self.findIndex((t) => t.id === v.id)
-        );
-
-        setVacancies(uniqueVacancies);
-      } catch (error) {
-        console.error("Erro ao buscar vagas:", error);
-        setError("Erro ao carregar vagas. Tente novamente.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVacancies();
-  }, [setVacancies]);
-
-  /**
-   * Exclui uma vaga específica
-   */
-  const handleDelete = async (vacancyId: number) => {
-    if (!confirm("Tem certeza que deseja excluir esta vaga?")) return;
-
+  const fetchVacancies = async () => {
     try {
-      // Deleta na API
-      await VacancyService.deleteVacancy(vacancyId);
+      setLoading(true)
+      setError(null)
+      const fetchedVacancies: Vacancies = await VacancyService.getAllVacancies()
 
-      // Remove imediatamente da lista na tela
-      setVacancies((prev) => prev.filter((v) => v.id !== vacancyId));
+      setVacancies(fetchedVacancies)
     } catch (error) {
-      console.error("Erro ao excluir vaga:", error);
-      alert("Erro ao excluir vaga. Tente novamente.");
+      console.error('Erro ao buscar vagas:', error)
+      setError('Erro ao carregar vagas. Tente novamente.')
+    } finally {
+      setLoading(false)
     }
-  };
+  }
+  fetchVacancies()
+
+  const handleDelete = async (vacancyId: number) => {
+    if (!confirm('Tem certeza que deseja excluir esta vaga?')) return
+    try {
+      await VacancyService.deleteVacancy(vacancyId)
+      setVacancies(vacancies.filter((v) => v.id != vacancyId))
+    } catch (error) {
+      console.error('Erro ao excluir vaga:', error)
+      alert('Erro ao excluir vaga. Tente novamente.')
+    }
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600">
@@ -67,7 +44,7 @@ const VacancyList: React.FC = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-extrabold text-white">Vagas</h1>
           <button
-            onClick={() => router.push("/vagas-display/nova-vaga")}
+            onClick={() => router.push('/vagas-display/nova-vaga')}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-transform transform hover:scale-105"
           >
             Adicionar Vagas
@@ -86,7 +63,7 @@ const VacancyList: React.FC = () => {
           {error && <p className="text-red-500 text-center">{error}</p>}
 
           {!loading && !error && (
-            <div className="overflow-y-auto rounded-lg" style={{ maxHeight: "300px" }}>
+            <div className="overflow-y-auto rounded-lg" style={{ maxHeight: '300px' }}>
               {vacancies.length > 0 ? (
                 vacancies.map((vacancy) => (
                   <div
@@ -95,7 +72,7 @@ const VacancyList: React.FC = () => {
                   >
                     {/* Cargo */}
                     <span className="text-gray-300 font-medium w-2/5">
-                      {vacancy.position}
+                      {vacancy.position?.name}
                     </span>
 
                     {/* Quantidade */}
@@ -106,14 +83,16 @@ const VacancyList: React.FC = () => {
                     {/* Ações */}
                     <div className="flex justify-end w-2/5 gap-2">
                       <button
-                        onClick={() => router.push(`/vagas-display/nova-vaga/${vacancy.id}`)}
+                        onClick={() =>
+                          router.push(`/vagas-display/nova-vaga/${vacancy.id}`)
+                        }
                         className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
                       >
                         Editar
                       </button>
 
                       <button
-                        onClick={() => handleDelete(vacancy.id)}
+                        onClick={() => handleDelete(Number(vacancy.id))}
                         className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all"
                       >
                         Excluir
@@ -129,7 +108,7 @@ const VacancyList: React.FC = () => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default VacancyList;
+export default VacancyList

@@ -1,15 +1,16 @@
 import { Position } from './position'
 
-export interface Vacancy {
-  id?: number
-  quantity: number
+export type VacancyT = {
+  id?: number | null
+  quantity?: number | null
+  description?: string | null
+  requirements?: string | null
+  benefits?: string | null
+  salary?: number | null
+  active?: boolean
   positionId: number
-  position: Position
-  description: string
-  requirements: string
-  benefits: string
-  salary: number
-  active: boolean
+  position?: Position | null
 }
 
-export type Vacancies = Vacancy[]
+export type Vacancy = VacancyT | Partial<VacancyT>
+export type Vacancies = Vacancy[] | Partial<Vacancy>[]
