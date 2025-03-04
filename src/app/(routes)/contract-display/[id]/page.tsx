@@ -1,62 +1,42 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter, useParams } from "next/navigation"
 import ContractForm from "@/app/components/display/contract-form"
-import { useEmployeeContext } from "@/app/context/EmployeeContext"
 import { EmployeeService } from "@/app/services/employeeService"
 import { EmployeeType } from "@/app/types/employee"
-import { Navigation } from "@/app/components/navigation/navigation"
+import { Navigation } from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function EmployeeDetailPage() {
-  const { employees, updateEmployee } = useEmployeeContext() // TODO: verificaruse EmployeeContext()
-  const [formData, setFormData] = useState<EmployeeType | null>(null)
+  const [formData, setFormData] = useState<EmployeeType>()
   const [loading, setLoading] = useState<boolean>(true)
   const router = useRouter()
   const { id } = useParams() // Captura o ID da URL
 
-  useEffect(() => {
-    const employeeId = Number(id)
 
-    if (isNaN(employeeId)) {
-      alert("ID inválido. Redirecionando...")
-      router.replace("/contract-display/employee")
-      return
-    }
+  const fetchEmployee = async (employeeId: number) => {
+    try {
 
-    const fetchEmployee = async () => {
-      try {
-        let employee = employees.find((emp) => emp.id === employeeId)
+      const employeeData = await EmployeeService.getEmployeeById(employeeId)
 
-        if (!employee) {
-          employee = await EmployeeService.getEmployeeById(employeeId)
-        }
-
-        if (employee) {
-          setFormData(employee)
-        } else {
-          alert("Funcionário não encontrado. Redirecionando...")
-          router.replace("/contract-display/employee")
-        }
-      } catch (error) {
-        console.error("Erro ao buscar funcionário:", error)
-        alert("Erro ao carregar dados do funcionário. Tente novamente.")
-        router.replace("/contract-display/employee")
-      } finally {
-        setLoading(false)
+      if (employeeData) {
+        setFormData(employeeData)
       }
+    } catch (error) {
+      console.error("Erro ao buscar funcionário:", error)
+      alert("Erro ao carregar dados do funcionário. Tente novamente.")
+      router.replace("/contract-display/employee")
+    } finally {
+      setLoading(false)
     }
+  }
+fetchEmployee(Number(id))
 
-    fetchEmployee()
-  }, [id, employees, router])
-
-  const handleSave = async (updatedData: EmployeeType) => {
+const handleSave = async (updatedData: EmployeeType) => {
     setLoading(true)
     try {
-      const updatedEmployee = await EmployeeService.updateEmployee(updatedData.id, updatedData)
-
-      updateEmployee(updatedData.id, updatedEmployee)
-
+      const updatedEmployee = await EmployeeService.updateEmployee(Number(updatedData.id), updatedData)
+      console.log(updatedEmployee)
       alert("Funcionário atualizado com sucesso.")
       router.push("/contract-display/employee")
     } catch (error) {

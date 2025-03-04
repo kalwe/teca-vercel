@@ -12,6 +12,9 @@ export type ResumeType = {
   pdf_url: string
 }
 
+
+export type Resumes = ResumeType[]
+
 export interface ResumeFormProps {
   mode: 'edit' | 'create'
   resumeData?: ResumeType
