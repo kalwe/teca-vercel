@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { EmployeeService } from '@/app/services/employeeService'
 import { EmployeeProps, EmployeeType } from '@/app/types/employee'
@@ -13,34 +13,36 @@ export function Funcionario({
   onNext,
   onPrev,
 }: EmployeeProps) {
-g
 
   const handleInputChange = (field: string, value: unknown) => {
-    const updatedData = { ...data, [field]: value }
-    onChange(updatedData)
-  }
+    onChange({ ...data, [field]: value });
+  };
 
   const handleSave = async () => {
-    try {
+    if (!data.registration || !data.contractDate) {
+      alert('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
 
-      const createdEmployee = await EmployeeService.createEmployee(data)
-      console.log('Funcionário cadastrado com sucesso:', createdEmployee)
-      onNext()
+    try {
+      const createdEmployee = await EmployeeService.createEmployee(data);
+      console.log('Funcionário cadastrado com sucesso:', createdEmployee);
+      onNext();
     } catch (error) {
-      alert('Erro ao cadastrar funcionário.')
-      console.error('Erro ao enviar para API:', error)
+      alert('Erro ao cadastrar funcionário.');
+      console.error('Erro ao enviar para API:', error);
 
       if (error.response) {
-        console.log(' Resposta da API:', error.response.data)
+        console.log('Resposta da API:', error.response.data);
       }
     }
-  }
+  };
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Funcionário</h2>
 
-      {/* Registration Field */}
+      {/* Campo de Matrícula */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Digite a matrícula</label>
         <input
@@ -54,7 +56,7 @@ g
         />
       </div>
 
-      {/* Contract Date Field with DatePicker */}
+      {/* Campo de Data de Admissão */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Admissão</label>
         <DatePicker
@@ -68,7 +70,7 @@ g
         />
       </div>
 
-      {/* Removal Date Field with DatePicker */}
+      {/* Campo de Data de Remoção */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Remoção</label>
         <DatePicker
@@ -82,15 +84,16 @@ g
         />
       </div>
 
-      {/* Dropdown for Position */}
+      {/* Dropdown para Seleção de Cargo */}
       <div>
-        <DropdownCheckboxPosition
-          value={data.positionId ?? 1}
-          onChange={(value) => handleInputChange('positionId', value)}
-        />
+      <DropdownCheckboxPosition
+  id={data.positionId ?? 1} // Passando apenas o ID corretamente
+  onChange={(id) => handleInputChange('positionId', id)} // Garantindo que o primeiro parâmetro seja o ID
+/>
+
       </div>
 
-      {/* Navigation Buttons */}
+      {/* Botões de Navegação */}
       <div className="flex justify-between mt-6">
         <button
           onClick={onPrev}
@@ -99,7 +102,6 @@ g
           Voltar
         </button>
         <button
-          // TODO: arruma INDENTACAO
           onClick={handleSave}
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
         >
@@ -107,5 +109,5 @@ g
         </button>
       </div>
     </div>
-  )
+  );
 }
