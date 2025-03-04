@@ -5,14 +5,15 @@ export type AddressType = {
   city?: string;
   zipCode?: string;
   state?: string;
-  employee?: number;
+  employeeId?: number;
+  [key: string]: any
 };
 
 export type AddressProps = {
   data?: Partial<AddressType>;
   onChange: (updatedData: AddressType) => void;
-  isEditable: boolean;
   onNext: () => void;
   onPrev: () => void;
-  employee?: number;
+  employeeId?: number;
+  isEditable: boolean
 };

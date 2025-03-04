@@ -19,7 +19,7 @@ export type EmployeeType = {
   salary: number
   contractDate: Date
   removalDate?: Date
-  positionId?: number
+  positionId: number
   position?: Position
   address?: Address
   contact?: Contact

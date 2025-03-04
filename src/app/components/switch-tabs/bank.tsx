@@ -2,7 +2,7 @@
 
 import { bankAccountSchema } from '@/app/schemas/bankAccountSchema'
 import { BankService } from '@/app/services/bankService'
-import type { BankAccountType, BankProps } from '@/app/types/bank_account' // TODO: aquivo nao existe, importa o correto
+import { BankAccountType, BankProps } from "@/app/types/BankAccount"
 import { useState } from 'react'
 import { z } from 'zod'
 

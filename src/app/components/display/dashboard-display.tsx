@@ -6,6 +6,7 @@ import { ReminderService } from '@/app/services/reminderService'
 import { VacancyService } from '@/app/services/vacancyService'
 import { Employees } from '@/app/types/employee'
 import { Reminders } from '@/app/types/reminderType'
+import { Resumes } from "@/app/types/resume"
 import { Vacancies } from '@/app/types/vacancyType'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -13,6 +14,7 @@ import { useState } from 'react'
 // import { Layout } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
+import { DashboardWidget } from "../dashboardWidget/page"
 
 export default function DashboardDisplay() {
   // const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -22,30 +24,19 @@ export default function DashboardDisplay() {
   const [employees, setEmployees] = useState<Employees>([])
   const [vacancies, setVacancies] = useState<Vacancies>([])
   const [reminders, setReminders] = useState<Reminders>([])
-
-  // const defaultLayout: Layout[] = [
-  //   { i: 'vagas', x: 0, y: 0, w: 3, h: 3 },
-  //   { i: 'funcionario', x: 3, y: 0, w: 3, h: 3 },
-  //   { i: 'banco-de-horas', x: 6, y: 0, w: 3, h: 3 },
-  //   { i: 'curriculos', x: 0, y: 3, w: 6, h: 3 },
-  //   { i: 'lembretes', x: 6, y: 3, w: 6, h: 3 },
-  //   { i: 'adicionar-funcionario', x: 9, y: 0, w: 3, h: 3 },
-  // ]
-
-  // TODO: remover tudo se nao usa
-  // const [layout, setLayout] = useState<Layout[]>(defaultLayout)
-  // const [isDragging, setIsDragging] = useState(false)
-  // const dragTimeout = useRef<NodeJS.Timeout | null>(null)
+  const [resumes, _setResumes] = useState<Resumes>([])
 
   const fetchingData = async () => {
     try {
       const employeesData: Employees = await EmployeeService.getAllEmployees()
       const vacanciesData: Vacancies = await VacancyService.getAllVacancies()
       const remindersData: Reminders = await ReminderService.getAllReminders()
+      //const resumesData: Resumes = await ResumeService.getAllResumes()
 
       setEmployees(employeesData)
       setVacancies(vacanciesData)
       setReminders(remindersData)
+      //setResumes(resumesData)
     } catch (err) {
       console.error('Erro ao carregar os dados do dashboard:', err)
     } finally {
@@ -126,46 +117,3 @@ export default function DashboardDisplay() {
 /**
  * Componente do Widget do Dashboard
  */
-interface DashboardWidgetProps {
-  title: string
-  data: any[] // cria um type juntando os types ex: type Data = Employees | Vacancies | Reminders
-  maxItems: number
-  navigateTo: string
-  loading: boolean
-  bgGradient: string
-}
-
-// TODO: move o componete pra um arquivo separado
-function DashboardWidget({
-  title,
-  data,
-  maxItems,
-  navigateTo,
-  loading,
-  bgGradient,
-}: DashboardWidgetProps) {
-  const router = useRouter()
-
-  return (
-    <div
-      className={`p-10 rounded-2xl shadow-2xl bg-gradient-to-br ${bgGradient} transform transition duration-300 hover:scale-105 cursor-pointer flex flex-col justify-between animate-slideIn`}
-      onClick={() => router.push(navigateTo)}
-    >
-      <h2 className="text-3xl font-semibold mb-6 text-[#C8DAC5]">{title}</h2>
-      {loading ? (
-        <p className="text-gray-400 text-lg animate-pulse">Carregando...</p>
-      ) : data.length > 0 ? (
-        <ul className="text-gray-300 text-lg space-y-3">
-          {data.slice(0, maxItems).map((item, index) => (
-            <li key={index} className="hover:text-[#A8C5A8] transition-all text-xl">
-              {/* TODO: isso nao vai bugar pois somente alguns items tem position e reason */}
-              {item.name || item.position || item.reason}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-500 text-lg">Nenhum dado encontrado.</p>
-      )}
-    </div>
-  )
-}
