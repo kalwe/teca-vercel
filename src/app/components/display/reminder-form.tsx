@@ -1,7 +1,7 @@
 "use client";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import { reminderSchema, ReminderInput } from "@/app/schemas/reminderSchema";
@@ -28,16 +28,16 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
         reason: reminderData?.reason || "",
         description: reminderData?.description || "",
     });
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [selectedTime, setSelectedTime] = useState<Date | null>(null);
-    const [errors, setErrors] = useState<Record<string, string>>({});
 
-    useEffect(() => {
-        if (reminderData) {
-            setSelectedDate(reminderData.date ? new Date(reminderData.date) : null);
-            setSelectedTime(reminderData.time ? new Date(`1970-01-01T${reminderData.time}:00`) : null);
-        }
-    }, [reminderData]);
+    // Inicializa os valores diretamente
+    const [selectedDate, setSelectedDate] = useState<Date | null>(
+        reminderData?.date ? new Date(reminderData.date) : null
+    );
+    const [selectedTime, setSelectedTime] = useState<Date | null>(
+        reminderData?.time ? new Date(`1970-01-01T${reminderData.time}:00`) : null
+    );
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     /**
      * Atualiza os campos e valida os dados em tempo real.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { EmployeeType } from "@/app/types/employee";
 import { EmployeeService } from "@/app/services/employeeService";
@@ -16,31 +16,45 @@ function Employees() {
   const lastEmployeeRef = useRef<HTMLTableRowElement | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      setLoading(true);
-      try {
-        const employeeList = await EmployeeService.getAllEmployees();
-        if (!Array.isArray(employeeList)) {
-          throw new Error("Dados inválidos recebidos do servidor.");
-        }
-        setEmployees((prev) => [...prev, ...employeeList]);
-      } catch (error) {
-        console.error("Erro ao carregar funcionários:", error);
-        setError("Erro ao carregar funcionários.");
-      } finally {
-        setLoading(false);
+  /**
+   * Busca funcionários diretamente na inicialização e sob demanda ao mudar de página.
+   */
+  const fetchEmployees = async (pageNumber: number) => {
+    setLoading(true);
+    try {
+      const employeeList = await EmployeeService.getAllEmployees();
+      if (!Array.isArray(employeeList)) {
+        throw new Error("Dados inválidos recebidos do servidor.");
       }
-    };
+      setEmployees((prev) => [...prev, ...employeeList]);
+    } catch (error) {
+      console.error("Erro ao carregar funcionários:", error);
+      setError("Erro ao carregar funcionários.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchEmployees();
+  /**
+   * Carrega mais funcionários sob demanda quando o usuário rolar até o final da lista.
+   */
+  const fetchMoreEmployees = useCallback(() => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchEmployees(nextPage);
   }, [page]);
 
-  const fetchMoreEmployees = useCallback(() => {
-    setPage((prevPage) => prevPage + 1);
-  }, []);
+  /**
+   * Inicia a busca de funcionários assim que o componente for carregado.
+   */
+  useState(() => {
+    fetchEmployees(page);
+  });
 
-  useEffect(() => {
+  /**
+   * Configura a interseção para detectar quando o último funcionário da lista aparece na tela.
+   */
+  const observeLastEmployee = useCallback(() => {
     if (observerRef.current) observerRef.current.disconnect();
 
     observerRef.current = new IntersectionObserver(
@@ -55,7 +69,12 @@ function Employees() {
     if (lastEmployeeRef.current) observerRef.current.observe(lastEmployeeRef.current);
   }, [fetchMoreEmployees]);
 
-  const toggleEmployeeStatus = async (employeeId: number | any, isActive: boolean | any) => {
+  observeLastEmployee();
+
+  /**
+   * Ativa ou desativa um funcionário.
+   */
+  const toggleEmployeeStatus = async (employeeId: number, isActive: boolean) => {
     try {
       const updatedEmployee = await EmployeeService.updateEmployee(employeeId, {
         active: !isActive,
@@ -70,6 +89,9 @@ function Employees() {
     }
   };
 
+  /**
+   * Filtra funcionários dinamicamente com base na pesquisa do usuário.
+   */
   const filteredEmployees = useMemo(() => {
     if (!searchTerm) return employees;
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -159,8 +181,7 @@ function Employees() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            {employee.id && toggleEmployeeStatus(employee.id, employee.active);}
-
+                            employee.id && toggleEmployeeStatus(employee.id, !!employee.active);
                           }}
                           className={`px-3 py-1 rounded ${
                             employee.active ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
