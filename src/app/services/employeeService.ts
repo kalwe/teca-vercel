@@ -40,9 +40,8 @@ export const EmployeeService = {
         return response.data
       }
     } catch (error) {
-      if (error instanceof AxiosError) {
+
         console.error(error.response?.data)
-      }
       console.error('Erro ao buscar todos os funcionários:', error)
       return []
     }

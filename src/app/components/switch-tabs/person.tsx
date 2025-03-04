@@ -5,37 +5,35 @@ import { PersonProps, PersonType } from '@/app/types/person'
 import { useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { z } from 'zod'
 import DropdownCheckboxGender from '../DropDown/dropdown-gender'
 import DropdownCheckboxMaritalStatus from '../DropDown/dropdown-marital-status'
+// TODO: nao ta usando...
+// import { EmployeeService } from "@/app/services/employeeService"
+import { z } from 'zod'
 
 export function PessoaFisica({
   data = {} as PersonType,
   onChange,
-  isEditable, // Certifique-se de que está recebendo essa prop corretamente
+  isEditable,
   onNext,
   onPrev,
 }: PersonProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string>>>({})
-  const [, setIsNextEnabled] = useState(false) // TODO: vc nunca usa isNextEnable
-
-  // interface PersonProps { // TODO: mais uma interface que nao usa, remove
-  //   employee: PersonType
-  // }
+  const [, setIsNextEnabled] = useState(false)
 
   const formatDateForBackend = (date: Date | null) => {
     if (!date) return ''
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
     const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}-${month}-${year}`
   }
 
   const handleInputChange = (field: keyof PersonType, value: string | Date | null) => {
     let formattedValue = value
 
     if (field === 'dateOfBirth' && value instanceof Date) {
-      formattedValue = formatDateForBackend(value) // Vai salvar no formato YYYY-MM-DD
+      formattedValue = formatDateForBackend(value)
     }
 
     const updatedData = { ...data, [field]: formattedValue }
@@ -59,24 +57,23 @@ export function PessoaFisica({
   }
 
   const handleSave = async () => {
-    try {
-      onNext()
-    } catch (error) {
-      alert('Erro ao salvar dados pessoais. Verifique os campos.')
-      console.error(error)
-    }
+    onNext()
   }
-
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Pessoa Física</h2>
 
       {[
-        { key: 'name', name: 'name', label: 'Nome', placeholder: 'Digite o nome' },
+        {
+          key: 'name',
+          name: 'name',
+          label: 'Digite o nome',
+          placeholder: 'Digite o nome',
+        },
         {
           key: 'fullName',
           name: 'fullName',
-          label: 'Nome Completo',
+          label: 'Digite o sobrenome',
           placeholder: 'Digite o sobrenome',
         },
         {
@@ -121,9 +118,10 @@ export function PessoaFisica({
       {/* Data de nascimento */}
       <div className="w-full">
         <DatePicker
+          // TODO: nao existe split em 'data.dateOfBirth'
           selected={
             data.dateOfBirth
-              ? new Date(data.dateOfBirth.replace(/-/g, '/')) // TODO: replace nao existe em Date apenas em arrays
+              ? new Date(data.dateOfBirth.split('-').reverse().join('-'))
               : null
           }
           onChange={(date) => handleInputChange('dateOfBirth', date)}

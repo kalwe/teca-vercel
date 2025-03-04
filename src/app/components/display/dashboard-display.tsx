@@ -57,52 +57,24 @@ export default function DashboardDisplay() {
     fetchingData()
   }
 
-  // TODO: remover se nao usa
-  //   const onMouseDown = () => {
-  //     dragTimeout.current = setTimeout(() => {
-  //       setIsDragging(true)
-  //     }, 2000)
-  //   }
-
-  // TODO: remover se nao usa
-  //   const onMouseUp = () => {
-  //     if (dragTimeout.current) {
-  //       clearTimeout(dragTimeout.current)
-  //       dragTimeout.current = null
-  //     }
-  //     setIsDragging(false)
-  //   }
-
-  // TODO: remover se nao usa
-  // const handleNavigation = (path: string) => {
-  //   if (isDragging) {
-  //     return
-  //   }
-  //   router.push(path)
-  // }
-
   const maxItemsToShow = 5
 
-  // TODO: remover se nao usa
-  // function changePage(path: string): void {
-  //   router.push(path)
-  // }
-
   return (
-    <div className="bg-[#1C2A21] min-h-screen text-white">
+    <div className="bg-[#121D14] min-h-screen text-white transition-all">
       <Navigation />
-      <div className="container mx-auto px-6 py-10">
-        <h1 className="text-3xl font-bold text-center text-gray-300 mb-8">Dashboard</h1>
+      {/* Container principal */}
+      <div className="flex flex-col items-center justify-center min-h-screen px-8 py-12 bg-[#121D14]">
+        <Navigation />
 
         {/* Grid de Cards */}
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 w-full max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <DashboardWidget
             title="Funcionários"
             data={employees}
             maxItems={maxItemsToShow}
             navigateTo="/contract-display/employee/"
             loading={loading}
-            bgGradient="from-[#2F3E34] to-[#1E2922]"
+            bgGradient="from-[#243A28] to-[#18231A]"
           />
           <DashboardWidget
             title="Vagas"
@@ -110,25 +82,7 @@ export default function DashboardDisplay() {
             maxItems={maxItemsToShow}
             navigateTo="/vagas-display/"
             loading={loading}
-            bgGradient="from-[#374E3F] to-[#2A3A2E]"
-          />
-          {/* TODO: remover nao teremos hours bank por enquanto */}
-          <DashboardWidget
-            title="Banco de Horas"
-            data={hoursBank}
-            maxItems={maxItemsToShow}
-            navigateTo="/hoursbank-display/"
-            loading={loading}
-            bgGradient="from-[#435A4C] to-[#2C3E35]"
-          />
-          {/* TODO: deixa o widge comentado ate trazer os dados de resume da api */}
-          <DashboardWidget
-            title="Currículos"
-            data={resumes}
-            maxItems={maxItemsToShow}
-            navigateTo="/curriculo-display/visualize-cv"
-            loading={loading}
-            bgGradient="from-[#3A5243] to-[#2B3A31]"
+            bgGradient="from-[#2A4231] to-[#1C2B21]"
           />
           <DashboardWidget
             title="Lembretes"
@@ -136,25 +90,33 @@ export default function DashboardDisplay() {
             maxItems={maxItemsToShow}
             navigateTo="/reminder-display/"
             loading={loading}
-            bgGradient="from-[#314730] to-[#1E2B1D]"
+            bgGradient="from-[#314B38] to-[#203225]"
           />
+          <DashboardWidget
+            title="Currículos"
+            data={resumes}
+            maxItems={maxItemsToShow}
+            navigateTo="/curriculo-display/"
+            loading={loading}
+            bgGradient="from-[#3A3B38] to-[#2B2C25]"
+          />
+        </div>
 
-          {/* Ações Rápidas */}
-          <div className="bg-[#1E2922] p-6 rounded-xl shadow-lg flex flex-col items-center justify-center space-y-4 transform transition duration-300 hover:scale-105">
-            <h2 className="text-xl font-semibold text-gray-300">Ações Rápidas</h2>
-            <button
-              onClick={() => router.push('/contract-display/')}
-              className="px-4 py-2 bg-[#3B5E3E] hover:bg-[#2E4A32] rounded-lg w-full text-white transition-all"
-            >
-              Adicionar Funcionário
-            </button>
-            <button
-              onClick={() => router.push('/user-display/')}
-              className="px-4 py-2 bg-[#2F4A30] hover:bg-[#253B26] rounded-lg w-full text-white transition-all"
-            >
-              Adicionar Usuário
-            </button>
-          </div>
+        {/* Card de Ações Rápidas - Ocupando bem o espaço */}
+        <div className="bg-[#203225] p-10 rounded-2xl shadow-xl flex flex-col items-center justify-center space-y-6 w-full max-w-3xl mt-12">
+          <h2 className="text-4xl font-bold text-[#C8DAC5]">Ações Rápidas</h2>
+          <button
+            onClick={() => router.push('/contract-display/')}
+            className="w-full py-4 bg-[#2D4A33] hover:bg-[#243A28] rounded-xl text-white font-semibold text-lg transition-all shadow-md hover:shadow-lg"
+          >
+            Adicionar Funcionário
+          </button>
+          <button
+            onClick={() => router.push('/user-display/')}
+            className="w-full py-4 bg-[#2B4531] hover:bg-[#203225] rounded-xl text-white font-semibold text-lg transition-all shadow-md hover:shadow-lg"
+          >
+            Adicionar Usuário
+          </button>
         </div>
       </div>
     </div>
@@ -162,7 +124,7 @@ export default function DashboardDisplay() {
 }
 
 /**
- * Widget do Dashboard
+ * Componente do Widget do Dashboard
  */
 interface DashboardWidgetProps {
   title: string
@@ -186,21 +148,23 @@ function DashboardWidget({
 
   return (
     <div
-      className={`p-6 rounded-xl shadow-lg bg-gradient-to-br ${bgGradient} transform transition duration-300 hover:scale-105 cursor-pointer flex flex-col justify-between`}
+      className={`p-10 rounded-2xl shadow-2xl bg-gradient-to-br ${bgGradient} transform transition duration-300 hover:scale-105 cursor-pointer flex flex-col justify-between animate-slideIn`}
       onClick={() => router.push(navigateTo)}
     >
-      <h2 className="text-xl font-semibold mb-4 text-gray-300">{title}</h2>
+      <h2 className="text-3xl font-semibold mb-6 text-[#C8DAC5]">{title}</h2>
       {loading ? (
-        <p className="text-gray-400 text-sm">Carregando...</p>
+        <p className="text-gray-400 text-lg animate-pulse">Carregando...</p>
       ) : data.length > 0 ? (
-        <ul className="text-gray-300 text-sm space-y-1">
+        <ul className="text-gray-300 text-lg space-y-3">
           {data.slice(0, maxItems).map((item, index) => (
-            // TODO: isso nao vai bugar pois somente alguns items tem position e reason
-            <li key={index}>{item.name || item.position || item.reason}</li>
+            <li key={index} className="hover:text-[#A8C5A8] transition-all text-xl">
+              {/* TODO: isso nao vai bugar pois somente alguns items tem position e reason */}
+              {item.name || item.position || item.reason}
+            </li>
           ))}
         </ul>
       ) : (
-        <p className="text-gray-400 text-sm">Nenhum dado encontrado.</p>
+        <p className="text-gray-500 text-lg">Nenhum dado encontrado.</p>
       )}
     </div>
   )

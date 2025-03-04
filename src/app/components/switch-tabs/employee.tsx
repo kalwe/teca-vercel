@@ -1,14 +1,11 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-// import { employeeSchema } from "@/app/schemas/employeeSchema"; // TODO: deveria usar mas nao usa
-import { EmployeeType } from "@/app/types/employee";
-import { EmployeeService } from "@/app/services/employeeService";
-import { z } from "zod";
-import DropdownCheckboxPosition from "../DropDown/dropdown-position";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { FuncionarioProps } from "@/app/types/funcionario";
+import { EmployeeService } from '@/app/services/employeeService'
+import { EmployeeProps, EmployeeType } from '@/app/types/employee'
+import { useState } from 'react'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
 export function Funcionario({
   data = {} as EmployeeType,
@@ -16,53 +13,71 @@ export function Funcionario({
   isEditable,
   onNext,
   onPrev,
-}: FuncionarioProps) { // TODO: tira a interface FuncionaioProps ela seta 'data' como FuncionarioType que nao todos os fields usados
-  const [errors, setErrors] = useState<Partial<Record<keyof EmployeeType, string>>>({});
+}: EmployeeProps) {
+  const [isNextEnabled, setIsNextEnabled] = useState(true) // TODO: nunca usa
 
-  // Comunica o estado do botão para o ContractForm
-  useEffect(() => {
-    setNextEnabled(isNextEnabled); // TODO: variavel isNextEnable nao existe
-  }, [isNextEnabled, setNextEnabled]);
+  const handleInputChange = (field: string, value: unknown) => {
+    const updatedData = { ...data, [field]: value }
+    onChange(updatedData)
+  }
 
-  const handleInputChange = (field: keyof EmployeeType, value: unknown) => {
-    let formattedValue = value;
-    if ((field === "contractDate" || field === "removalDate") && value instanceof Date) {
-      formattedValue = formatDateForBackend(value); // TODO: formatDataForBackend() nao existe
-    }
-    data.positionId = data.position?.id
-    console.log(data.position)
-    const updatedData = { ...data, [field]: formattedValue };
-    try {
-      EmployeeType.parse(updatedData); // TODO: EmployeeType nao eh um schema do zod, nao existe o method parse
-      setErrors({});
-
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        const newErrors: Partial<Record<keyof EmployeeType, string>> = {};
-        err.errors.forEach((e) => {
-          newErrors[e.path[0] as keyof EmployeeType] = e.message;
-        });
-        setErrors(newErrors);
-
-      }
-    }
-
-    onChange(updatedData);
-  };
-
-  /**
-   * Faz o POST na API e avança para a próxima etapa
-   */
   const handleSave = async () => {
     try {
-      const createdEmployee = await EmployeeService.createEmployee(data);
-      console.log(createdEmployee);
-      onNext();
+      // TODO: precisar tipar com EmloyeeType pra passar pro createEmployee
+      const formattedData = {
+        name: data.name || 'NOME_PADRÃO',
+        fullName: data.fullName || 'NOME COMPLETO PADRÃO',
+        dateOfBirth: data.dateOfBirth || '2000-01-01',
+        taxId: data.taxId || '00000000000',
+        nationalId: data.nationalId || '000000000',
+        issuingBody: data.issuingBody || 'ORGÃO_EMISSOR',
+        registration: data.registration || '123456',
+        contractDate: data.contractDate
+          ? data.contractDate.split('T')[0] // Garante que seja YYYY-MM-DD
+          : new Date().toISOString().split('T')[0],
+
+        salary: data.salary ?? 1000,
+
+        gender:
+          data.gender === 'Masculino'
+            ? 'MALE'
+            : data.gender === 'Feminino'
+              ? 'FEMALE'
+              : 'UNDEFINED',
+
+        maritalStatus:
+          data.maritalStatus === 'Solteiro'
+            ? 'SINGLE'
+            : data.maritalStatus === 'Casado'
+              ? 'MARRIED'
+              : data.maritalStatus === 'Divorciado'
+                ? 'DIVORCED'
+                : data.maritalStatus === 'União Estável'
+                  ? 'STABLE_UNION'
+                  : data.maritalStatus === 'Viúvo'
+                    ? 'WIDOWER'
+                    : 'LIVING_TOGETHER',
+
+        positionId: data.positionId ? Number(data.positionId) : 1, // Troca position.id por positionId
+      }
+
+      console.log(
+        '🚀 Enviando payload formatado:',
+        JSON.stringify(formattedData, null, 2),
+      )
+
+      const createdEmployee = await EmployeeService.createEmployee(formattedData)
+      console.log('✅ Funcionário cadastrado com sucesso:', createdEmployee)
+      onNext()
     } catch (error) {
-      alert("Erro ao cadastrar funcionário. Verifique os campos.");
-      console.error(error);
+      alert('❌ Erro ao cadastrar funcionário.')
+      console.error('Erro ao enviar para API:', error)
+
+      if (error.response) {
+        console.log('🛑 Resposta da API:', error.response.data)
+      }
     }
-  };
+  }
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
@@ -74,61 +89,48 @@ export function Funcionario({
         <input
           type="text"
           name="registration"
-          value={data.registration || ""}
-          onChange={(e) => handleInputChange("registration", e.target.value)}
+          value={data.registration || ''}
+          onChange={(e) => handleInputChange('registration', e.target.value)}
           placeholder="Digite a matrícula"
-          // TODO: nao da pra usar errors.registration aqui vamos arrumar me chama na call
-          className={w-full bg-gray-700 text-white border ${
-            errors.registration ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3}
+          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
           disabled={!isEditable}
         />
-        {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
       </div>
 
       {/* Contract Date Field with DatePicker */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Admissão</label>
         <DatePicker
-          selected={parseDateFromBackend(data.contractDate)} // TODO: da onde vem o method parseDateFromBackend ?!?!?!
-          onChange={(date: Date | null) => handleInputChange("contractDate", date)}
-          dateFormat="dd-MM-yyyy"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.contractDate ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
+          selected={data.contractDate ? new Date(data.contractDate) : null}
+          onChange={(date: Date | null) =>
+            handleInputChange('contractDate', date?.toISOString())
+          }
+          dateFormat="yyyy-MM-dd"
+          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
           disabled={!isEditable}
         />
-        {errors.contractDate && (
-          <p className="text-red-500 text-sm mt-1">{errors.contractDate}</p>
-        )}
       </div>
 
       {/* Removal Date Field with DatePicker */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Remoção</label>
         <DatePicker
-          selected={parseDateFromBackend(data.removalDate)} // TODO: da onde vem o method parseDateFromBackend ?!?!?!
-          onChange={(date: Date | null) => handleInputChange("removalDate", date)}
-          dateFormat="dd-MM-yyyy"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.removalDate ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
+          selected={data.removalDate ? new Date(data.removalDate) : null}
+          onChange={(date: Date | null) =>
+            handleInputChange('removalDate', date?.toISOString())
+          }
+          dateFormat="yyyy-MM-dd"
+          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
           disabled={!isEditable}
         />
-        {errors.removalDate && (
-          <p className="text-red-500 text-sm mt-1">{errors.removalDate}</p>
-        )}
       </div>
+
       {/* Dropdown for Position */}
-      <div className="w-full">
+      <div>
         <DropdownCheckboxPosition
-          id={data.position?.name ?? ''}
-          onChange={(id, name) => handleInputChange("position", {id: id, name: name})}
-          disabled={!isEditable} // TODO: verificar no componente DropdownCheckboxPosition pq nao recebe desable
+          value={data.positionId ?? 1} // Garante um número válido
+          onChange={(value) => handleInputChange('positionId', value)}
         />
-        {errors.positionId && (
-          <p className="text-red-500 text-sm mt-1">{errors.positionId}</p>
-        )}
       </div>
 
       {/* Navigation Buttons */}
@@ -140,14 +142,13 @@ export function Funcionario({
           Voltar
         </button>
         <button
-        // TODO: arruma INDENTACAO
-  onClick={handleSave}
-  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
->
-  Próximo
-</button>
-
+          // TODO: arruma INDENTACAO
+          onClick={handleSave}
+          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+        >
+          Próximo
+        </button>
       </div>
     </div>
-  );
+  )
 }

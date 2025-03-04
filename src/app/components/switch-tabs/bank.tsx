@@ -14,6 +14,7 @@ export function Bank({
   onPrev,
   employee, // Mantendo mesmo padrão do Address.tsx
 }: BankProps) {
+  const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof BankAccountType, string>>>({})
 
   const handleInputChange = (field: string, value: string) => {
@@ -22,6 +23,7 @@ export function Bank({
     try {
       bankAccountSchema.parse(updatedData) // Valida os dados
       setErrors({}) // Limpa os erros ao preencher corretamente
+      setIsNextEnabled(true)
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: Record<string, string> = {}
@@ -29,6 +31,7 @@ export function Bank({
           newErrors[e.path[0]] = e.message
         })
         setErrors(newErrors)
+        setIsNextEnabled(false)
       }
     }
 
@@ -37,13 +40,11 @@ export function Bank({
 
   const handleSave = async () => {
     try {
-      console.log('Enviando dados para criação:', { ...data, employee })
       const createdBankAccount = await BankService.createBankAccount({
         ...data,
         employee,
       })
-      console.log('Resposta da API:', createdBankAccount)
-
+      console.log(createdBankAccount)
       onNext()
     } catch (error) {
       alert('Erro ao cadastrar conta bancária. Verifique os campos.')
@@ -110,6 +111,7 @@ export function Bank({
         <button
           onClick={handleSave}
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          disabled={!isNextEnabled}
         >
           Próximo
         </button>

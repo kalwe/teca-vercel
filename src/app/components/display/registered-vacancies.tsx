@@ -6,7 +6,7 @@ import { useVacancyContext } from "@/app/context/VacancyContext";
 import { VacancyService } from "@/app/services/vacancyService";
 
 const VacancyList: React.FC = () => {
-  const { vacancies, setVacancies } = useVacancyContext();
+  const { vacancies = [], setVacancies } = useVacancyContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

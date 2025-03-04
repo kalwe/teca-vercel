@@ -1,18 +1,12 @@
 'use client'
 
 import { clothingSchema } from '@/app/schemas/clothingSchema'
-import { BankService } from '@/app/services/bankService'
+import { ClothingService } from '@/app/services/clothingService'
 import type { ClothingProps, ClothingType } from '@/app/types/clothing'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { z } from 'zod'
 
-// export type ClothingProps = {
-//   data: ClothingType;
-//   onChange: (updatedData: ClothingProps['data']) => void;
-//   mode: 'add' | 'edit' | 'view' | 'create';
-//   employeeId?: number;
-// };
 export function Clothing({
   // TODO: ajusta a interface pq ta tudo dando erro de type
   data = {},
@@ -49,11 +43,10 @@ export function Clothing({
 
   const handleSave = async () => {
     try {
-      console.log('Enviando dados para criação:', { ...data, employee })
-      const createdClothing = await BankService.createClothing({ ...data, employee }) // TODO: adiciona o BankService
-      console.log('Resposta da API:', createdClothing)
+      const createdClothing = await ClothingService.createClothing({ ...data, employee })
+      console.log(createdClothing)
+
       router.push('/contract-display/employee')
-      onNext() // TODO: nao existe
     } catch (error) {
       alert('Erro ao cadastrar conta bancária. Verifique os campos.')
       console.error(error)

@@ -1,5 +1,6 @@
 'use client'
 
+import { ContractFormProps } from '@/app/types/employee'
 import { useState } from 'react'
 import { Address } from '../switch-tabs/address'
 import { Bank } from '../switch-tabs/bank'
@@ -9,14 +10,14 @@ import { Funcionario } from '../switch-tabs/employee'
 import { PessoaFisica } from '../switch-tabs/person'
 
 export default function ContractForm({
-  employeeData = {}, // TODO: tipe com Employee pq da erro no setFormData
+  employeeData = {}, // TODO: define como EmployeeType
   isEditable = true,
-  mode = 'create',
-}) {
+  mode = 'create', // TODO: nunca usa
+}: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null) // TODO: voce nunca usa setError, nunca vai aparecer um erro
-  // const [isNextEnabled, setIsNextEnabled] = useState(false) // TODOD: remove se nao usa
+  const [isNextEnabled, setIsNextEnabled] = useState(false) // TODO: nunca ussa
 
   const [formData, setFormData] = useState({
     pessoaFisica: employeeData ?? {},
@@ -79,11 +80,10 @@ export default function ContractForm({
             <div className="w-full md:w-3/4 p-6">
               {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
               <CurrentComponent
-                // FIX: a key nao pode ser string muda pra numero
                 data={formData[currentKey] || {}}
                 onChange={handleInputChange}
                 isEditable={isEditable}
-                mode={mode} // TODO: na inferface vc definio um type e aqui passa string
+                mode={mode}
                 onNext={handleNextTab}
                 onPrev={handlePrevTab}
               />
