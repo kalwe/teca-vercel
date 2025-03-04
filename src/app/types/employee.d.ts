@@ -27,6 +27,7 @@ export type EmployeeType = {
   clothing?: Clothing
   gender: string
   maritalStatus: string
+  codigoFractal?: string
 }
 
 export type Employee = EmployeeType

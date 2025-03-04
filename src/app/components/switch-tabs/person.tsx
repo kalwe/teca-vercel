@@ -58,23 +58,15 @@ export function PessoaFisica({
   };
 
   const handleSave = async () => {
-    try {
-      const createdPerson = await EmployeeService.createEmployee({ ...data, employee });
-      console.log(createdPerson);
       onNext();
-    } catch (error) {
-      alert("Erro ao salvar dados pessoais. Verifique os campos.");
-      console.error(error);
-    }
   };
-
-
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Pessoa Física</h2>
 
       {[
-  { key: "fullName", name: "fullName", label: "Nome Completo", placeholder: "Digite o nome completo" },
+  { key: "name", name: "name", label: "Digite o nome", placeholder: "Digite o nome" },
+  { key: "fullName", name: "fullName", label: "Digite o sobrenome", placeholder: "Digite o sobrenome" },
   { key: "taxId", name: "taxId", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
   { key: "nationalId", name: "nationalId", label: "RG", placeholder: "Digite o RG" },
   { key: "issuingBody", name: "issuingBody", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
@@ -143,7 +135,7 @@ export function PessoaFisica({
         <button
           onClick={handleSave}
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={!isNextEnabled}
+
         >
           Próximo
         </button>

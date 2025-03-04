@@ -102,6 +102,24 @@ export function Funcionario({
         {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
       </div>
 
+      {/* Cod person */}
+
+      <div className="w-full">
+        <label className="block text-gray-400 mb-2">Digite o código da pessoa</label>
+        <input
+          type="text"
+          name="codigoFractal"
+          value={data.codigoFractal || ""}
+          onChange={(e) => handleInputChange("codigoFractal", e.target.value)}
+          placeholder="Digite o código da pessoa"
+          className={`w-full bg-gray-700 text-white border ${
+            errors.codigoFractal ? "border-red-500" : "border-gray-600"
+          } rounded-lg py-2 px-3`}
+          disabled={!isEditable}
+        />
+        {errors.codigoFractal && <p className="text-red-500 text-sm mt-1">{errors.codigoF}</p>}
+      </div>
+
       {/* Contract Date Field with DatePicker */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Admissão</label>
