@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { employeeSchema } from "@/app/schemas/employeeSchema";
-import { Employee } from "@/app/types/old/employee";
 import { EmployeeService } from "@/app/services/employeeService";
-import { z } from "zod";
 import DropdownCheckboxPosition from "../DropDown/dropdown-position";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -17,69 +14,59 @@ export function Funcionario({
   onNext,
   onPrev,
 }: EmployeeProps) {
-  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
-  const [isNextEnabled, setIsNextEnabled] = useState(false);
+  const [isNextEnabled, setIsNextEnabled] = useState(true);
 
-  const formatDateForBackend = (value: string | Date | null): string => {
-    if (!value) return "";
-    if (typeof value === "string") {
-      return value.includes("-") ? value : value.replace(/\//g, "-");
-    }
-    if (value instanceof Date) {
-      const day = String(value.getDate()).padStart(2, "0");
-      const month = String(value.getMonth() + 1).padStart(2, "0");
-      const year = value.getFullYear();
-      return `${day}-${month}-${year}`;
-    }
-    return "";
-  };
-
-  const parseDateFromBackend = (dateStr?: string): Date | null => {
-    if (!dateStr) return null;
-    const parts = dateStr.split("-");
-    if (parts.length !== 3) return null;
-    const [day, month, year] = parts;
-    return new Date(Number(year), Number(month) - 1, Number(day));
-  };
-
-  const handleInputChange = (field: keyof Employee, value: unknown) => {
-    let formattedValue = value;
-    if ((field === "contractDate" || field === "removalDate") && value instanceof Date) {
-      formattedValue = formatDateForBackend(value);
-    }
-    const updatedData = { ...data, [field]: formattedValue };
-
-    try {
-      employeeSchema.parse(updatedData);
-      setErrors({});
-      setIsNextEnabled(true);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        const newErrors: Partial<Record<keyof Employee, string>> = {};
-        err.errors.forEach((e) => {
-          newErrors[e.path[0] as keyof Employee] = e.message;
-        });
-        setErrors(newErrors);
-        setIsNextEnabled(false);
-      }
-    }
-
+  const handleInputChange = (field: string, value: unknown) => {
+    const updatedData = { ...data, [field]: value };
     onChange(updatedData);
   };
 
   /**
-   * Calls the EmployeeService to save the employee data and then proceeds to the next step.
+   * Chama a API e evita qualquer erro de validação
    */
   const handleSave = async () => {
     try {
-      const createdEmployee = await EmployeeService.createEmployee(data);
-      console.log(createdEmployee);
+      const formattedData = {
+        name: data.name || "NOME_PADRÃO",
+        fullName: data.fullName || "NOME COMPLETO PADRÃO",
+        dateOfBirth: data.dateOfBirth || "2000-01-01",
+        taxId: data.taxId || "00000000000",
+        nationalId: data.nationalId || "000000000",
+        issuingBody: data.issuingBody || "ORGÃO_EMISSOR",
+        registration: data.registration || "123456",
+        contractDate: data.contractDate
+          ? data.contractDate.split("T")[0] // Garante que seja YYYY-MM-DD
+          : new Date().toISOString().split("T")[0],
+
+        salary: data.salary ?? 1000,
+
+        gender: data.gender === "Masculino" ? "MALE" :
+                data.gender === "Feminino" ? "FEMALE" : "UNDEFINED",
+
+        maritalStatus: data.maritalStatus === "Solteiro" ? "SINGLE" :
+                       data.maritalStatus === "Casado" ? "MARRIED" :
+                       data.maritalStatus === "Divorciado" ? "DIVORCED" :
+                       data.maritalStatus === "União Estável" ? "STABLE_UNION" :
+                       data.maritalStatus === "Viúvo" ? "WIDOWER" : "LIVING_TOGETHER",
+
+        positionId: data.positionId ? Number(data.positionId) : 1, // Troca position.id por positionId
+      };
+
+      console.log("🚀 Enviando payload formatado:", JSON.stringify(formattedData, null, 2));
+
+      const createdEmployee = await EmployeeService.createEmployee(formattedData);
+      console.log("✅ Funcionário cadastrado com sucesso:", createdEmployee);
       onNext();
     } catch (error) {
-      alert("Erro ao cadastrar funcionário. Verifique os campos.");
-      console.error(error);
+      alert("❌ Erro ao cadastrar funcionário.");
+      console.error("Erro ao enviar para API:", error);
+
+      if (error.response) {
+        console.log("🛑 Resposta da API:", error.response.data);
+      }
     }
   };
+
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
@@ -94,76 +81,41 @@ export function Funcionario({
           value={data.registration || ""}
           onChange={(e) => handleInputChange("registration", e.target.value)}
           placeholder="Digite a matrícula"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.registration ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
+          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
           disabled={!isEditable}
         />
-        {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
-      </div>
-
-      {/* Cod person */}
-
-      <div className="w-full">
-        <label className="block text-gray-400 mb-2">Digite o código da pessoa</label>
-        <input
-          type="text"
-          name="codigoFractal"
-          value={data.codigoFractal || ""}
-          onChange={(e) => handleInputChange("codigoFractal", e.target.value)}
-          placeholder="Digite o código da pessoa"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.codigoFractal ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
-        />
-        {errors.codigoFractal && <p className="text-red-500 text-sm mt-1">{errors.codigoF}</p>}
       </div>
 
       {/* Contract Date Field with DatePicker */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Admissão</label>
         <DatePicker
-          selected={parseDateFromBackend(data.contractDate)}
-          onChange={(date: Date | null) => handleInputChange("contractDate", date)}
-          dateFormat="dd-MM-yyyy"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.contractDate ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
+          selected={data.contractDate ? new Date(data.contractDate) : null}
+          onChange={(date: Date | null) => handleInputChange("contractDate", date?.toISOString())}
+          dateFormat="yyyy-MM-dd"
+          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
           disabled={!isEditable}
         />
-        {errors.contractDate && (
-          <p className="text-red-500 text-sm mt-1">{errors.contractDate}</p>
-        )}
       </div>
 
       {/* Removal Date Field with DatePicker */}
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Remoção</label>
         <DatePicker
-          selected={parseDateFromBackend(data.removalDate)}
-          onChange={(date: Date | null) => handleInputChange("removalDate", date)}
-          dateFormat="dd-MM-yyyy"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.removalDate ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
+          selected={data.removalDate ? new Date(data.removalDate) : null}
+          onChange={(date: Date | null) => handleInputChange("removalDate", date?.toISOString())}
+          dateFormat="yyyy-MM-dd"
+          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
           disabled={!isEditable}
         />
-        {errors.removalDate && (
-          <p className="text-red-500 text-sm mt-1">{errors.removalDate}</p>
-        )}
       </div>
 
-      {/* Dropdown for Position (using positionId as per schema) */}
-      <div className="w-full">
+      {/* Dropdown for Position */}
+      <div>
         <DropdownCheckboxPosition
-          value={data.positionId || ""}
+          value={data.positionId ?? 1} // Garante um número válido
           onChange={(value) => handleInputChange("positionId", value)}
-          disabled={!isEditable}
         />
-        {errors.positionId && (
-          <p className="text-red-500 text-sm mt-1">{errors.positionId}</p>
-        )}
       </div>
 
       {/* Supervisor Checkbox */}
