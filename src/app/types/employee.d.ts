@@ -32,6 +32,7 @@ export type EmployeeType = {
 export type Employee = EmployeeType
 export type Employees = EmployeeType[]
 
+// TODO: remover nao usa nunca
 export interface EmployeeProps {
   data: EmployeeType
   onChange: (updatedData: EmployeeType) => void
@@ -39,6 +40,7 @@ export interface EmployeeProps {
   onNext: () => void
   onPrev: () => void
 }
+
 export interface ContractFormProps {
   mode: 'edit' | 'create'
   employeeData?: EmployeeType | null

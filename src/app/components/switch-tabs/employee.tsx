@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { employeeSchema } from "@/app/schemas/employeeSchema";
+// import { employeeSchema } from "@/app/schemas/employeeSchema"; // TODO: deveria usar mas nao usa
 import { EmployeeType } from "@/app/types/employee";
 import { EmployeeService } from "@/app/services/employeeService";
 import { z } from "zod";
@@ -16,24 +16,24 @@ export function Funcionario({
   isEditable,
   onNext,
   onPrev,
-}: FuncionarioProps) {
+}: FuncionarioProps) { // TODO: tira a interface FuncionaioProps ela seta 'data' como FuncionarioType que nao todos os fields usados
   const [errors, setErrors] = useState<Partial<Record<keyof EmployeeType, string>>>({});
 
   // Comunica o estado do botão para o ContractForm
   useEffect(() => {
-    setNextEnabled(isNextEnabled);
+    setNextEnabled(isNextEnabled); // TODO: variavel isNextEnable nao existe
   }, [isNextEnabled, setNextEnabled]);
 
   const handleInputChange = (field: keyof EmployeeType, value: unknown) => {
     let formattedValue = value;
     if ((field === "contractDate" || field === "removalDate") && value instanceof Date) {
-      formattedValue = formatDateForBackend(value);
+      formattedValue = formatDateForBackend(value); // TODO: formatDataForBackend() nao existe
     }
     data.positionId = data.position?.id
     console.log(data.position)
     const updatedData = { ...data, [field]: formattedValue };
     try {
-      EmployeeType.parse(updatedData);
+      EmployeeType.parse(updatedData); // TODO: EmployeeType nao eh um schema do zod, nao existe o method parse
       setErrors({});
 
     } catch (err) {
@@ -77,6 +77,7 @@ export function Funcionario({
           value={data.registration || ""}
           onChange={(e) => handleInputChange("registration", e.target.value)}
           placeholder="Digite a matrícula"
+          // TODO: nao da pra usar errors.registration aqui vamos arrumar me chama na call
           className={w-full bg-gray-700 text-white border ${
             errors.registration ? "border-red-500" : "border-gray-600"
           } rounded-lg py-2 px-3}
@@ -89,7 +90,7 @@ export function Funcionario({
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Admissão</label>
         <DatePicker
-          selected={parseDateFromBackend(data.contractDate)}
+          selected={parseDateFromBackend(data.contractDate)} // TODO: da onde vem o method parseDateFromBackend ?!?!?!
           onChange={(date: Date | null) => handleInputChange("contractDate", date)}
           dateFormat="dd-MM-yyyy"
           className={`w-full bg-gray-700 text-white border ${
@@ -106,7 +107,7 @@ export function Funcionario({
       <div className="w-full">
         <label className="block text-gray-400 mb-2">Data de Remoção</label>
         <DatePicker
-          selected={parseDateFromBackend(data.removalDate)}
+          selected={parseDateFromBackend(data.removalDate)} // TODO: da onde vem o method parseDateFromBackend ?!?!?!
           onChange={(date: Date | null) => handleInputChange("removalDate", date)}
           dateFormat="dd-MM-yyyy"
           className={`w-full bg-gray-700 text-white border ${
@@ -123,7 +124,7 @@ export function Funcionario({
         <DropdownCheckboxPosition
           id={data.position?.name ?? ''}
           onChange={(id, name) => handleInputChange("position", {id: id, name: name})}
-          disabled={!isEditable}
+          disabled={!isEditable} // TODO: verificar no componente DropdownCheckboxPosition pq nao recebe desable
         />
         {errors.positionId && (
           <p className="text-red-500 text-sm mt-1">{errors.positionId}</p>
@@ -139,6 +140,7 @@ export function Funcionario({
           Voltar
         </button>
         <button
+        // TODO: arruma INDENTACAO
   onClick={handleSave}
   className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
 >

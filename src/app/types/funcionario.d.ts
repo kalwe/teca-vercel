@@ -1,9 +1,9 @@
-
+// TODO: remover tudo
 export type FuncionarioType = {
-registration: number
-contractDate: string
-removalDate: string
-positionId: number
+  registration: number
+  contractDate: string
+  removalDate: string
+  positionId: number
 }
 
 export type FuncionarioProps = {

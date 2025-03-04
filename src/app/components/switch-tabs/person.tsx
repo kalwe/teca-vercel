@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import DropdownCheckboxMaritalStatus from "../DropDown/dropdown-marital-status";
-import DropdownCheckboxGender from "../DropDown/dropdown-gender";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { PersonProps, PersonType } from "@/app/types/person";
-import { personSchema } from "@/app/schemas/personSchema";
-import { z } from "zod";
+import { personSchema } from '@/app/schemas/personSchema'
+import { PersonProps, PersonType } from '@/app/types/person'
+import { useState } from 'react'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { z } from 'zod'
+import DropdownCheckboxGender from '../DropDown/dropdown-gender'
+import DropdownCheckboxMaritalStatus from '../DropDown/dropdown-marital-status'
 
 export function PessoaFisica({
   data = {} as PersonType,
@@ -17,109 +17,133 @@ export function PessoaFisica({
   onPrev,
 }: PersonProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof PersonType, string>>>({})
-  const [isNextEnabled, setIsNextEnabled] = useState(false)
+  const [, setIsNextEnabled] = useState(false) // TODO: vc nunca usa isNextEnable
 
-  interface PersonProps {
-    employee: PersonType
-  }
+  // interface PersonProps { // TODO: mais uma interface que nao usa, remove
+  //   employee: PersonType
+  // }
 
   const formatDateForBackend = (date: Date | null) => {
-    if (!date) return "";
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-
+    if (!date) return ''
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
 
   const handleInputChange = (field: keyof PersonType, value: string | Date | null) => {
-    let formattedValue = value;
+    let formattedValue = value
 
-    if (field === "dateOfBirth" && value instanceof Date) {
-      formattedValue = formatDateForBackend(value); // Vai salvar no formato YYYY-MM-DD
+    if (field === 'dateOfBirth' && value instanceof Date) {
+      formattedValue = formatDateForBackend(value) // Vai salvar no formato YYYY-MM-DD
     }
 
-    const updatedData = { ...data, [field]: formattedValue };
+    const updatedData = { ...data, [field]: formattedValue }
 
     try {
-      personSchema.parse(updatedData);
-      setErrors({});
-      setIsNextEnabled(true);
+      personSchema.parse(updatedData)
+      setErrors({})
+      setIsNextEnabled(true)
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, string> = {}
         err.errors.forEach((e) => {
-          newErrors[e.path[0] as keyof PersonType] = e.message;
-        });
-        setErrors(newErrors);
-        setIsNextEnabled(false);
+          newErrors[e.path[0] as keyof PersonType] = e.message
+        })
+        setErrors(newErrors)
+        setIsNextEnabled(false)
       }
     }
 
-    onChange(updatedData);
-  };
+    onChange(updatedData)
+  }
 
   const handleSave = async () => {
     try {
-      onNext();
+      onNext()
     } catch (error) {
-      alert("Erro ao salvar dados pessoais. Verifique os campos.");
-      console.error(error);
+      alert('Erro ao salvar dados pessoais. Verifique os campos.')
+      console.error(error)
     }
-  };
+  }
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Pessoa Física</h2>
 
       {[
-  { key: "name", name: "name", label: "Nome", placeholder: "Digite o nome" },
-  { key: "fullName", name: "fullName", label: "Nome Completo", placeholder: "Digite o sobrenome" },
-  { key: "taxId", name: "taxId", label: "CPF", placeholder: "Digite o CPF xxxxxx-xx" },
-  { key: "nationalId", name: "nationalId", label: "RG", placeholder: "Digite o RG" },
-  { key: "issuingBody", name: "issuingBody", label: "Órgão Expedidor", placeholder: "Órgão Expedidor" },
-].map((field) => (
-  <div key={field.key} className="w-full">
-    <input
-      type="text"
-      name={field.name}
-      value={data[field.name] || ""}
-      onChange={(e) => handleInputChange(field.name as keyof PersonType, e.target.value)}
-      placeholder={field.placeholder}
-      className={`w-full bg-gray-700 text-white border ${
-        errors[field.name] ? "border-red-500" : "border-gray-600"
-      } rounded-lg py-2 px-3`}
-      disabled={!isEditable}
-    />
-    {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
-  </div>
-))}
+        { key: 'name', name: 'name', label: 'Nome', placeholder: 'Digite o nome' },
+        {
+          key: 'fullName',
+          name: 'fullName',
+          label: 'Nome Completo',
+          placeholder: 'Digite o sobrenome',
+        },
+        {
+          key: 'taxId',
+          name: 'taxId',
+          label: 'CPF',
+          placeholder: 'Digite o CPF xxxxxx-xx',
+        },
+        {
+          key: 'nationalId',
+          name: 'nationalId',
+          label: 'RG',
+          placeholder: 'Digite o RG',
+        },
+        {
+          key: 'issuingBody',
+          name: 'issuingBody',
+          label: 'Órgão Expedidor',
+          placeholder: 'Órgão Expedidor',
+        },
+      ].map((field) => (
+        <div key={field.key} className="w-full">
+          <input
+            type="text"
+            name={field.name}
+            value={data[field.name] || ''}
+            onChange={(e) =>
+              handleInputChange(field.name as keyof PersonType, e.target.value)
+            }
+            placeholder={field.placeholder}
+            className={`w-full bg-gray-700 text-white border ${
+              errors[field.name] ? 'border-red-500' : 'border-gray-600'
+            } rounded-lg py-2 px-3`}
+            disabled={!isEditable}
+          />
+          {errors[field.name] && (
+            <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
+          )}
+        </div>
+      ))}
 
       {/* Data de nascimento */}
       <div className="w-full">
         <DatePicker
           selected={
             data.dateOfBirth
-              ? new Date(data.dateOfBirth.replace(/-/g, "/"))
+              ? new Date(data.dateOfBirth.replace(/-/g, '/')) // TODO: replace nao existe em Date apenas em arrays
               : null
           }
-          onChange={(date) => handleInputChange("dateOfBirth", date)}
+          onChange={(date) => handleInputChange('dateOfBirth', date)}
           dateFormat="dd/MM/yyyy"
           placeholderText="Data de Nascimento"
           className={`w-full bg-gray-700 text-white border ${
-            errors.dateOfBirth ? "border-red-500" : "border-gray-600"
+            errors.dateOfBirth ? 'border-red-500' : 'border-gray-600'
           } rounded-lg py-2 px-3`}
           disabled={!isEditable}
         />
-        {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
+        {errors.dateOfBirth && (
+          <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>
+        )}
       </div>
 
       {/* Gênero */}
       <div className="w-full">
         <DropdownCheckboxGender
-          value={data.gender || ""}
-          onChange={(value) => handleInputChange("gender", value)}
+          value={data.gender || ''}
+          onChange={(value) => handleInputChange('gender', value)}
           disabled={!isEditable}
         />
         {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
@@ -128,11 +152,13 @@ export function PessoaFisica({
       {/* Estado Civil */}
       <div className="w-full">
         <DropdownCheckboxMaritalStatus
-          value={data.maritalStatus || ""}
-          onChange={(value) => handleInputChange("maritalStatus", value)}
+          value={data.maritalStatus || ''}
+          onChange={(value) => handleInputChange('maritalStatus', value)}
           disabled={!isEditable}
         />
-        {errors.maritalStatus && <p className="text-red-500 text-sm mt-1">{errors.maritalStatus}</p>}
+        {errors.maritalStatus && (
+          <p className="text-red-500 text-sm mt-1">{errors.maritalStatus}</p>
+        )}
       </div>
 
       {/* Botões */}
@@ -151,5 +177,5 @@ export function PessoaFisica({
         </button>
       </div>
     </div>
-  );
+  )
 }

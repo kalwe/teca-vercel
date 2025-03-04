@@ -6,3 +6,5 @@ export type baseType = {
   deleted_at: Date
   version: number
 }
+
+// TODO: tem dois type pra banco remove um

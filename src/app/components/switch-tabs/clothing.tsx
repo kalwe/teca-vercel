@@ -1,56 +1,62 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import type { ClothingProps, ClothingType } from "@/app/types/clothing"
-import { ClothingService } from "@/app/services/clothingService"
-import { clothingSchema } from "@/app/schemas/clothingSchema"
-import { z } from "zod"
+import { clothingSchema } from '@/app/schemas/clothingSchema'
+import { BankService } from '@/app/services/bankService'
+import type { ClothingProps, ClothingType } from '@/app/types/clothing'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { z } from 'zod'
 
+// export type ClothingProps = {
+//   data: ClothingType;
+//   onChange: (updatedData: ClothingProps['data']) => void;
+//   mode: 'add' | 'edit' | 'view' | 'create';
+//   employeeId?: number;
+// };
 export function Clothing({
+  // TODO: ajusta a interface pq ta tudo dando erro de type
   data = {},
   onChange,
-  isEditable,
+  isEditable, // TODO: adiciona pq nao
 
-  onPrev,
-  employee,
+  onPrev, // TODO: adiciona pq nao
+  employee, // TODO: adiciona pq nao
 }: ClothingProps) {
-
   const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof ClothingType, string>>>({})
-  const router = useRouter();
+  const router = useRouter()
 
   const handleInputChange = (field: string, value: string) => {
-    const updatedData = { ...data, [field]: value };
+    const updatedData = { ...data, [field]: value }
 
     try {
-      clothingSchema.parse(updatedData); // Valida os dados
-      setErrors({}); // Limpa os erros ao preencher corretamente
-      setIsNextEnabled(true);
+      clothingSchema.parse(updatedData) // Valida os dados
+      setErrors({}) // Limpa os erros ao preencher corretamente
+      setIsNextEnabled(true)
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, string> = {}
         error.errors.forEach((e) => {
-          newErrors[e.path[0]] = e.message;
-        });
-        setErrors(newErrors);
-        setIsNextEnabled(false);
+          newErrors[e.path[0]] = e.message
+        })
+        setErrors(newErrors)
+        setIsNextEnabled(false)
       }
     }
 
-    onChange(updatedData);
-  };
+    onChange(updatedData)
+  }
 
   const handleSave = async () => {
     try {
-      console.log("Enviando dados para criação:", { ...data, employee });
-      const createdClothing = await BankService.createClothing({ ...data, employee });
-      console.log("Resposta da API:", createdClothing);
-      router.push("/contract-display/employee");
-      onNext();
+      console.log('Enviando dados para criação:', { ...data, employee })
+      const createdClothing = await BankService.createClothing({ ...data, employee }) // TODO: adiciona o BankService
+      console.log('Resposta da API:', createdClothing)
+      router.push('/contract-display/employee')
+      onNext() // TODO: nao existe
     } catch (error) {
-      alert("Erro ao cadastrar conta bancária. Verifique os campos.");
-      console.error(error);
+      alert('Erro ao cadastrar conta bancária. Verifique os campos.')
+      console.error(error)
     }
   }
 
@@ -59,29 +65,46 @@ export function Clothing({
       <h2 className="text-white text-xl font-bold">Vestuário</h2>
 
       {[
-        { name: "shirt_size", placeholder: "Digite o tamanho da camisa", label: "Tamanho da Camisa" },
-        { name: "pants_size", placeholder: "Digite o tamanho da calça", label: "Tamanho da Calça" },
-        { name: "shoe_size", placeholder: "Digite o tamanho do calçado", label: "Tamanho do Calçado" },
+        {
+          name: 'shirt_size',
+          placeholder: 'Digite o tamanho da camisa',
+          label: 'Tamanho da Camisa',
+        },
+        {
+          name: 'pants_size',
+          placeholder: 'Digite o tamanho da calça',
+          label: 'Tamanho da Calça',
+        },
+        {
+          name: 'shoe_size',
+          placeholder: 'Digite o tamanho do calçado',
+          label: 'Tamanho do Calçado',
+        },
       ].map((field) => (
         <div key={field.name} className="w-full">
           <input
             type="text"
             name={field.name}
-            value={data[field.name] || ""}
+            value={data[field.name] || ''}
             onChange={(e) => handleInputChange(e.target.name, e.target.value)}
             placeholder={field.placeholder}
             className={`w-full bg-gray-700 text-white border ${
-              errors[field.name] ? "border-red-500" : "border-gray-600"
+              errors[field.name] ? 'border-red-500' : 'border-gray-600'
             } rounded-lg py-2 px-3`}
             disabled={!isEditable}
           />
-          {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
+          {errors[field.name] && (
+            <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
+          )}
         </div>
       ))}
 
       {/* Botões */}
       <div className="flex justify-between mt-6">
-        <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+        <button
+          onClick={onPrev}
+          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+        >
           Voltar
         </button>
         <button
