@@ -1,0 +1,31 @@
+{
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.paths": true,
+  "editor.minimap.enabled": false,
+  "[typescript]": {
+    "prettier.trailingComma": "none",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "prettier.singleQuote": true,
+    "editor.codeActionsOnSave": {
+      "source.removeUnused.ts": "always",
+      "source.organizeImports": "always",
+      "source.addMissingImports.ts": "always",
+      "source.sortImports": "always",
+    },
+  },
+  "[typescriptreact]": {
+    "prettier.singleQuote": false,
+    "typescript.preferences.quoteStyle": "double",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.removeUnused.ts": "always",
+      "source.organizeImports": "always",
+      "source.addMissingImports.ts": "always",
+      "source.removeUnusedImports": "always",
+      "source.sortImports": "always",
+    },
+  },
+}

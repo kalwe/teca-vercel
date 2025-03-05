@@ -1,14 +1,13 @@
 'use client'
 
-import { useUserContext } from '@/app/context/UserContext' // Import the user context
 import { DropDownBurgerProps } from '@/app/types/dropdown'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 
 export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
   const router = useRouter()
-  const { loggedInUser } = useUserContext() // Access the logged-in user
 
+  const userName = localStorage.getItem('name')
   return (
     <motion.div
       initial={{ y: '-100%', opacity: 0 }}
@@ -18,9 +17,9 @@ export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
     >
       <div className="flex flex-col items-center justify-center h-full space-y-6 text-lg text-white font-semibold">
         {/* Display the username if logged in */}
-        {loggedInUser && (
+        {userName && (
           <div className="text-center text-xl font-bold">
-            <p>{loggedInUser.name}</p>
+            <p>{userName}</p>
           </div>
         )}
 

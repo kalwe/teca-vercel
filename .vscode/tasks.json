@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+	// 	{
+	// 		"type": "shell",
+	// 		"runOptions": {
+  //       "runOn": "folderOpen"
+  //     },
+  //     "command": [
+  //       {}
+  //     ],
+	// 		"problemMatcher": [],
+	// 		"label": "nvm use",
+	// 		"detail": "use nvm to set node versim, try use .nvmrc"
+	// 	}
+	// ]
+}

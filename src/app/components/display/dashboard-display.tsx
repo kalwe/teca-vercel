@@ -1,52 +1,38 @@
 'use client'
 
 import { Navigation } from '@/app/components/navigation/navigation'
-import { EmployeeService } from '@/app/services/employeeService'
-import { ReminderService } from '@/app/services/reminderService'
-import { VacancyService } from '@/app/services/vacancyService'
 import { Employees } from '@/app/types/employee'
 import { Reminders } from '@/app/types/reminderType'
 import { Vacancies } from '@/app/types/vacancyType'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-// import { useRef } from 'react'
-// import { Layout } from 'react-grid-layout'
+import { useEffect, useState } from 'react'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import { DashboardWidget } from '../dashboardWidget/page'
 
-export default function DashboardDisplay() {
-  // const ResponsiveGridLayout = WidthProvider(Responsive);
+export default function DashboardDisplay({
+  employeesData,
+  vacanciesData,
+  remindersData,
+}: {
+  employeesData: Employees
+  vacanciesData: Vacancies
+  remindersData: Reminders
+}) {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [fetchData, setFetchData] = useState(true)
+  const [loading, setLoading] = useState(true)
   const [employees, setEmployees] = useState<Employees>([])
   const [vacancies, setVacancies] = useState<Vacancies>([])
   const [reminders, setReminders] = useState<Reminders>([])
-  // const [resumes, _setResumes] = useState<Resumes>([])
 
-  const fetchingData = async () => {
-    try {
-      const employeesData: Employees = await EmployeeService.getAllEmployees()
-      const vacanciesData: Vacancies = await VacancyService.getAllVacancies()
-      const remindersData: Reminders = await ReminderService.getAllReminders()
-      //const resumesData: Resumes = await ResumeService.getAllResumes()
-
+  useEffect(() => {
+    if (loading) {
       setEmployees(employeesData)
       setVacancies(vacanciesData)
       setReminders(remindersData)
-      //setResumes(resumesData)
-    } catch (err) {
-      console.error('Erro ao carregar os dados do dashboard:', err)
-    } finally {
-      setLoading(false)
-      setFetchData(false)
     }
-  }
-  if (fetchData) {
-    fetchingData()
-  }
-
+    setLoading(false)
+  }, [loading, employeesData, vacanciesData, remindersData])
   const maxItemsToShow = 5
 
   return (
@@ -112,7 +98,3 @@ export default function DashboardDisplay() {
     </div>
   )
 }
-
-/**
- * Componente do Widget do Dashboard
- */

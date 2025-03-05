@@ -1,13 +1,11 @@
 'use client'
 
-import { useUserContext } from '@/app/context/UserContext'
 import { UserInput, UserResponse, userResponseSchema } from '@/app/schemas/userSchema'
 import { UserService } from '@/app/services/userService'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 function UserList() {
-  const { updateUser } = useUserContext()
   const router = useRouter()
   const [userList, setUserList] = useState<UserResponse[]>([])
   const [error, setError] = useState<string | null>(null)

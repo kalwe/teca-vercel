@@ -1,32 +1,23 @@
-"use client"
+'use client'
 
-
-
-import VisualizeCV from '@/app/components/display/visualize-resumes';
+import VisualizeCV from '@/app/components/display/visualize-resumes'
 import '../style.css'
-import { useRouter } from "next/navigation";
 
-import { Navigation } from "@/app/components/navigation/navigation";
-import ComebackButton from '@/app/components/button/comeback';
-
+import ComebackButton from '@/app/components/button/comeback'
+import { Navigation } from '@/app/components/navigation/navigation'
 
 export default function Contract() {
+  // const router = useRouter()
 
-/* Change page */
-
-const router = useRouter()
-
-const handleClick = () => {
-  router.push('/dashboard-display/')
-}
-
+  // const handleClick = () => {
+  //   router.push('/dashboard-display/')
+  // }
 
   return (
     <div>
-     <Navigation/>
-      <VisualizeCV/>
-        {/* Botão "Voltar" */}
-<ComebackButton/>
+      <Navigation />
+      <VisualizeCV />
+      <ComebackButton />
     </div>
-  );
+  )
 }
