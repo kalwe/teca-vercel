@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
   const router = useRouter()
 
-  const userName = localStorage.getItem('name')
+  const userName = 'John'
   return (
     <motion.div
       initial={{ y: '-100%', opacity: 0 }}

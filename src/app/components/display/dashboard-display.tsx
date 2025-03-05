@@ -8,12 +8,12 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
-import { DashboardWidget } from '../dashboardWidget/page'
+import { DashboardWidget } from '../dashboardWidget/dashboard-widget'
 
 export default function DashboardDisplay({
   employeesData,
   vacanciesData,
-  remindersData,
+  remindersData
 }: {
   employeesData: Employees
   vacanciesData: Vacancies

@@ -5,31 +5,12 @@ import { VacancyService } from '@/app/services/vacancyService'
 import { Employees } from '@/app/types/employee'
 import { Reminders } from '@/app/types/reminderType'
 import { Vacancies } from '@/app/types/vacancyType'
-import { GetStaticProps, InferGetStaticPropsType } from 'next'
 
-export const getStaticProps = (async () => {
+export default async function Page() {
   const employees: Employees = await EmployeeService.getAllEmployees()
   const vacancies: Vacancies = await VacancyService.getAllVacancies()
   const reminders: Reminders = await ReminderService.getAllReminders()
 
-  return {
-    props: {
-      employees: employees,
-      vacancies: vacancies,
-      reminders: reminders
-    }
-  }
-}) satisfies GetStaticProps<{
-  employees: Employees
-  vacancies: Vacancies
-  reminders: Reminders
-}>
-
-export default function Page({
-  employees,
-  vacancies,
-  reminders
-}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <div
       className="p-0 overflow-auto h-screen"

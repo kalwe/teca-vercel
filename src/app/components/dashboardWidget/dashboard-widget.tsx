@@ -1,17 +1,15 @@
 'use client'
 
-import { useRouter } from "next/navigation"
+import { useRouter } from 'next/navigation'
 
 interface DashboardWidgetProps {
   title: string
-  data: any[] // cria um type juntando os types ex: type Data = Employees | Vacancies | Reminders
+  data: any[]
   maxItems: number
   navigateTo: string
   loading: boolean
   bgGradient: string
 }
-
-
 
 export function DashboardWidget({
   title,
@@ -19,7 +17,7 @@ export function DashboardWidget({
   maxItems,
   navigateTo,
   loading,
-  bgGradient,
+  bgGradient
 }: DashboardWidgetProps) {
   const router = useRouter()
 
