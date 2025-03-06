@@ -1,6 +1,6 @@
 "use client";
 
-import { z } from "zod";
+import { z } from "zod"
 
 // Expressoes regulares para validação
 
@@ -29,6 +29,8 @@ export const resumeSchema = z.object({
     .refine((date) => !isNaN(Date.parse(date)), {
       message: "Data inválida. Use um formato de data válido (dd-mm-yyyy ou ISO8601).",
     }),
+  positionId: z
+    .number(),
 });
 
 export interface ResumeFormProps {

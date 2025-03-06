@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { UserInput, userInputSchema } from "@/app/schemas/userSchema";
-import { UserService } from "@/app/services/userService";
-import { ZodError } from "zod"
+import { UserInput, userInputSchema } from "@/app/schemas/userSchema"
 import { AuthService } from "@/app/services/authService"
+import { UserService } from "@/app/services/userService"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { ZodError } from "zod"
 
-export default function UserForm({ mode = "create", userData, onSave }) {
+export default function UserForm({
+  mode = "create",
+  userData,
+  onSave,
+}: {
+  mode?: "create" | "edit";
+  userData?: UserInput;
+  onSave?: () => void;
+}) {
+
   const router = useRouter();
   const { id } = useParams();
   const userId = id ? Number(id) : null;
