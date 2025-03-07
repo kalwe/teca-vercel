@@ -32,7 +32,7 @@ export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
           </li>
           <li
             className="hover:text-gray-300 transition duration-300 cursor-pointer"
-            onClick={() => router.push('/vagas-display/')} // Absolute path
+            onClick={() => router.push('/vacancy-display/')} // Absolute path
           >
             Vagas
           </li>

@@ -8,69 +8,69 @@ export const VacancyService = {
   async createVacancy(vacancyData: Vacancy) {
     try {
       const response = await api.post(endpoint, vacancyData)
-      if (response.status == 201) {
+      if (response.status === 201) {
         return response.data
       }
     } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error('Erro ao criar vaga: ', error.response?.data)
-      }
-      console.error('Erro ao criar vaga: ', error)
+      this.handleError(error, 'Erro ao criar vaga')
     }
+    return null
   },
 
   async getVacancyById(id: number) {
     try {
-      const response = await api.get(`/vacancy/${id}`)
-      if (response.status == 200) {
+      const response = await api.get(`${endpoint}/${id}`)
+      if (response.status === 200) {
         return response.data
       }
     } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error('Erro ao criar vaga: ', error.response?.data)
-      }
-      console.error('Erro ao criar vaga: ', error)
+      this.handleError(error, 'Erro ao buscar vaga por ID')
     }
+    return null
   },
 
   async getAllVacancies() {
     try {
       const response = await api.get(endpoint)
-      if (response.status == 200) {
+      if (response.status === 200) {
         return response.data
       }
     } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error(error.response?.data)
-      }
-      console.error('Erro ao criar vaga: ', error)
+      this.handleError(error, 'Erro ao buscar todas as vagas')
     }
+    return null
   },
 
   async updateVacancy(id: number, vacancyData: Vacancy) {
     try {
+      console.log(id, vacancyData)
       const response = await api.put(`${endpoint}/${id}`, vacancyData)
       if (response.status == 200) {
         return response.data
       }
     } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error('Erro ao atualizar vaga:', error.response?.data)
-      }
+      this.handleError(error, 'Erro ao atualizar vaga')
     }
+    return null
   },
 
   async deleteVacancy(id: number) {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
-      if (response.status == 204) {
-        return response.data
+      if (response.status === 204) {
+        return true
       }
     } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error(error.response?.data)
-      }
-      console.error(error)
+      this.handleError(error, 'Erro ao excluir vaga')
     }
+    return false
   },
+
+  handleError(error: unknown, message: string) {
+    if (error instanceof AxiosError) {
+      console.error(`${message}:`, error.response?.data)
+    } else {
+      console.error(`${message}:`, error)
+    }
+  }
 }

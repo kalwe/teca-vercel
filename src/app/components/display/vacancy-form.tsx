@@ -10,35 +10,26 @@ import "react-datepicker/dist/react-datepicker.css"
 import { z } from "zod"
 import DropdownCheckboxPosition from "../DropDown/dropdown-position"
 
-const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
+export default function VacancyForm() {
   const router = useRouter();
   const { id } = useParams();
   const isEditMode = !!id;
   const vacancyId = isEditMode ? Number(id) : null;
-
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [vacancy, setVacancy] = useState<Vacancy>(
-    vacancyData || {
-      positionId: 0,
-      quantity: 0,
-      description: "",
-      benefits: "",
-      requirements: "",
-      salary: 0,
-    }
-  );
+  const [formData, setFormData] = useState<Vacancy>();
 
   /**
    * Carrega os dados da vaga no modo de edição
    */
+  /*TODO: TIRAR O GETVACANCYBYID E COLOCAR NO PAGE  */
   useEffect(() => {
     if (isEditMode && vacancyId) {
       const fetchVacancy = async () => {
         try {
           setLoading(true);
           const data = await VacancyService.getVacancyById(vacancyId);
-          setVacancy(data);
+          setFormData(data);
         } catch (error) {
           console.error("Erro ao buscar vaga:", error);
           alert("Erro ao carregar dados da vaga. Tente novamente.");
@@ -55,11 +46,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
    * Atualiza os campos do formulário e valida os dados
    */
   const handleChange = <K extends keyof Vacancy>(field: K, value: Vacancy[K]) => {
-    const updatedData = { ...vacancy, [field]: value };
-
-    if (field === "salary" && typeof value === "string") {
-      updatedData.salary = Number(value.replace(/\D/g, "")) / 100;
-    }
+    const updatedData = { ...formData, [field]: value };
 
     try {
       vacancySchema.parse(updatedData);
@@ -76,7 +63,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
       }
     }
 
-    setVacancy(updatedData);
+    setFormData(updatedData);
   };
 
   /**
@@ -84,19 +71,22 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
    */
   const handleSave = async () => {
     if (loading) return;
-
+    console.log(id, isEditMode, loading, vacancyId)
     try {
       setLoading(true);
-
       if (isEditMode && vacancyId) {
-        await VacancyService.updateVacancy(vacancyId, vacancy);
+       // const validatedData = vacancySchema.parse(formData);
+        const {_id, ...vacancyUpdate} = formData;
+        console.log(vacancyUpdate)
+        await VacancyService.updateVacancy(vacancyId, {...vacancyUpdate});
         alert("Vaga atualizada com sucesso!");
       } else {
-        await VacancyService.createVacancy(vacancy);
+       // const validatedData = vacancySchema.parse(formData);
+        await VacancyService.createVacancy({...formData});
         alert("Vaga criada com sucesso!");
       }
 
-      router.push("/vagas-display");
+      router.push("/vacancy-display");
     } catch (error) {
       console.error("Erro ao salvar vaga:", error);
       alert("Erro ao salvar vaga. Tente novamente.");
@@ -104,6 +94,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600">
@@ -116,7 +107,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
         <div>
             {/* Dropdown de Posição */}
             <DropdownCheckboxPosition
-            id={vacancy.positionId ?? null}
+            id={formData?.positionId ?? null}
             onChange={(value) => handleChange('positionId', value)}
           />
           {errors.position && <p className="text-red-500 text-sm">{errors.position}</p>}
@@ -127,7 +118,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
           <input
             type="number"
             placeholder="Quantidade"
-            value={vacancy.quantity?.toString()}
+            value={formData?.quantity?.toString()}
             onChange={(e) => handleChange("quantity", Number(e.target.value))}
             className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
           />
@@ -139,7 +130,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
         <input
   type="text"
   placeholder="Descrição"
-  value={vacancy.description ?? ""}
+  value={formData?.description ?? ""}
   onChange={(e) => handleChange("description", e.target.value)}
   className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
 />
@@ -152,7 +143,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
           <input
             type="text"
             placeholder="Benefícios"
-            value={vacancy.benefits ?? ""}
+            value={formData?.benefits ?? ""}
             onChange={(e) => handleChange("benefits", e.target.value)}
             className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
           />
@@ -164,7 +155,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
           <input
             type="text"
             placeholder="Requisitos"
-            value={vacancy.requirements ?? ""}
+            value={formData?.requirements ?? ""}
             onChange={(e) => handleChange("requirements", e.target.value)}
             className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
           />
@@ -174,7 +165,7 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
         {/* Salário */}
         <div>
         <MoneyInput
-  value={vacancy.salary ? String(vacancy.salary) : "0"}
+  value={formData?.salary ? String(formData?.salary) : "0"}
   onChange={(value) => {
     const numericValue = Number(value.replace(/\D/g, "")) / 100;
     handleChange("salary", numericValue);
@@ -196,5 +187,3 @@ const VacancyForm: React.FC<{ vacancyData?: Vacancy }> = ({ vacancyData }) => {
     </div>
   );
 };
-
-export default VacancyForm;
