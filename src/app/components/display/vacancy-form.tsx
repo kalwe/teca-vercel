@@ -5,7 +5,7 @@ import { vacancySchema } from "@/app/schemas/vacancySchema"
 import { VacancyService } from "@/app/services/vacancyService"
 import { Vacancy } from "@/app/types/vacancyType"
 import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import "react-datepicker/dist/react-datepicker.css"
 import { z } from "zod"
 import DropdownCheckboxPosition from "../DropDown/dropdown-position"
@@ -23,24 +23,6 @@ export default function VacancyForm() {
    * Carrega os dados da vaga no modo de edição
    */
   /*TODO: TIRAR O GETVACANCYBYID E COLOCAR NO PAGE  */
-  useEffect(() => {
-    if (isEditMode && vacancyId) {
-      const fetchVacancy = async () => {
-        try {
-          setLoading(true);
-          const data = await VacancyService.getVacancyById(vacancyId);
-          setFormData(data);
-        } catch (error) {
-          console.error("Erro ao buscar vaga:", error);
-          alert("Erro ao carregar dados da vaga. Tente novamente.");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchVacancy();
-    }
-  }, [isEditMode, vacancyId]);
 
   /**
    * Atualiza os campos do formulário e valida os dados
@@ -85,7 +67,6 @@ export default function VacancyForm() {
         await VacancyService.createVacancy({...formData});
         alert("Vaga criada com sucesso!");
       }
-
       router.push("/vacancy-display");
     } catch (error) {
       console.error("Erro ao salvar vaga:", error);
