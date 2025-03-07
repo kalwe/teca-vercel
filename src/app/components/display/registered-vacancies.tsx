@@ -5,37 +5,28 @@ import { Vacancies } from '@/app/types/vacancy'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-const VacancyList: React.FC = () => {
+export default function VacancyList({ vacanciesData }: { vacanciesData: Vacancies }) {
   const [vacancies, setVacancies] = useState<Vacancies>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  const fetchVacancies = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const fetchedVacancies: Vacancies = await VacancyService.getAllVacancies()
-
-      setVacancies(fetchedVacancies)
-    } catch (error) {
-      console.error('Erro ao buscar vagas:', error)
-      setError('Erro ao carregar vagas. Tente novamente.')
-    } finally {
+  const fetchVacancies = () => {
+    if (loading) {
+      setVacancies(vacanciesData)
       setLoading(false)
     }
   }
-  fetchVacancies()
+  fetchVacancies
 
   const handleDelete = async (vacancyId: number) => {
     if (!confirm('Tem certeza que deseja excluir esta vaga?')) return
-    try {
-      await VacancyService.deleteVacancy(vacancyId)
+
+    const success = await VacancyService.deleteVacancy(vacancyId)
+    if (success) {
       setVacancies(vacancies.filter((v) => v.id != vacancyId))
-    } catch (error) {
-      console.error('Erro ao excluir vaga:', error)
-      alert('Erro ao excluir vaga. Tente novamente.')
     }
+    setError('Erro ao excluir vaga. Tente novamente.')
   }
 
   return (
@@ -44,14 +35,14 @@ const VacancyList: React.FC = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-extrabold text-white">Vagas</h1>
           <button
-            onClick={() => router.push('/vagas-display/nova-vaga')}
+            onClick={() => router.push('/vacancy-display/vaga')}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-transform transform hover:scale-105"
           >
-            Adicionar Vagas
+            Adicionar Vaga
           </button>
         </div>
 
-        {/* Lista de Vacancy */}
+        {/* Lista de Vagas */}
         <div className="p-4 bg-gray-700 rounded-lg shadow-inner w-full">
           <div className="flex justify-between items-center border-b border-gray-600 pb-4 mb-2">
             <h1 className="text-gray-300 font-semibold w-2/5">Cargo</h1>
@@ -62,47 +53,45 @@ const VacancyList: React.FC = () => {
           {loading && <p className="text-white text-center">Carregando vagas...</p>}
           {error && <p className="text-red-500 text-center">{error}</p>}
 
-          {!loading && !error && (
+          {!loading && !error && vacancies.length === 0 && (
+            <p className="text-gray-300 text-center">Nenhuma vaga cadastrada</p>
+          )}
+
+          {!loading && !error && vacancies.length > 0 && (
             <div className="overflow-y-auto rounded-lg" style={{ maxHeight: '300px' }}>
-              {vacancies.length > 0 ? (
-                vacancies.map((vacancy) => (
-                  <div
-                    key={vacancy.id}
-                    className="flex justify-between items-center p-2 bg-gray-800 rounded-md mb-2 hover:bg-gray-700"
-                  >
-                    {/* Cargo */}
-                    <span className="text-gray-300 font-medium w-2/5">
-                      {vacancy.position?.name}
-                    </span>
+              {vacancies.map((vacancy) => (
+                <div
+                  key={vacancy.id}
+                  className="flex justify-between items-center p-2 bg-gray-800 rounded-md mb-2 hover:bg-gray-700"
+                >
+                  {/* Cargo */}
+                  <span className="text-gray-300 font-medium w-2/5">
+                    {vacancy.position?.name || 'Sem posição'}
+                  </span>
 
-                    {/* Quantidade */}
-                    <span className="text-gray-300 font-medium w-1/5 text-center">
-                      {vacancy.quantity}
-                    </span>
+                  {/* Quantidade */}
+                  <span className="text-gray-300 font-medium w-1/5 text-center">
+                    {vacancy.quantity}
+                  </span>
 
-                    {/* Ações */}
-                    <div className="flex justify-end w-2/5 gap-2">
-                      <button
-                        onClick={() =>
-                          router.push(`/vagas-display/nova-vaga/${vacancy.id}`)
-                        }
-                        className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
-                      >
-                        Editar
-                      </button>
+                  {/* Ações */}
+                  <div className="flex justify-end w-2/5 gap-2">
+                    <button
+                      onClick={() => router.push(`/vacancy-display/vaga/${vacancy.id}`)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
+                    >
+                      Editar
+                    </button>
 
-                      <button
-                        onClick={() => handleDelete(Number(vacancy.id))}
-                        className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all"
-                      >
-                        Excluir
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => handleDelete(Number(vacancy?.id))}
+                      className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all"
+                    >
+                      Excluir
+                    </button>
                   </div>
-                ))
-              ) : (
-                <p className="text-gray-300 text-center">Nenhuma vaga carregada</p>
-              )}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -110,5 +99,3 @@ const VacancyList: React.FC = () => {
     </div>
   )
 }
-
-export default VacancyList

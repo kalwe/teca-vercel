@@ -23,14 +23,13 @@
   "[typescriptreact]": {
     "editor.rulers": [ { "column": 119, "color": "#3d2020" } ],
     "prettier.endOfLine": "lf",
-    "prettier.singleQuote": false,
+    "prettier.singleQuote": true,
     "typescript.preferences.quoteStyle": "double",
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
-      "source.removeUnused.ts": "always",
       "source.organizeImports": "always",
-      "source.addMissingImports.ts": "always",
+      "source.addMissingImports": "always",
       "source.removeUnusedImports": "always",
       "source.sortImports": "always",
     },

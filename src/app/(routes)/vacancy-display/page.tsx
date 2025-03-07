@@ -1,10 +1,12 @@
-'use client'
-
 import ComebackButton from '@/app/components/button/comeback'
 import VacancyList from '@/app/components/display/registered-vacancies'
 import { Navigation } from '@/app/components/navigation/navigation'
+import { VacancyService } from '@/app/services/vacancyService'
+import { Vacancies } from '@/app/types/vacancy'
 
-function Contract() {
+export default async function Page() {
+  const vacancies: Vacancies = await VacancyService.getAllVacancies()
+
   return (
     <div
       style={{
@@ -12,10 +14,8 @@ function Contract() {
       }}
     >
       <Navigation />
-      <VacancyList />
+      <VacancyList vacanciesData={vacancies} />
       <ComebackButton />
     </div>
   )
 }
-
-export default Contract

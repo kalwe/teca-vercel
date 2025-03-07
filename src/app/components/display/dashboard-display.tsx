@@ -47,7 +47,10 @@ export default function DashboardDisplay({
           <DashboardWidget
             title="Funcionários"
             data={employees.map((e) => {
-              return { name: e.name, misc: e.position?.name }
+              return {
+                name: e.name || '',
+                misc: e.position?.name || ''
+              }
             })}
             maxItems={maxItemsToShow}
             navigateTo="/contract-display/employee/"
@@ -57,17 +60,23 @@ export default function DashboardDisplay({
           <DashboardWidget
             title="Vagas"
             data={vacancies.map((v) => {
-              return { name: v.position?.name || '', misc: String(v.quantity) || '' }
+              return {
+                name: v.position?.name || '',
+                misc: String(v.quantity)
+              }
             })}
             maxItems={maxItemsToShow}
-            navigateTo="/vagas-display/"
+            navigateTo="/vacancy-display/"
             loading={loading}
             bgGradient="from-[#2A4231] to-[#1C2B21]"
           />
           <DashboardWidget
             title="Lembretes"
             data={reminders.map((r) => {
-              return { name: r.reason || '', misc: r.date || '' }
+              return {
+                name: r.reason,
+                misc: r.date
+              }
             })}
             maxItems={maxItemsToShow}
             navigateTo="/reminder-display/"

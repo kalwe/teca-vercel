@@ -1,21 +1,22 @@
 'use client'
+
 import { useEffect, useRef, useState } from 'react'
 
 const DropdownCheckboxPosition = ({
   id,
-  onChange,
+  onChange
 }: {
   id: number | null
   onChange: (id: number, name: string) => void
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [positions, setPositions] = useState<{ id: number; name: string }[]>([])
+  const [positions, setPositions] = useState<{ id: number; name: string }[]>([]) // AQUI USA O Position LA em types/position.d.ts
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const response = await fetch('/data/positions.json')
+        const response = await fetch('/data/positions.json') // PEGA DA API
         if (!response.ok) {
           throw new Error('Erro ao carregar cargos.')
         }
@@ -34,6 +35,7 @@ const DropdownCheckboxPosition = ({
     setIsDropdownOpen(false)
   }
 
+  // TIRA useEffect()
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {

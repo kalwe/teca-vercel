@@ -1,57 +1,72 @@
 "use client";
 
-import "react-datepicker/dist/react-datepicker.css";
-import { useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { resumeSchema } from "@/app/schemas/cvSchema";
-import { ResumeService } from "@/app/services/resumeService";
-import { z } from "zod";
-import DatePicker from "react-datepicker";
-import DropdownCheckboxPosition from "../DropDown/dropdown-position";
-import { ResumeFormProps } from "@/app/schemas/cvSchema";
+import { ResumeFormProps, resumeSchema } from "@/app/schemas/cvSchema"
+import { ResumeService } from "@/app/services/resumeService"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+import { z } from "zod"
+import DropdownCheckboxPosition from "../DropDown/dropdown-position"
 
 function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
   const router = useRouter();
-
-  // Estado do formulário com fallback para valores vazios
-  const [formData, setFormData] = useState<z.infer<typeof resumeSchema>>(
-    curriculoData || ({} as z.infer<typeof resumeSchema>)
-  );
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [registrationDate, setRegistrationDate] = useState<Date | null>(new Date());
 
-  // Atualiza os campos do formulário e faz a validação instantânea
-  const handleChange = useCallback(
-    <K extends keyof z.infer<typeof resumeSchema>>(key: K, value: z.infer<typeof resumeSchema>[K]) => {
-      const updatedData = { ...formData, [key]: value };
-
-      try {
-        resumeSchema.parse(updatedData);
-        setErrors({});
-      } catch (err) {
-        if (err instanceof z.ZodError) {
-          const fieldErrors: Record<string, string> = {};
-          err.errors.forEach((error) => {
-            if (error.path.length > 0) {
-              fieldErrors[error.path[0] as string] = error.message;
-            }
-          });
-          setErrors(fieldErrors);
-        }
-      }
-
-      setFormData(updatedData);
-    },
-    [formData]
+  const [formData, setFormData] = useState<z.infer<typeof resumeSchema>>(
+    curriculoData || {
+      fullName: "",
+      positionId: 0,
+      pdf_url: "",
+      registration_date: "",
+      id: 0,
+    }
   );
 
-  // Upload de arquivo
+  /**
+   * Inicializa os dados do formulário ao carregar
+   */
+  useEffect(() => {
+    if (curriculoData) {
+      setFormData(curriculoData);
+    }
+  }, [curriculoData]);
+
+  /**
+   * Atualiza os campos do formulário e valida em tempo real
+   */
+  const handleChange = <K extends keyof z.infer<typeof resumeSchema>>(
+    key: K,
+    value: z.infer<typeof resumeSchema>[K]
+  ) => {
+    const updatedData = { ...formData, [key]: value };
+
+    try {
+      resumeSchema.parse(updatedData);
+      setErrors({});
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        err.errors.forEach((error) => {
+          if (error.path.length > 0) {
+            fieldErrors[error.path[0] as string] = error.message;
+          }
+        });
+        setErrors(fieldErrors);
+      }
+    }
+
+    setFormData(updatedData);
+  };
+
+  /**
+   * Manipula upload de arquivo
+   */
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
-
     if (uploadedFile) {
       setFile(uploadedFile);
     } else {
@@ -59,44 +74,38 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
     }
   };
 
-  // Salvar currículo utilizando createResume
+  /**
+   * Salvar currículo na API
+   */
   const handleSave = async () => {
+    if (!file) {
+      alert("Por favor, selecione um arquivo.");
+      return;
+    }
+
     try {
       setLoading(true);
-      if (!file) {
-        alert("Por favor, selecione um arquivo.");
-        return;
-      }
 
-      // Cria um FormData com todos os dados do currículo
       const formDataToSend = new FormData();
       formDataToSend.append("file", file);
       formDataToSend.append("registrationDate", registrationDate ? registrationDate.toISOString() : "");
       formDataToSend.append("fullName", formData.fullName || "");
-      formDataToSend.append("position", formData.position || "");
-      // Se houver outros campos no formData, adicione-os aqui conforme necessário.
+      formDataToSend.append("positionId", formData.positionId.toString());
 
-      // Chama o método createResume do serviço
       await ResumeService.createResume(formDataToSend);
       alert("✅ Currículo enviado com sucesso!");
       router.push("/curriculo-display/visualize-cv");
     } catch (error) {
       console.error("Erro ao salvar currículo:", error);
-      alert("Erro ao salvar currículo. Verifique o console para mais detalhes.");
+      alert("Erro ao salvar currículo. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (file) {
-      console.log("Arquivo selecionado:", file.name);
-    }
-  }, [file]);
-
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="w-full max-w-4xl p-6 bg-gray-800 shadow-md rounded-lg border">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-700">
+      <div className="w-full max-w-4xl p-6 bg-gray-800 shadow-md rounded-lg border border-gray-700">
         <h1 className="text-2xl font-bold text-white mb-6 text-center">
           {mode === "edit" ? "Editar Currículo" : "Novo Currículo"}
         </h1>
@@ -105,12 +114,10 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
           <div>
             <label
               htmlFor="file-upload"
-              className="flex items-center gap-4 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100"
+              className="flex items-center gap-4 px-4 py-3 border border-gray-500 rounded-lg bg-gray-700 text-white cursor-pointer hover:bg-gray-600"
             >
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
+              <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                📎
               </div>
               <span>Anexar Arquivo</span>
               <input id="file-upload" type="file" onChange={handleFileUpload} className="hidden" />
@@ -125,12 +132,20 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
                 value={formData.fullName || ""}
                 onChange={(e) => handleChange("fullName", e.target.value)}
                 placeholder="Nome Completo"
-                className={`w-full px-4 py-2 border ${errors.fullName ? "border-red-500" : "border-gray-300"} rounded-lg bg-gray-50`}
+                className={`w-full px-4 py-2 border ${
+                  errors.fullName ? "border-red-500" : "border-gray-500"
+                } rounded-lg bg-gray-700 text-white placeholder-gray-400`}
               />
               {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
             </div>
-
-            <DropdownCheckboxPosition value={formData.position || ""} onChange={(value) => handleChange("position", value)} />
+            <div>
+            {/* Dropdown de Posição */}
+            <DropdownCheckboxPosition
+            id={formData.positionId ?? null}
+            onChange={(value) => handleChange('positionId', value)}
+          />
+          {errors.position && <p className="text-red-500 text-sm">{errors.position}</p>}
+        </div>
 
             {/* Selecionador de Data */}
             <div>
@@ -138,18 +153,18 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
               <DatePicker
                 selected={registrationDate}
                 onChange={(date) => setRegistrationDate(date)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                className="w-full px-4 py-2 border border-gray-500 rounded-lg bg-gray-700 text-white"
                 dateFormat="dd/MM/yyyy"
               />
             </div>
           </div>
 
           {/* Botões de Ação */}
-          <div className="flex justify-end space-x-4">
+          <div className="flex justify-between">
             <button
               type="button"
               onClick={() => router.push("/curriculo-display/visualize-cv")}
-              className="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600"
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500"
             >
               Cancelar
             </button>

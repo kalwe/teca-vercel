@@ -58,6 +58,7 @@ export default function EmployeesDisplay() {
             <h1 className="text-3xl font-extrabold text-white">Funcionários</h1>
             <button
               onClick={() => router.push('/contract-display/')}
+              onClick={() => router.push('/contract-display/')}
               className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all transform hover:scale-105"
             >
               Adicionar Funcionário
@@ -105,6 +106,7 @@ export default function EmployeesDisplay() {
                       key={employee.id}
                       className={`hover:bg-gray-700 transition duration-200 cursor-pointer ${
                         !employee.active ? 'bg-gray-700 text-gray-400' : ''
+                        !employee.active ? 'bg-gray-700 text-gray-400' : ''
                       }`}
                       onClick={() => router.push(`/contract-display/${employee.id}`)}
                       ref={
@@ -128,8 +130,12 @@ export default function EmployeesDisplay() {
                         {employee.active ? 'Ativo' : 'Inativo'}
                       </td>
                       <td className="px-4 py-2 border border-gray-700">
-                        <button
+                      <button
                           onClick={(e) => {
+                            e.stopPropagation();
+                            if (employee.id !== undefined) {
+                              toggleEmployeeStatus(employee.id, employee.active ?? false);
+                            }
                             e.stopPropagation()
                             employee.id &&
                               toggleEmployeeStatus(employee.id, !!employee.active)
@@ -141,7 +147,9 @@ export default function EmployeesDisplay() {
                           } text-white`}
                         >
                           {employee.active ? 'Desativar' : 'Ativar'}
+                          {employee.active ? 'Desativar' : 'Ativar'}
                         </button>
+
                       </td>
                     </tr>
                   ))
