@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios'
-import { Vacancy } from '../types/vacancyType'
+import { Vacancy } from '../types/vacancy'
 import api from './api'
 
 const endpoint = '/vacancy'
@@ -72,5 +72,5 @@ export const VacancyService = {
       }
       console.error(error)
     }
-  },
+  }
 }

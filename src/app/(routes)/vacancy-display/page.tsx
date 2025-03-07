@@ -8,11 +8,10 @@ function Contract() {
   return (
     <div
       style={{
-        background: 'linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))',
+        background: 'linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))'
       }}
     >
       <Navigation />
-
       <VacancyList />
       <ComebackButton />
     </div>

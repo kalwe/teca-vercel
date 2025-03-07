@@ -1,52 +1,38 @@
 import { Address } from './address'
-import { BankAccount } from './BankAccount'
+import { BankAccount } from './bank'
 import { Clothing } from './clothing'
 import { Contact } from './contact'
 import { Position } from './position'
 
-export type EmployeeType = {
+export type Employee = {
   id?: number
   active?: boolean
   name: string
   fullName?: string
-  dateOfBirth: string
+  dateOfBirth?: string
   taxId: string
   nationalId: string
-  issuingBody: string
+  issuingBody?: string
   registration: string
   supervisor?: boolean
   manager?: boolean
-  salary: number
-  contractDate: Date
+  salary?: number
+  contractDate?: Date
   removalDate?: Date
-  positionId: number
+  positionId?: number
   position?: Position
   address?: Address
   contact?: Contact
   bank?: BankAccount
   clothing?: Clothing
-  gender: string
-  maritalStatus: string
-
+  gender?: string
+  maritalStatus?: string
 }
 
-export type Employee = EmployeeType
-export type Employees = EmployeeType[]
-
-// TODO: remover nao usa nunca
-export interface EmployeeProps {
-  data: EmployeeType
-  onChange: (updatedData: EmployeeType) => void
-  isEditable: boolean
-  onNext: () => void
-  onPrev: () => void
-}
+export type Employees = Employee[]
 
 export interface ContractFormProps {
-  mode: 'edit' | 'create'
-  employeeData?: EmployeeType | null
-  onSave: (updatedData: EmployeeType) => Promise<void>
-  onCancel: () => void
+  employeeData?: Employee
   isEditable: boolean
 }
 

@@ -1,49 +1,40 @@
 'use client'
 
-import { ContractFormProps } from '@/app/types/employee'
+import { ContractFormProps, Employee } from '@/app/types/employee'
 import { useState } from 'react'
 import { Address } from '../switch-tabs/address'
 import { Bank } from '../switch-tabs/bank'
 import { Clothing } from '../switch-tabs/clothing'
 import { Contact } from '../switch-tabs/Contact'
-import { Funcionario } from '../switch-tabs/employee'
+import { EmployeeForm } from '../switch-tabs/employee'
 import { PessoaFisica } from '../switch-tabs/person'
 
 export default function ContractForm({
-  employeeData = {}, // TODO: define como EmployeeType
-  isEditable = true,
-  mode = 'create', // TODO: nunca usa
+  employeeData = undefined,
+  isEditable = true
 }: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null) // TODO: voce nunca usa setError, nunca vai aparecer um erro
-  const [isNextEnabled, setIsNextEnabled] = useState(false) // TODO: nunca ussa
+  const [error, setError] = useState<string | null>(null)
 
-  const [formData, setFormData] = useState({
-    pessoaFisica: employeeData ?? {},
-    funcionario: employeeData ?? {},
-    address: employeeData?.address ?? {},
-    contact: employeeData?.contact ?? {},
-    bankAccount: employeeData?.bank_account ?? {}, // TODO: verifica o nome da prop bank_account
-    clothing: employeeData?.clothing ?? {},
-  })
+  const [employee, setEmployee] = useState<Employee>(employeeData)
 
   const tabs = [
     { name: 'PESSOA FÍSICA', component: PessoaFisica, key: 'employee' },
-    { name: 'FUNCIONÁRIO', component: Funcionario, key: 'employee' },
+    { name: 'FUNCIONÁRIO', component: EmployeeForm, key: 'employee' },
     { name: 'ENDEREÇO', component: Address, key: 'address' },
     { name: 'CONTATO', component: Contact, key: 'contact' },
     { name: 'DADOS BANCÁRIOS', component: Bank, key: 'bankAccount' },
-    { name: 'VESTUÁRIO', component: Clothing, key: 'clothing' },
+    { name: 'VESTUÁRIO', component: Clothing, key: 'clothing' }
   ]
 
   const CurrentComponent = tabs[selectedTab].component
   const currentKey = tabs[selectedTab].key
 
   const handleInputChange = (data: Record<string, unknown>) => {
-    setFormData((prevData) => ({
+    setEmployee((prevData) => ({
       ...prevData,
-      [currentKey]: { ...data },
+      [currentKey]: { ...data }
     }))
   }
 
@@ -80,7 +71,7 @@ export default function ContractForm({
             <div className="w-full md:w-3/4 p-6">
               {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
               <CurrentComponent
-                data={formData[currentKey] || {}}
+                data={employee || {}}
                 onChange={handleInputChange}
                 isEditable={isEditable}
                 mode={mode}

@@ -2,8 +2,8 @@
 
 import { Navigation } from '@/app/components/navigation/navigation'
 import { Employees } from '@/app/types/employee'
-import { Reminders } from '@/app/types/reminderType'
-import { Vacancies } from '@/app/types/vacancyType'
+import { Reminders } from '@/app/types/reminder'
+import { Vacancies } from '@/app/types/vacancy'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import 'react-grid-layout/css/styles.css'
@@ -46,7 +46,9 @@ export default function DashboardDisplay({
         <div className="grid gap-8 w-full max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <DashboardWidget
             title="Funcionários"
-            data={employees}
+            data={employees.map((e) => {
+              return { name: e.name, misc: e.position?.name }
+            })}
             maxItems={maxItemsToShow}
             navigateTo="/contract-display/employee/"
             loading={loading}
@@ -54,7 +56,9 @@ export default function DashboardDisplay({
           />
           <DashboardWidget
             title="Vagas"
-            data={vacancies}
+            data={vacancies.map((v) => {
+              return { name: v.position?.name || '', misc: String(v.quantity) || '' }
+            })}
             maxItems={maxItemsToShow}
             navigateTo="/vagas-display/"
             loading={loading}
@@ -62,7 +66,9 @@ export default function DashboardDisplay({
           />
           <DashboardWidget
             title="Lembretes"
-            data={reminders}
+            data={reminders.map((r) => {
+              return { name: r.reason || '', misc: r.date || '' }
+            })}
             maxItems={maxItemsToShow}
             navigateTo="/reminder-display/"
             loading={loading}

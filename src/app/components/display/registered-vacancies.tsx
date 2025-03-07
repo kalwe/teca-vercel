@@ -1,7 +1,7 @@
 'use client'
 
 import { VacancyService } from '@/app/services/vacancyService'
-import { Vacancies } from '@/app/types/vacancyType'
+import { Vacancies } from '@/app/types/vacancy'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 

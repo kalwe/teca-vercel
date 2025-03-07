@@ -1,10 +1,15 @@
 {
+  "editor.minimap.enabled": false,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.suggest.completeFunctionCalls": true,
   "typescript.suggest.paths": true,
-  "editor.minimap.enabled": false,
   "[typescript]": {
+    "editor.rulers": [ { "column": 79, "color": "#3d2020" } ],
+    "prettier.endOfLine": "lf",
     "prettier.trailingComma": "none",
+    "typescript.preferences.quoteStyle": "single",
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "prettier.singleQuote": true,
@@ -16,6 +21,8 @@
     },
   },
   "[typescriptreact]": {
+    "editor.rulers": [ { "column": 119, "color": "#3d2020" } ],
+    "prettier.endOfLine": "lf",
     "prettier.singleQuote": false,
     "typescript.preferences.quoteStyle": "double",
     "editor.formatOnSave": true,
@@ -28,4 +35,7 @@
       "source.sortImports": "always",
     },
   },
+  "workbench.colorCustomizations": {
+    // "editorError.background": "#ff0000e7",
+  }
 }

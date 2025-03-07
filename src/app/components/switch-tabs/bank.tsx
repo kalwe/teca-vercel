@@ -2,7 +2,7 @@
 
 import { bankAccountSchema } from '@/app/schemas/bankAccountSchema'
 import { BankService } from '@/app/services/bankService'
-import { BankAccountType, BankProps } from "@/app/types/BankAccount"
+import { BankAccountType, BankProps } from '@/app/types/bank'
 import { useState } from 'react'
 import { z } from 'zod'
 
@@ -12,7 +12,7 @@ export function Bank({
   isEditable,
   onNext,
   onPrev,
-  employee, // Mantendo mesmo padrão do Address.tsx
+  employee // Mantendo mesmo padrão do Address.tsx
 }: BankProps) {
   const [isNextEnabled, setIsNextEnabled] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof BankAccountType, string>>>({})
@@ -42,7 +42,7 @@ export function Bank({
     try {
       const createdBankAccount = await BankService.createBankAccount({
         ...data,
-        employee,
+        employee
       })
       console.log(createdBankAccount)
       onNext()
@@ -59,7 +59,7 @@ export function Bank({
       {[
         { name: 'bank', placeholder: 'Digite o nome do banco', label: 'Banco' },
         { name: 'agency', placeholder: 'Digite a agência', label: 'Agência' },
-        { name: 'account', placeholder: 'Digite a conta', label: 'Conta' },
+        { name: 'account', placeholder: 'Digite a conta', label: 'Conta' }
       ].map((field) => (
         <div key={field.name} className="w-full">
           <input

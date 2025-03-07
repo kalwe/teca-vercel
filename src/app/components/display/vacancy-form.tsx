@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import MoneyInput from '@/app/components/masks/salary'
 import { vacancySchema } from '@/app/schemas/vacancySchema'
 import { VacancyService } from '@/app/services/vacancyService'
-import { Vacancy } from '@/app/types/vacancyType'
+import { Vacancy } from '@/app/types/vacancy'
 import { z } from 'zod'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
@@ -17,7 +17,6 @@ const VacancyForm: React.FC = (vacancyData: Vacancy) => {
   const isEditMode = !!params?.id
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
-
   const [vacancy, setVacancy] = useState<Vacancy>(vacancyData)
 
   const fetchVacancy = async (vacancyId: number) => {

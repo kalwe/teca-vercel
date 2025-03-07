@@ -1,26 +1,22 @@
 'use client'
 
-import { UserInput, UserResponse, userResponseSchema } from '@/app/schemas/userSchema'
+import { UserInput, Users } from '@/app/schemas/userSchema'
 import { UserService } from '@/app/services/userService'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 function UserList() {
   const router = useRouter()
-  const [userList, setUserList] = useState<UserResponse[]>([])
+  const [userList, setUserList] = useState<Users>([])
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [_loading, setLoading] = useState(false)
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true)
         const users = await UserService.getUsers()
-        const validatedUsers = userResponseSchema.array().parse(users)
-        const uniqueUsers = Array.from(
-          new Map(validatedUsers.map((user) => [user.id, user])).values(),
-        )
-        setUserList(uniqueUsers)
+        setUserList(users)
       } catch (err) {
         console.error('Erro ao buscar usuários:', err)
         setError('Erro ao carregar usuários. Tente novamente.')
@@ -28,22 +24,19 @@ function UserList() {
         setLoading(false)
       }
     }
-
-    fetchUsers()
-  }, [])
+    if (userList.length > 0) {
+      fetchUsers()
+    }
+  }, [setUserList, setLoading, setError])
 
   const handleEditUser = (id: number) => {
     router.push(`/user-display/${id}`)
   }
 
-  const toggleUserStatus = async (userId: number, user: Omit<UserInput, 'password'>) => {
+  const toggleUserStatus = async (userId: number, user: UserInput) => {
     try {
-      const userUpdate = { ...user }
-      setUserList((prev) =>
-        prev.map((user) =>
-          user.id === userId ? { ...user, active: !user.active } : user,
-        ),
-      )
+      await UserService.updateUser(userId, { active: !user.active })
+      setUserList(userList.filter((u) => u.id !== userId))
     } catch (err) {
       console.error('Erro ao alterar status do usuário:', err)
       setError('Erro ao atualizar status do usuário.')
@@ -53,16 +46,8 @@ function UserList() {
   const handleDeleteUser = async (userId: number) => {
     try {
       if (confirm('Tem certeza que deseja excluir este usuário?')) {
-        console.log('Tentando excluir usuário com ID:', userId)
-
         await UserService.deleteUser(userId)
-
-        console.log('Usuário deletado com sucesso!')
-
-        setUserList((prev) => {
-          const updatedList = prev.filter((user) => user.id !== userId)
-          return Array.from(new Map(updatedList.map((user) => [user.id, user])).values())
-        })
+        setUserList(userList.filter((user) => user.id !== userId))
       }
     } catch (err) {
       console.error('Erro ao deletar usuário:', err)
@@ -78,7 +63,7 @@ function UserList() {
     <div
       className="min-h-screen flex items-center justify-center p-6"
       style={{
-        background: 'linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))',
+        background: 'linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))'
       }}
     >
       <div className="w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg">
@@ -129,7 +114,7 @@ function UserList() {
                     </td>
                     <td className="px-4 py-3 border border-gray-600 space-x-2">
                       <button
-                        onClick={() => toggleUserStatus(user.id, user)}
+                        onClick={() => toggleUserStatus(Number(user.id), user)}
                         className={`px-3 py-1 rounded-lg ${
                           user.active
                             ? 'bg-red-500 hover:bg-red-600'
@@ -139,13 +124,13 @@ function UserList() {
                         {user.active ? 'Desativar' : 'Ativar'}
                       </button>
                       <button
-                        onClick={() => handleDeleteUser(user.id)}
+                        onClick={() => handleDeleteUser(Number(user.id))}
                         className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
                       >
                         Excluir
                       </button>
                       <button
-                        onClick={() => handleEditUser(user.id)}
+                        onClick={() => handleEditUser(Number(user.id))}
                         className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg"
                       >
                         Editar

@@ -3,8 +3,8 @@ import { EmployeeService } from '@/app/services/employeeService'
 import { ReminderService } from '@/app/services/reminderService'
 import { VacancyService } from '@/app/services/vacancyService'
 import { Employees } from '@/app/types/employee'
-import { Reminders } from '@/app/types/reminderType'
-import { Vacancies } from '@/app/types/vacancyType'
+import { Reminders } from '@/app/types/reminder'
+import { Vacancies } from '@/app/types/vacancy'
 
 export default async function Page() {
   const employees: Employees = await EmployeeService.getAllEmployees()

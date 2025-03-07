@@ -1,7 +1,7 @@
-import { BankAccountType } from "../types/BankAccount";
-import api from "./api"; //  Importa a instância do Axios configurada
+import { BankAccountType } from '../types/bank'
+import api from './api' //  Importa a instância do Axios configurada
 
-const endpoint = "/bank-account"; //  Define o endpoint base
+const endpoint = '/bank-account' //  Define o endpoint base
 
 export const BankService = {
   /**
@@ -12,15 +12,14 @@ export const BankService = {
   async createBankAccount(BankAccountData: BankAccountType) {
     try {
       const response = await api.post(endpoint, BankAccountData)
-      if (response.status == 201)
-        return response.data
+      if (response.status == 201) return response.data
 
       // TODO: validar se for erro
 
       // const createdMock = createBankAccountMock(BankAccountData)
       // return createdMock
     } catch (error) {
-      console.error("Erro ao cadastrar dados bancário", error)
+      console.error('Erro ao cadastrar dados bancário', error)
       throw error
     }
   },
@@ -31,11 +30,11 @@ export const BankService = {
    */
   async getBankAccountById(id: number): Promise<any> {
     try {
-      const response = await api.get(`${endpoint}/${id}`);
-      return response.data;
+      const response = await api.get(`${endpoint}/${id}`)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao buscar conta bancária:", error);
-      throw error;
+      console.error('❌ Erro ao buscar conta bancária:', error)
+      throw error
     }
   },
 
@@ -45,11 +44,11 @@ export const BankService = {
    */
   async getAllBankAccounts(): Promise<any[]> {
     try {
-      const response = await api.get(endpoint);
-      return response.data;
+      const response = await api.get(endpoint)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao buscar todas as contas bancárias:", error);
-      throw error;
+      console.error('❌ Erro ao buscar todas as contas bancárias:', error)
+      throw error
     }
   },
 
@@ -61,11 +60,11 @@ export const BankService = {
    */
   async updateBankAccount(id: number, bankData: any): Promise<any> {
     try {
-      const response = await api.put(`${endpoint}/${id}`, bankData);
-      return response.data;
+      const response = await api.put(`${endpoint}/${id}`, bankData)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao atualizar conta bancária:", error);
-      throw error;
+      console.error('❌ Erro ao atualizar conta bancária:', error)
+      throw error
     }
   },
 
@@ -76,11 +75,11 @@ export const BankService = {
    */
   async deleteBankAccount(id: number): Promise<any> {
     try {
-      const response = await api.delete(`${endpoint}/${id}`);
-      return response.data;
+      const response = await api.delete(`${endpoint}/${id}`)
+      return response.data
     } catch (error) {
-      console.error("❌ Erro ao deletar conta bancária:", error);
-      throw error;
+      console.error('❌ Erro ao deletar conta bancária:', error)
+      throw error
     }
-  },
-};
+  }
+}

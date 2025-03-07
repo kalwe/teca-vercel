@@ -1,10 +1,11 @@
 'use client'
 
+import { da } from "date-fns/locale"
 import { useRouter } from 'next/navigation'
 
 interface DashboardWidgetProps {
   title: string
-  data: any[]
+  data: { name: string, misc?: string }[]
   maxItems: number
   navigateTo: string
   loading: boolean
@@ -13,7 +14,7 @@ interface DashboardWidgetProps {
 
 export function DashboardWidget({
   title,
-  data,
+  data = [],
   maxItems,
   navigateTo,
   loading,
@@ -34,7 +35,9 @@ export function DashboardWidget({
           {data.slice(0, maxItems).map((item, index) => (
             <li key={index} className="hover:text-[#A8C5A8] transition-all text-xl">
               {/* TODO: isso nao vai bugar pois somente alguns items tem position e reason */}
-              {item.name || item.position || item.reason}
+              {data.map((d) => {
+                return  `${d.name}, ${d.misc}` 
+              })}
             </li>
           ))}
         </ul>

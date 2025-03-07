@@ -1,42 +1,39 @@
-'use client';
+'use client'
 
 import { EmployeeService } from '@/app/services/employeeService'
-import { EmployeeProps, EmployeeType } from '@/app/types/employee'
+import { ContractFormProps, Employee } from '@/app/types/employee'
+import { useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export function Funcionario({
-  data = {} as EmployeeType,
-  onChange,
-  isEditable,
-  onNext,
-  onPrev,
-}: EmployeeProps) {
+export default function EmployeeForm({
+  employeeData = undefined,
+  isEditable
+}: ContractFormProps) {
+  const [employee, setEmployee] = useState<Employee | undefined>(employeeData)
+  const handleInputChange = (field: keyof Employee, value: any) => {
+    setEmployee(employee.map((e) => {
+      return {  }
+    }))
+  }
 
-  const handleInputChange = (field: string, value: unknown) => {
-    onChange({ ...data, [field]: value });
-  };
+  const valueFromField = (field: string, obj: Object) => {
+    const val = Object.entries(obj).filter((key, value) => {
+      return String(key) == field ? value : ''
+    })
+    return val
+  }
 
   const handleSave = async () => {
-    if (!data.registration || !data.contractDate) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
-
     try {
-      const createdEmployee = await EmployeeService.createEmployee(data);
-      console.log('Funcionário cadastrado com sucesso:', createdEmployee);
-      onNext();
+      const createdEmployee = await EmployeeService.createEmployee(employee)
+      console.log('Funcionário cadastrado com sucesso:', createdEmployee)
     } catch (error) {
-      alert('Erro ao cadastrar funcionário.');
-      console.error('Erro ao enviar para API:', error);
-
-      if (error.response) {
-        console.log('Resposta da API:', error.response.data);
-      }
+      alert('Erro ao cadastrar funcionário.')
+      console.error('Erro ao enviar para API:', error)
     }
-  };
+  }
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
@@ -48,7 +45,7 @@ export function Funcionario({
         <input
           type="text"
           name="registration"
-          value={data.registration || ''}
+          value={employee?.registration || ''}
           onChange={(e) => handleInputChange('registration', e.target.value)}
           placeholder="Digite a matrícula"
           className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
@@ -56,11 +53,11 @@ export function Funcionario({
         />
       </div>
 
-      {/* Campo de Data de Admissão */}
+      {/* Campo de Employee de Admissão */}
       <div className="w-full">
-        <label className="block text-gray-400 mb-2">Data de Admissão</label>
+        <label className="block text-gray-400 mb-2">Employee de Admissão</label>
         <DatePicker
-          selected={data.contractDate ? new Date(data.contractDate) : null}
+          selected={employee?.contractDate ? new Date(employee.contractDate) : null}
           onChange={(date: Date | null) =>
             handleInputChange('contractDate', date?.toISOString())
           }
@@ -70,11 +67,11 @@ export function Funcionario({
         />
       </div>
 
-      {/* Campo de Data de Remoção */}
+      {/* Campo de Employee de Remoção */}
       <div className="w-full">
-        <label className="block text-gray-400 mb-2">Data de Remoção</label>
+        <label className="block text-gray-400 mb-2">Employee de Remoção</label>
         <DatePicker
-          selected={data.removalDate ? new Date(data.removalDate) : null}
+          selected={employee?.removalDate ? new Date(employee.removalDate) : null}
           onChange={(date: Date | null) =>
             handleInputChange('removalDate', date?.toISOString())
           }
@@ -86,11 +83,10 @@ export function Funcionario({
 
       {/* Dropdown para Seleção de Cargo */}
       <div>
-      <DropdownCheckboxPosition
-  id={data.positionId ?? 1} // Passando apenas o ID corretamente
-  onChange={(id) => handleInputChange('positionId', id)} // Garantindo que o primeiro parâmetro seja o ID
-/>
-
+        <DropdownCheckboxPosition
+          id={employee?.positionId ?? 1}
+          onChange={() => handleInputChange('positionId', id)}
+        />
       </div>
 
       {/* Botões de Navegação */}
@@ -109,5 +105,5 @@ export function Funcionario({
         </button>
       </div>
     </div>
-  );
+  )
 }
