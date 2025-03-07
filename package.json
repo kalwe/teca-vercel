@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "nvm:use": "nvm use v20.10"
+    "nvm:use": "nvm use"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
