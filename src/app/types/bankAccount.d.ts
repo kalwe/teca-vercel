@@ -1,10 +1,11 @@
-export type BankAccountType = {
-  bank: string;
-  agency: string;
-  account: string;
-  account_type: string;
+type BankAccountType = {
+  bank?: string;
+  agency?: string;
+  account?: string;
+  account_type?: string;
   employeeId?: number;
 };
+
 
 export type ModeType = 'edit' | 'add' | 'view' | 'create';
 
