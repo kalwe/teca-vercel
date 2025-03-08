@@ -6,14 +6,18 @@ export type AddressType = {
   zipCode?: string;
   state?: string;
   employeeId?: number;
-  [key: string]: any
+
 };
 
+export type Address = AddressT | Partial<AddressT>
+export type Addresses = AddressT[] | Partial<AddressT>[]
+
+
 export type AddressProps = {
-  data?: Partial<AddressType>;
+  data: Address;
   onChange: (updatedData: AddressType) => void;
   onNext: () => void;
   onPrev: () => void;
-  employeeId?: number;
-  isEditable: boolean
+  employeeId: number;
+
 };

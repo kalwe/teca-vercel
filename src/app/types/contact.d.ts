@@ -1,14 +1,17 @@
-export type ContactType = {
+type ContactT = {
   phone: string;
-  email: string;
-  website: string;
-  employeeId?: number;
+  email?: string;
+  webSite?: string;
+  employeeId: number;
 };
 
+export type Contact = ContactT | Partial<ContactT>
+export type Contacts = ContactT[] | Partial<ContactT>[]
+
 export interface ContactProps {
-  data?: Partial<ContactType>;
-  onChange: (updatedData: ContactData) => void;
+  contactData: Contact;
+  onChange: (updatedData: Contact) => void;
   onNext: () => void;
   onPrev: () => void;
-  employeeId?: number;
+  employeeId: number;
 }

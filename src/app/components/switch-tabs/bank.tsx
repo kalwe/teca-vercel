@@ -1,56 +1,34 @@
 'use client'
 
-import { bankAccountSchema } from '@/app/schemas/bankAccountSchema'
 import { BankService } from '@/app/services/bankService'
-import { BankAccountType, BankProps } from "@/app/types/BankAccount"
+import type { BankAccount, BankProps } from "@/app/types/BankAccount"
 import { useState } from 'react'
-import { z } from 'zod'
 
-export function Bank({
-  data = {},
-  onChange,
-  isEditable,
-  onNext,
-  onPrev,
-  employee, // Mantendo mesmo padrão do Address.tsx
-}: BankProps) {
-  const [isNextEnabled, setIsNextEnabled] = useState(false)
-  const [errors, setErrors] = useState<Partial<Record<keyof BankAccountType, string>>>({})
+export function Bank({ data, onChange, onNext, onPrev, employeeId }: BankProps) {
+  const [bankData, setBankData] = useState<BankAccount>(data);
+  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (field: string, value: string) => {
-    const updatedData = { ...data, [field]: value }
-
-    try {
-      bankAccountSchema.parse(updatedData) // Valida os dados
-      setErrors({}) // Limpa os erros ao preencher corretamente
-      setIsNextEnabled(true)
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {}
-        error.errors.forEach((e) => {
-          newErrors[e.path[0]] = e.message
-        })
-        setErrors(newErrors)
-        setIsNextEnabled(false)
-      }
-    }
-
-    onChange(updatedData)
-  }
+  const handleInputChange = (field: keyof BankAccount, value: any) => {
+    const updatedBankData = { ...bankData, [field]: value };
+    setBankData(updatedBankData);
+    onChange(updatedBankData);
+  };
 
   const handleSave = async () => {
     try {
-      const createdBankAccount = await BankService.createBankAccount({
-        ...data,
-        employee,
-      })
-      console.log(createdBankAccount)
-      onNext()
+      setLoading(true);
+      await BankService.createBankAccount({ ...bankData, employeeId: Number(employeeId) });
+      alert("Conta bancária cadastrada com sucesso!");
+      onNext();
     } catch (error) {
-      alert('Erro ao cadastrar conta bancária. Verifique os campos.')
-      console.error(error)
+      console.error("Erro ao cadastrar conta bancária:", error);
+      alert("Erro ao cadastrar conta bancária. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
+  const valueFromField = (field: keyof BankAccount, obj: BankAccount) => obj[field] ?? '';
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
@@ -65,17 +43,12 @@ export function Bank({
           <input
             type="text"
             name={field.name}
-            value={data[field.name] || ''}
-            onChange={(e) => handleInputChange(e.target.name, e.target.value)}
+            value={String(valueFromField(field.name as keyof BankAccount, bankData))}
+            onChange={(e) => handleInputChange(field.name as keyof BankAccount, e.target.value)}
             placeholder={field.placeholder}
-            className={`w-full bg-gray-700 text-white border ${
-              errors[field.name] ? 'border-red-500' : 'border-gray-600'
-            } rounded-lg py-2 px-3`}
-            disabled={!isEditable}
+            className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
+
           />
-          {errors[field.name] && (
-            <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
-          )}
         </div>
       ))}
 
@@ -83,38 +56,32 @@ export function Bank({
       <div className="w-full">
         <select
           name="account_type"
-          value={data.account_type || ''}
+          value={bankData.account_type || ''}
           onChange={(e) => handleInputChange('account_type', e.target.value)}
-          className={`w-full bg-gray-700 text-white border ${
-            errors.account_type ? 'border-red-500' : 'border-gray-600'
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
+          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
+
         >
           <option value="">Selecione o tipo de conta</option>
           <option value="corrente">Conta Corrente</option>
           <option value="poupança">Conta Poupança</option>
           <option value="salário">Conta Salário</option>
         </select>
-        {errors.account_type && (
-          <p className="text-red-500 text-sm mt-1">{errors.account_type}</p>
-        )}
       </div>
 
       {/* Botões */}
       <div className="flex justify-between mt-6">
-        <button
-          onClick={onPrev}
-          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-        >
+        <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar
         </button>
-        <button
-          onClick={handleSave}
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={!isNextEnabled}
-        >
-          Próximo
-        </button>
+
+          <button
+            onClick={handleSave}
+            className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            disabled={loading}
+          >
+            {loading ? "Salvando..." : "Próximo"}
+          </button>
+
       </div>
     </div>
   )

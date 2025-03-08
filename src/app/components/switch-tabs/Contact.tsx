@@ -1,29 +1,24 @@
 'use client'
 
 import { ContactService } from '@/app/services/contactService'
-import type { ContactProps, ContactType } from '@/app/types/contact'
+import type { Contact, ContactProps } from '@/app/types/contact'
 import { useState } from 'react'
 
-export function Contact({ data = {}, onChange, onNext, onPrev }: ContactProps) {
-  const [formData, setFormData] = useState<Partial<ContactType>>(data);
+export function Contact({ contactData = {}, onChange, onNext, onPrev, employeeId }: ContactProps) {
+  const [contact, setContact] = useState<Contact>(contactData);
   const [loading, setLoading] = useState(false);
 
-  /**
-   * Atualiza o estado do formulário.
-   */
-  const handleInputChange = <K extends keyof ContactType>(field: K, value: ContactType[K]) => {
-    const updatedData = { ...formData, [field]: value };
-    setFormData(updatedData);
-    onChange(updatedData);
+  const handleInputChange = (field: keyof Contact, value: any) => {
+    const contactInput = { ...contact, [field]: value }
+    setContact(contactInput);
+    onChange(contactInput);
   };
 
-  /**
-   * Salva os dados do contato.
-   */
   const handleSave = async () => {
     try {
       setLoading(true);
-      await ContactService.createContact(formData as ContactType);
+      console.log("Enviando para API:", contactData);
+      await ContactService.createContact({ ...contact,  employeeId: Number(employeeId)  });
       alert("Contato criado com sucesso!");
       onNext();
     } catch (error) {
@@ -34,6 +29,10 @@ export function Contact({ data = {}, onChange, onNext, onPrev }: ContactProps) {
     }
   };
 
+  const valueFromField = (field: string, obj: Record<string, any>) => {
+    return obj[field] ?? '';
+  };
+
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
       <h2 className="text-white text-xl font-bold">Contato</h2>
@@ -41,14 +40,14 @@ export function Contact({ data = {}, onChange, onNext, onPrev }: ContactProps) {
       {[
         { name: 'phone', placeholder: 'Digite o número de telefone', label: 'Telefone' },
         { name: 'email', placeholder: 'Digite o e-mail', label: 'E-mail' },
-        { name: 'website', placeholder: 'Digite o website', label: 'Website' },
+        { name: 'webSite', placeholder: 'Digite o website', label: 'Website' },
       ].map((field) => (
         <div key={field.name} className="w-full">
           <input
             type="text"
             name={field.name}
-            value={formData[field.name as keyof ContactType] || ''}
-            onChange={(e) => handleInputChange(field.name as keyof ContactType, e.target.value)}
+            value={String(valueFromField(field.name, contact))}
+            onChange={(e) => handleInputChange(field.name as keyof Contact, e.target.value)}
             placeholder={field.placeholder}
             className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
           />

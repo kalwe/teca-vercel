@@ -118,7 +118,7 @@ model Address {
   postCode      String
   state         String
   employee      Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  employeeId    Int       @unique @map("employee_id")
+  employeeId    Int       @unique @map("employeeId")
 
   @@map("address")
 }
@@ -129,7 +129,7 @@ model Contact {
   email         String
   webSite       String
   employee      Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  employeeId    Int       @unique @map("employee_id")
+  employeeId    Int       @unique @map("employeeId")
 
   @@map("contact")
 }
@@ -151,7 +151,7 @@ model Bank {
   account       String
   type          AccountType
   employee      Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  employeeId    Int           @unique @map("employee_id")
+  employeeId    Int           @unique @map("employeeId")
 
   @@map("bank")
 }
@@ -170,7 +170,7 @@ model Clothing {
   pants         String
   shoes         String
   employee      Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  employeeId    Int       @unique @map("employee_id")
+  employeeId    Int       @unique @map("employeeId")
 
   @@map("clothing")
 }

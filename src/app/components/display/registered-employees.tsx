@@ -1,9 +1,9 @@
 'use client';
 
-import { EmployeeService } from '@/app/services/employeeService'
-import { EmployeeType } from '@/app/types/employee'
-import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { EmployeeService } from '@/app/services/employeeService';
+import { EmployeeType } from '@/app/types/employee';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 function Employees() {
   const [employees, setEmployees] = useState<EmployeeType[]>([]);

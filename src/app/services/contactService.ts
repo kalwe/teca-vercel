@@ -1,37 +1,26 @@
-import { ContactType } from "../types/contact";
-import api from "./api"; // Importa a instância do Axios configurada
+import { Contact } from "../types/contact"
+import api from "./api"
 
-const endpoint = '/contact'
+const endpoint = '/contact';
 
 export const ContactService = {
-  /**
-   * Cria um novo contato para um funcionário
-   * @param {object} contactData - Dados do contato
-   * @returns {Promise} - Resposta da API
-   */
-  async createContact(ContactData: ContactType) {
+  async createContact(contactData: Contact) {
     try {
-      const response = await api.post(endpoint, ContactData)
-      if (response.status == 201)
-        return response.data
+      const response = await api.post(endpoint, {
+        ...contactData,
+        employee: { id: contactData.employeeId },
+      });
 
-      // TODO: validar se for erro
-
-      // const createdMock = createContactMock(ContactData)
-      // return createdMock
+      if (response.status === 201) return response.data;
     } catch (error) {
-      console.error("Erro ao criar endereço:", error)
-      throw error
+      console.error("Erro ao criar contato:", error);
+      throw error;
     }
   },
-  /**
-   * Busca um contato por ID
-   * @param {number} id - ID do contato
-   * @returns {Promise} - Dados do contato
-   */
-  getContactById: async (id: number) => {
+
+  async getContactById(id: number) {
     try {
-      const response = await api.get(`/contact/${id}`);
+      const response = await api.get(`${endpoint}/${id}`);
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar contato:", error);
@@ -39,13 +28,9 @@ export const ContactService = {
     }
   },
 
-  /**
-   * Busca todos os contatos cadastrados
-   * @returns {Promise} - Lista de contatos
-   */
-  getAllContacts: async () => {
+  async getAllContacts() {
     try {
-      const response = await api.get("/contact");
+      const response = await api.get(endpoint);
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar todos os contatos:", error);
@@ -53,15 +38,12 @@ export const ContactService = {
     }
   },
 
-  /**
-   * Atualiza um contato existente
-   * @param {number} id - ID do contato
-   * @param {object} contactData - Novos dados do contato
-   * @returns {Promise} - Dados atualizados
-   */
-  updateContact: async (id: number, contactData: any) => {
+  async updateContact(id: number, contactData: Partial<Contact>) {
     try {
-      const response = await api.put(`/contact/${id}`, contactData);
+      const response = await api.put(`${endpoint}/${id}`, {
+        ...contactData,
+        employee: { id: contactData.employeeId },
+      });
       return response.data;
     } catch (error) {
       console.error("Erro ao atualizar contato:", error);
@@ -69,14 +51,9 @@ export const ContactService = {
     }
   },
 
-  /**
-   * Exclui um contato pelo ID
-   * @param {number} id - ID do contato a ser removido
-   * @returns {Promise} - Confirmação da exclusão
-   */
-  deleteContact: async (id: number) => {
+  async deleteContact(id: number) {
     try {
-      const response = await api.delete(`/contact/${id}`);
+      const response = await api.delete(`${endpoint}/${id}`);
       return response.data;
     } catch (error) {
       console.error("Erro ao deletar contato:", error);
