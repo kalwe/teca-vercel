@@ -1,6 +1,6 @@
 'use client'
 
-import { BankService } from '@/app/services/bankService'
+import { ContactService } from "@/app/services/contactService"
 import type { BankAccount, BankProps } from "@/app/types/BankAccount"
 import { useState } from 'react'
 
@@ -17,16 +17,18 @@ export function Bank({ data, onChange, onNext, onPrev, employeeId }: BankProps) 
   const handleSave = async () => {
     try {
       setLoading(true);
-      await BankService.createBankAccount({ ...bankData, employeeId: Number(employeeId) });
-      alert("Conta bancária cadastrada com sucesso!");
+      console.log("Enviando para API:", contactData);
+      await ContactService.createContact({ ...contact,  employeeId: Number(employeeId)  });
+      alert("Contato criado com sucesso!");
       onNext();
     } catch (error) {
-      console.error("Erro ao cadastrar conta bancária:", error);
-      alert("Erro ao cadastrar conta bancária. Tente novamente.");
+      console.error("Erro ao criar contato:", error);
+      alert("Erro ao criar contato. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
+
 
   const valueFromField = (field: keyof BankAccount, obj: BankAccount) => obj[field] ?? '';
 

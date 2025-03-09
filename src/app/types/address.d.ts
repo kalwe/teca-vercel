@@ -1,4 +1,4 @@
-export type AddressType = {
+type AddressType = {
   street?: string;
   number?: string;
   neighborhood?: string;

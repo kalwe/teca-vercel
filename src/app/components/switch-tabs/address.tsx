@@ -1,14 +1,14 @@
 'use client'
 
 import { AddressService } from '@/app/services/addressService'
-import type { AddressProps, AddressType } from '@/app/types/address'
+import type { Address, AddressProps } from '@/app/types/address'
 import { useState } from 'react'
 
 export function Address({ data, onChange, onNext, onPrev, employeeId }: AddressProps) {
-  const [addressData, setAddressData] = useState<AddressType>(data);
+  const [addressData, setAddressData] = useState<Address>(data);
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (field: keyof AddressType, value: any) => {
+  const handleInputChange = (field: keyof Address, value: any) => {
     const updatedAddress = { ...addressData, [field]: value };
     setAddressData(updatedAddress);
     onChange(updatedAddress);
@@ -28,7 +28,7 @@ export function Address({ data, onChange, onNext, onPrev, employeeId }: AddressP
     }
   };
 
-  const valueFromField = (field: keyof AddressType, obj: AddressType) => obj[field] ?? '';
+  const valueFromField = (field: keyof Address, obj: Address) => obj[field] ?? '';
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
@@ -45,8 +45,8 @@ export function Address({ data, onChange, onNext, onPrev, employeeId }: AddressP
           <input
             type="text"
             name={field.name}
-            value={String(valueFromField(field.name as keyof AddressType, addressData))}
-            onChange={(e) => handleInputChange(field.name as keyof AddressType, e.target.value)}
+            value={String(valueFromField(field.name as keyof Address, addressData))}
+            onChange={(e) => handleInputChange(field.name as keyof Address, e.target.value)}
             placeholder={field.placeholder}
             className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
 

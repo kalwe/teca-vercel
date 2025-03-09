@@ -1,24 +1,22 @@
 import { Contact } from "../types/contact"
-import api from "./api"
+import api from "./api"; // Importa a instância do Axios configurada
 
-const endpoint = '/contact';
+const endpoint = '/contact'
 
 export const ContactService = {
+
   async createContact(contactData: Contact) {
     try {
-      const response = await api.post(endpoint, {
-        ...contactData,
-        employee: { id: contactData.employeeId },
-      });
-
-      if (response.status === 201) return response.data;
+      const response = await api.post(endpoint, contactData)
+      if (response.status == 201){
+      return response.data
+      }
     } catch (error) {
-      console.error("Erro ao criar contato:", error);
-      throw error;
+      console.error("Erro ao criar contato:", error)
+      throw error
     }
   },
-
-  async getContactById(id: number) {
+  async getContactById(id: number){
     try {
       const response = await api.get(`${endpoint}/${id}`);
       return response.data;
@@ -30,7 +28,7 @@ export const ContactService = {
 
   async getAllContacts() {
     try {
-      const response = await api.get(endpoint);
+      const response = await api.get(`/${endpoint}`);
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar todos os contatos:", error);
@@ -38,12 +36,9 @@ export const ContactService = {
     }
   },
 
-  async updateContact(id: number, contactData: Partial<Contact>) {
+  updateContact: async (id: number, contactData: any) => {
     try {
-      const response = await api.put(`${endpoint}/${id}`, {
-        ...contactData,
-        employee: { id: contactData.employeeId },
-      });
+      const response = await api.put(`${endpoint}/${id}`, contactData);
       return response.data;
     } catch (error) {
       console.error("Erro ao atualizar contato:", error);
@@ -51,7 +46,7 @@ export const ContactService = {
     }
   },
 
-  async deleteContact(id: number) {
+  deleteContact: async (id: number) => {
     try {
       const response = await api.delete(`${endpoint}/${id}`);
       return response.data;
