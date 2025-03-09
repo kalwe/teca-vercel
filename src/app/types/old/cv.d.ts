@@ -10,5 +10,5 @@ export type Resume = {
     region: string; // Candidate's region
     scholarity: string; // Candidate's education level
     dateOfBirth: string; // Date of birth (Format: dd-mm-yyyy)
-    pdf_url: string; // URL of the CV PDF file
+    fileUrl: string; // URL of the CV PDF file
   };

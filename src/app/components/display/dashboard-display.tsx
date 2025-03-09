@@ -3,6 +3,7 @@
 import { Navigation } from '@/app/components/navigation/navigation'
 import { Employees } from '@/app/types/employee'
 import { Reminders } from '@/app/types/reminderType'
+import { Resumes } from "@/app/types/resume"
 import { Vacancies } from '@/app/types/vacancyType'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -13,26 +14,30 @@ import { DashboardWidget } from '../dashboardWidget/dashboard-widget'
 export default function DashboardDisplay({
   employeesData,
   vacanciesData,
-  remindersData
+  remindersData,
+  resumesData
 }: {
   employeesData: Employees
   vacanciesData: Vacancies
   remindersData: Reminders
+  resumesData: Resumes
 }) {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [employees, setEmployees] = useState<Employees>([])
   const [vacancies, setVacancies] = useState<Vacancies>([])
   const [reminders, setReminders] = useState<Reminders>([])
+  const [resumes, setResumes] = useState<Resumes>([])
 
   useEffect(() => {
     if (loading) {
       setEmployees(employeesData)
       setVacancies(vacanciesData)
       setReminders(remindersData)
+      setResumes(resumesData)
     }
     setLoading(false)
-  }, [loading, employeesData, vacanciesData, remindersData])
+  }, [loading, employeesData, vacanciesData, remindersData, resumesData])
   const maxItemsToShow = 5
 
   return (
@@ -76,14 +81,18 @@ export default function DashboardDisplay({
             loading={loading}
             bgGradient="from-[#314B38] to-[#203225]"
           />
-          {/* <DashboardWidget
-            title="Currículos"
-            data={resumes}
-            maxItems={maxItemsToShow}
-            navigateTo="/curriculo-display/"
-            loading={loading}
-            bgGradient="from-[#3A3B38] to-[#2B2C25]"
-          /> */}
+         <DashboardWidget
+  title="Currículos"
+  data={(resumes ?? []).map((d) => ({
+    name: d.fullName || "",
+    misc: d.position,
+  }))}
+  maxItems={maxItemsToShow}
+  navigateTo="/curriculo-display/visualize-cv"
+  loading={loading}
+  bgGradient="from-[#3A3B38] to-[#2B2C25]"
+/>
+
         </div>
 
         {/* Card de Ações Rápidas - Ocupando bem o espaço */}

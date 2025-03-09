@@ -19,14 +19,6 @@ export default function VacancyForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<Vacancy>();
 
-  /**
-   * Carrega os dados da vaga no modo de edição
-   */
-  /*TODO: TIRAR O GETVACANCYBYID E COLOCAR NO PAGE  */
-
-  /**
-   * Atualiza os campos do formulário e valida os dados
-   */
   const handleChange = <K extends keyof Vacancy>(field: K, value: Vacancy[K]) => {
     const updatedData = { ...formData, [field]: value };
 
