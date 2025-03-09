@@ -1,22 +1,20 @@
 
-import api from "./api";
+import api from "./api"
 
-const API_URL = "http://your-python-api.com/positions"; // Replace with your actual API
+
+const endpoint = '/position'
+
 
 export const PositionService = {
-  /**
-   * Fetches all job positions from the Python API
-   * @returns {Promise<{ id: number; name: string }[]>} - List of job positions
-   */
-  async getAllPositions(): Promise<{ id: number; name: string }[]> {
-    const response = await api.get(API_URL);
 
-    if (Array.isArray(response.data)) {
-      return response.data; // API returns a plain list
-    } else if (response.data.positions && Array.isArray(response.data.positions)) {
-      return response.data.positions; // API wraps data inside { positions: [...] }
-    } else {
-      throw new Error("Unexpected API response format");
+  async getAllPositions(){
+    try {
+      const response = await api.get(endpoint)
+      if (response.status == 200){
+      return response.data
+      }
+    } catch (error) {
+      console.error("Erro ao pegar cargo:", error)
     }
   },
 };
