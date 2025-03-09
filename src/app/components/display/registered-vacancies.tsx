@@ -17,7 +17,7 @@ export default function VacancyList({ vacanciesData }: { vacanciesData: Vacancie
       setLoading(false)
     }
   }
-  fetchVacancies
+  fetchVacancies()
 
   const handleDelete = async (vacancyId: number) => {
     if (!confirm('Tem certeza que deseja excluir esta vaga?')) return
@@ -35,7 +35,7 @@ export default function VacancyList({ vacanciesData }: { vacanciesData: Vacancie
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-extrabold text-white">Vagas</h1>
           <button
-            onClick={() => router.push('/vacancy-display/vaga')}
+            onClick={() => router.push('/vacancy-display/')}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-transform transform hover:scale-105"
           >
             Adicionar Vaga
@@ -77,14 +77,14 @@ export default function VacancyList({ vacanciesData }: { vacanciesData: Vacancie
                   {/* Ações */}
                   <div className="flex justify-end w-2/5 gap-2">
                     <button
-                      onClick={() => router.push(`/vacancy-display/vaga/${vacancy.id}`)}
+                      onClick={() => router.push(`/vacancy-display/${vacancy.id}`)}
                       className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
                     >
                       Editar
                     </button>
 
                     <button
-                      onClick={() => handleDelete(Number(vacancy?.id))}
+                      onClick={() => handleDelete(Number(vacancy.id))}
                       className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all"
                     >
                       Excluir

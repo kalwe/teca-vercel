@@ -17,17 +17,16 @@ export default async function VacancyForm({ vacancyData }: { vacancyData: Vacanc
   const vacancyId = isEditMode ? Number(id) : null
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [vacancy, setVacancy] = useState<Vacancy>(vacancyData)
+  const [vacancy, setVacancy] = useState<Vacancy>({})
 
   useEffect(() => {
     if (isEditMode && vacancyId) {
       setVacancy(vacancyData)
     }
-  }, [isEditMode, vacancyId, setVacancy, vacancyData])
+  }, [isEditMode, vacancyId, vacancyData])
 
-  const handleChange = <K extends keyof Vacancy>(field: K, value: Vacancy[K]) => {
+  const handleChange = (field: keyof Vacancy, value: any) => {
     const updatedData = { ...vacancy, [field]: value }
-
     try {
       vacancySchema.parse(updatedData)
       setErrors({})
@@ -51,11 +50,11 @@ export default async function VacancyForm({ vacancyData }: { vacancyData: Vacanc
     if (isEditMode && vacancyId) {
       // const validatedData = vacancySchema.parse(vacancy);
       const { id, ...vacancyUpdate } = vacancy
-      await VacancyService.updateVacancy(Number(id), { ...vacancyUpdate })
+      await VacancyService.updateVacancy(Number(id), vacancyUpdate)
       alert('Vaga atualizada com sucesso!')
     } else {
       // const validatedData = vacancySchema.parse(vacancy);
-      await VacancyService.createVacancy({ ...vacancy })
+      await VacancyService.createVacancy(vacancy)
       alert('Vaga criada com sucesso!')
     }
     setLoading(false)
@@ -63,72 +62,67 @@ export default async function VacancyForm({ vacancyData }: { vacancyData: Vacanc
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600">
-      <div className="w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border flex flex-col gap-6">
-        <h1 className="text-4xl font-extrabold text-white">
+    <div className='flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600'>
+      <div className='w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border flex flex-col gap-6'>
+        <h1 className='text-4xl font-extrabold text-white'>
           {isEditMode ? 'Atualizar Vaga' : 'Nova Vaga'}
         </h1>
-        {/* Posição */}
         <div>
           <DropdownCheckboxPosition
-            id={vacancy?.positionId ?? null}
+            id={vacancy?.positionId ?? 1}
             onChange={(id) => handleChange('positionId', id)}
           />
-          {errors.position && <p className="text-red-500 text-sm">{errors.position}</p>}
+          {errors.position && <p className='text-red-500 text-sm'>{errors.position}</p>}
         </div>
 
         <div>
           <input
-            type="number"
-            placeholder="Quantidade"
-            value={vacancy?.quantity?.toString()}
+            type='number'
+            placeholder='Quantidade'
+            value={vacancy?.quantity}
             onChange={(e) => handleChange('quantity', Number(e.target.value))}
-            className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
+            className='w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300'
           />
-          {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity}</p>}
+          {errors.quantity && <p className='text-red-500 text-sm'>{errors.quantity}</p>}
         </div>
 
-        {/* Descrição */}
         <div>
           <input
-            type="text"
-            placeholder="Descrição"
+            type='text'
+            placeholder='Descrição'
             value={vacancy?.description ?? ''}
             onChange={(e) => handleChange('description', e.target.value)}
-            className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
+            className='w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300'
           />
           {errors.description && (
-            <p className="text-red-500 text-sm">{errors.description}</p>
+            <p className='text-red-500 text-sm'>{errors.description}</p>
           )}
         </div>
 
-        {/* Benefícios */}
         <div>
           <input
-            type="text"
-            placeholder="Benefícios"
+            type='text'
+            placeholder='Benefícios'
             value={vacancy?.benefits ?? ''}
             onChange={(e) => handleChange('benefits', e.target.value)}
-            className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
+            className='w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300'
           />
-          {errors.benefits && <p className="text-red-500 text-sm">{errors.benefits}</p>}
+          {errors.benefits && <p className='text-red-500 text-sm'>{errors.benefits}</p>}
         </div>
 
-        {/* Requisitos */}
         <div>
           <input
-            type="text"
-            placeholder="Requisitos"
+            type='text'
+            placeholder='Requisitos'
             value={vacancy?.requirements ?? ''}
             onChange={(e) => handleChange('requirements', e.target.value)}
-            className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300"
+            className='w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300'
           />
           {errors.requirements && (
-            <p className="text-red-500 text-sm">{errors.requirements}</p>
+            <p className='text-red-500 text-sm'>{errors.requirements}</p>
           )}
         </div>
 
-        {/* Salário */}
         <div>
           <MoneyInput
             value={vacancy?.salary ? String(vacancy?.salary) : '0'}
@@ -137,13 +131,12 @@ export default async function VacancyForm({ vacancyData }: { vacancyData: Vacanc
               handleChange('salary', numericValue)
             }}
           />
-          {errors.salary && <p className="text-red-500 text-sm">{errors.salary}</p>}
+          {errors.salary && <p className='text-red-500 text-sm'>{errors.salary}</p>}
         </div>
 
-        {/* Botão de ação */}
         <button
           onClick={handleSave}
-          className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-transform transform hover:scale-105 disabled:opacity-50"
+          className='bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-transform transform hover:scale-105 disabled:opacity-50'
           disabled={loading}
         >
           {loading ? 'Salvando...' : isEditMode ? 'Atualizar Vaga' : 'Salvar Nova Vaga'}

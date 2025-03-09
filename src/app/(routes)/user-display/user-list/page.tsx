@@ -1,25 +1,20 @@
-'use client'
-
+import ComebackButton from '@/app/components/button/comeback'
 import UserList from '@/app/components/display/registered-users'
 import { Navigation } from '@/app/components/navigation/navigation'
-import { useRouter } from 'next/navigation'
+import { Users } from '@/app/schemas/userSchema'
+import { UserService } from '@/app/services/userService'
 import '../style.css'
-import ComebackButton from '@/app/components/button/comeback'
 
-export default function Contract() {
-  const router = useRouter()
-
-  const handleClick = () => {
-    router.push('/dashboard-display/')
-  }
+export default async function Page() {
+  const users: Users = await UserService.getUsers()
 
   return (
     <div>
       {/* Navbar */}
       <Navigation />
-      <UserList />
+      <UserList usersData={users} />
 
-     <ComebackButton/>
+      <ComebackButton />
     </div>
   )
 }

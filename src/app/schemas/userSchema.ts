@@ -45,6 +45,7 @@ export const userResponseSchema = userBaseSchema.extend({
   deletedAt: z.string().optional()
 })
 
-export type UserInput = z.infer<typeof userInputSchema>
-export type Users = UserInput[]
-export type UserResponse = z.infer<typeof userResponseSchema>
+type UserInput = z.infer<typeof userInputSchema>
+type UserResponse = z.infer<typeof userResponseSchema>
+export type User = UserInput | Partial<UserInput>
+export type Users = UserResponse[] | Partial<UserResponse>[]

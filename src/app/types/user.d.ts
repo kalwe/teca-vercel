@@ -47,3 +47,4 @@ export const userResponseSchema = userBaseSchema.extend({
 
 export type UserInput = z.infer<typeof userInputSchema>
 export type UserResponse = z.infer<typeof userResponseSchema>
+export type Users = UserResponse[] | Partial<UserResponse>[]

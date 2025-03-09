@@ -4,7 +4,7 @@ import { Clothing } from './clothing'
 import { Contact } from './contact'
 import { Position } from './position'
 
-export type Employee = {
+type EmployeeT = {
   id?: number
   active?: boolean
   name: string
@@ -29,10 +29,18 @@ export type Employee = {
   maritalStatus?: string
 }
 
-export type Employees = Employee[]
+export type Employee = EmployeeT | Partial<EmployeeT>
+export type Employees = EmployeeT[] | Partial<EmployeeT>[]
+
+export interface EmployeeFormProps {
+  employeeData: Employee | null
+  isEditable: boolean
+  onNext: () => void
+  onPrev: () => void
+}
 
 export interface ContractFormProps {
-  employeeData?: Employee
+  employeeData: Employee | null
   isEditable: boolean
 }
 

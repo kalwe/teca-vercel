@@ -1,0 +1,8 @@
+{
+"recommendations": [
+  "editorconfig.editorconfig",
+  "firefox-devtools.vscode-firefox-debug",
+  "esbenp.prettier-vscode",
+  "YoavBls.pretty-ts-errors",
+]
+}

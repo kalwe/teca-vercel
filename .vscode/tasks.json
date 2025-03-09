@@ -11,13 +11,14 @@
     //   "label": "nvm use",
     //   "detail": "use nvm to set node versim, try use .nvmrc"
     // },
-    {
-      "type": "npm",
-      "label": "set node with nvm use",
-      "script": "nvm:use",
-      "runOptions": {
-        "runOn": "folderOpen",
-      },
-    }
+    // {
+    //   "type": "shell",
+    //   "label": "set node with nvm use",
+    //   "command": "nvm use",
+    //   "problemMatcher": [],
+    //   "runOptions": {
+    //     "runOn": "folderOpen",
+    //   },
+    // }
   ]
 }

@@ -11,11 +11,10 @@ export const UserService = {
       if (response.status == 200) {
         return response.data
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError) {
         console.error('Erro ao buscar usuário: ', error.response?.data)
       }
-      throw new Error('Erro ao buscar usuário: ', error.message)
     }
   },
 
@@ -25,11 +24,10 @@ export const UserService = {
       if (response.status == 200) {
         return response.data
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError) {
         console.error('Erro ao buscar usuário: ', error.response?.data)
       }
-      throw new Error('Erro ao buscar usuário: ', error.message)
     }
   },
 
@@ -39,11 +37,10 @@ export const UserService = {
       if (response.status == 200) {
         return response.data
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError) {
         console.error('Erro ao atualizar usuário: ', error.response?.data)
       }
-      throw new Error('Erro ao atualizar usuário: ', error.message)
     }
   },
 
@@ -53,11 +50,10 @@ export const UserService = {
       if (response.status == 204) {
         return response.data
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError) {
         console.error('Erro ao excluir usuário: ', error.response?.data)
       }
-      throw new Error('Erro ao excluir usuário: ', error.message)
     }
-  },
+  }
 }

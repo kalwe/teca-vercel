@@ -2,12 +2,11 @@ import ComebackButton from '@/app/components/button/comeback'
 import ContractForm from '@/app/components/display/contract-form'
 import { Navigation } from '@/app/components/navigation/navigation'
 
-export default function Contract() {
+export default function Page() {
   return (
-    <div className="bg-gradient-to-br from-[#0B140B] to-[#4F7452] min-h-screen relative">
+    <div className='bg-gradient-to-br from-[#0B140B] to-[#4F7452] min-h-screen relative'>
       <Navigation />
-
-      <ContractForm isEditable={true} />
+      <ContractForm employeeData={{}} isEditable={false} />
       <ComebackButton />
     </div>
   )

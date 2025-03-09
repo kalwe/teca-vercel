@@ -5,22 +5,17 @@ import { Navigation } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 
-export default function EmployeeDetailPage() {
-  const [employee, setEmployee] = useState<Employee>()
+export default async function Page() {
   const [loading, setLoading] = useState<boolean>(true)
   const { id } = useParams()
 
-  const fetchEmployee = async (employeeId: number) => {
-    const employeeData = await EmployeeService.getEmployeeById(employeeId)
-    setEmployee(employeeData)
-    setLoading(false)
-  }
-  fetchEmployee(Number(id))
+  const employeeData: Employee = await EmployeeService.getEmployeeById(Number(id))
+  setLoading(false)
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-white text-lg font-semibold">
+      <div className='flex justify-center items-center h-screen'>
+        <p className='text-white text-lg font-semibold'>
           Carregando dados do funcionário...
         </p>
       </div>
@@ -28,9 +23,9 @@ export default function EmployeeDetailPage() {
   }
 
   return (
-    <div className="mx-auto mt-10">
+    <div className='mx-auto mt-10'>
       <Navigation />
-      <ContractForm employeeData={employee} isEditable={true} />
+      <ContractForm employeeData={employeeData} isEditable={true} />
     </div>
   )
 }

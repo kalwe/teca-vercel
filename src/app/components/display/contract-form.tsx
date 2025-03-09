@@ -1,23 +1,27 @@
 'use client'
 
 import { ContractFormProps, Employee } from '@/app/types/employee'
-import { useState } from 'react'
-import { Address } from '../switch-tabs/address'
-import { Bank } from '../switch-tabs/bank'
-import { Clothing } from '../switch-tabs/clothing'
+import { useEffect, useState } from 'react'
+import { Address } from '../switch-tabs/Address'
+import { Bank } from '../switch-tabs/Bank'
+import { Clothing } from '../switch-tabs/Cloting'
 import { Contact } from '../switch-tabs/Contact'
-import { EmployeeForm } from '../switch-tabs/employee'
-import { PessoaFisica } from '../switch-tabs/person'
+import { EmployeeForm } from '../switch-tabs/Employee'
+import { PessoaFisica } from '../switch-tabs/Person'
 
-export default function ContractForm({
-  employeeData = undefined,
-  isEditable = true
-}: ContractFormProps) {
+export default function ContractForm({ employeeData, isEditable }: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error] = useState<string | null>(null)
 
-  const [employee, setEmployee] = useState<Employee>(employeeData)
+  const [employee, setEmployee] = useState<Employee>()
+
+  useEffect(() => {
+    if (employeeData) {
+      setEmployee(employeeData)
+    }
+    setLoading(false)
+  }, [employeeData])
 
   const tabs = [
     { name: 'PESSOA FÍSICA', component: PessoaFisica, key: 'employee' },
@@ -29,28 +33,23 @@ export default function ContractForm({
   ]
 
   const CurrentComponent = tabs[selectedTab].component
-  const currentKey = tabs[selectedTab].key
 
-  const handleInputChange = (data: Record<string, unknown>) => {
-    setEmployee((prevData) => ({
-      ...prevData,
-      [currentKey]: { ...data }
-    }))
+  const handleNextTab = () => {
+    setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))
   }
 
-  const handleNextTab = () =>
-    setSelectedTab((prev) => Math.min(prev + 1, tabs.length - 1))
-
-  const handlePrevTab = () => setSelectedTab((prev) => Math.max(prev - 1, 0))
+  const handlePrevTab = () => {
+    setSelectedTab((prev) => Math.max(prev - 1, 0))
+  }
 
   return (
     <>
-      <div className="flex items-center justify-center min-h-screen p-4">
-        <div className="w-full max-w-5xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="flex flex-col md:flex-row">
+      <div className='flex items-center justify-center min-h-screen p-4'>
+        <div className='w-full max-w-5xl bg-gray-800 rounded-lg shadow-lg overflow-hidden'>
+          <div className='flex flex-col md:flex-row'>
             {/* Sidebar Menu */}
-            <div className="w-full md:w-1/4 bg-gray-900 text-white">
-              <div className="flex flex-col space-y-2 p-4">
+            <div className='w-full md:w-1/4 bg-gray-900 text-white'>
+              <div className='flex flex-col space-y-2 p-4'>
                 {tabs.map((tab, index) => (
                   <button
                     key={tab.name}
@@ -68,17 +67,15 @@ export default function ContractForm({
             </div>
 
             {/* Content Area */}
-            <div className="w-full md:w-3/4 p-6">
-              {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            <div className='w-full md:w-3/4 p-6'>
+              {error && <p className='text-red-500 text-sm mb-4'>{error}</p>}
               <CurrentComponent
-                data={employee || {}}
-                onChange={handleInputChange}
+                data={employee}
                 isEditable={isEditable}
-                mode={mode}
                 onNext={handleNextTab}
                 onPrev={handlePrevTab}
               />
-              {loading && <p className="text-white text-sm mt-2">Salvando...</p>}
+              {loading && <p className='text-white text-sm mt-2'>Salvando...</p>}
             </div>
           </div>
         </div>
