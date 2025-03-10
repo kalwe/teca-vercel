@@ -3,7 +3,7 @@
 import { EmployeeService } from '@/app/services/employeeService'
 import { Employees } from '@/app/types/employee'
 import { useRouter } from 'next/navigation'
-import { useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 export default function EmployeesDisplay() {
   const [employees, setEmployees] = useState<Employees>([])

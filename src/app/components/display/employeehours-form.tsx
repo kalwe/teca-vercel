@@ -1,25 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale } from "react-datepicker";
 import { ptBR } from "date-fns/locale";
+import { useEffect, useState } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-import { Bar, Pie } from "react-chartjs-2";
+import { HoursBankFilter, HoursBankService } from "@/app/services/hoursBankService";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
+    ArcElement,
+    BarElement,
+    CategoryScale,
+    Chart as ChartJS,
+    Legend,
+    LinearScale,
+    Title,
+    Tooltip,
 } from "chart.js";
-import { HoursBankService, HoursBankFilter } from "@/app/services/hoursBankService";
-import { Navigation } from "../navigation/navigation";
+import { Bar, Pie } from "react-chartjs-2";
 import DropdownCheckboxEmployee from "../DropDown/dropdown-employees";
+import { Navigation } from "../navigation/navigation";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 

@@ -1,18 +1,32 @@
-export type BankAccountType = {
-  bank: string;
-  agency: string;
-  account: string;
-  account_type: string;
-  employeeId?: number;
-};
+export enum AccountTypeEnum {
+  SALARIO = 'Salário',
+  CORRENTE = 'Corrente',
+  CONJUNTA = 'Conjunta',
+  POUPANCA = 'Poupança',
+  UNIVERSITARIA = 'Universitária',
+  EMPRESARIAL = 'Empresarial'
+}
 
-export type ModeType = 'edit' | 'add' | 'view' | 'create';
+// type accountType = keyof typeof AccountTypeEnum
+
+type BankAccountT = {
+  bank: string
+  agency: string
+  account: string
+  type: string
+  employeeId: number
+}
+
+export type ModeType = 'edit' | 'add' | 'view' | 'create'
+
+export type BankAccount = BankAccountT | Partial<BankAccountT>
+export type BankAccounts = BankAccountT[] | Partial<BankAccountT>[]
 
 export type BankProps = {
-  data: BankAccountType;
-  onChange: (updatedData: BankProps['data']) => void;
-  onNext: () => void;
-  onPrev: () => void;
-  mode: ModeType;
-  employee?: number;
-};
+  data: BankAccount
+  onChange: (updatedData: BankAccount) => void
+  onNext: () => void
+  onPrev: () => void
+  mode: ModeType
+  employeeId: number
+}

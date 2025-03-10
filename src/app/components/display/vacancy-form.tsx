@@ -23,9 +23,9 @@ export default async function VacancyForm({ vacancyData }: { vacancyData: Vacanc
     if (isEditMode && vacancyId) {
       setVacancy(vacancyData)
     }
-  }, [isEditMode, vacancyId, vacancyData])
+  })
 
-  const handleChange = (field: keyof Vacancy, value: any) => {
+  const handleChange = <K extends keyof Vacancy>(field: K, value: Vacancy[K]) => {
     const updatedData = { ...vacancy, [field]: value }
     try {
       vacancySchema.parse(updatedData)

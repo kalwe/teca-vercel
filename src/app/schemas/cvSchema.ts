@@ -1,6 +1,6 @@
 "use client";
 
-import { z } from "zod"
+import { z } from "zod";
 
 // Expressoes regulares para validação
 
@@ -16,7 +16,7 @@ export const resumeSchema = z.object({
     .max(100, "O nome completo deve ter no máximo 100 caracteres")
     .trim(),
 
-  pdf_url: z
+  fileUrl: z
     .string()
     .trim()
     .regex(/^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/, "Formato de URL inválido")

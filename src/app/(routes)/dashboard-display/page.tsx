@@ -1,3 +1,5 @@
+'use clinet'
+
 import DashboardDisplay from '@/app/components/display/dashboard-display'
 import { EmployeeService } from '@/app/services/employeeService'
 import { ReminderService } from '@/app/services/reminderService'
