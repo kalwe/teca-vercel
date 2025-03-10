@@ -13,7 +13,7 @@ export const ContactService = {
       }
     } catch (error) {
       console.error("Erro ao criar contato:", error)
-      throw error
+
     }
   },
   async getContactById(id: number){
@@ -22,7 +22,7 @@ export const ContactService = {
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar contato:", error);
-      throw error;
+      ;
     }
   },
 
@@ -32,7 +32,7 @@ export const ContactService = {
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar todos os contatos:", error);
-      throw error;
+      ;
     }
   },
 
@@ -42,7 +42,7 @@ export const ContactService = {
       return response.data;
     } catch (error) {
       console.error("Erro ao atualizar contato:", error);
-      throw error;
+      ;
     }
   },
 
@@ -52,7 +52,7 @@ export const ContactService = {
       return response.data;
     } catch (error) {
       console.error("Erro ao deletar contato:", error);
-      throw error;
+      ;
     }
   },
 };
