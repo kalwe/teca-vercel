@@ -128,7 +128,6 @@ export default function VisualizeCV() {
           >
             Adicionar Currículo
           </button>
-          {loading && <p className="text-gray-300 text-center py-4">Carregando currículos...</p>}
         </div>
 
         <div className="overflow-y-auto border-t border-gray-600" style={{ maxHeight: "300px" }}>

@@ -1,14 +1,21 @@
 'use client'
 
 import MoneyInput from '@/app/components/masks/salary'
-import { vacancySchema } from '@/app/schemas/vacancySchema'
 import { VacancyService } from '@/app/services/vacancyService'
-import { Vacancy } from '@/app/types/vacancy'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
-import { z } from 'zod'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
+
+// Definição do tipo para a vaga
+type Vacancy = {
+  positionId?: number
+  quantity?: number
+  description?: string
+  benefits?: string
+  requirements?: string
+  salary?: number
+}
 
 export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
   const router = useRouter()
@@ -16,44 +23,25 @@ export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
   const isEditMode = !!id
   const vacancyId = isEditMode ? Number(id) : null
   const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
   const [vacancy, setVacancy] = useState<Vacancy>({})
 
   useEffect(() => {
     if (isEditMode && vacancyId) {
       setVacancy(vacancyData)
     }
-  })
+  }, [])
 
-  const handleChange = <K extends keyof Vacancy>(field: K, value: Vacancy[K]) => {
-    const updatedData = { ...vacancy, [field]: value }
-    try {
-      vacancySchema.parse(updatedData)
-      setErrors({})
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {}
-        err.errors.forEach((e) => {
-          if (e.path.length > 0) {
-            fieldErrors[e.path[0] as string] = e.message
-          }
-        })
-        setErrors(fieldErrors)
-      }
-    } finally {
-      setVacancy(updatedData)
-    }
+  const handleChange = (field: keyof Vacancy, value: any) => {
+    setVacancy({ ...vacancy, [field]: value })
   }
 
   const handleSave = async () => {
     setLoading(true)
     if (isEditMode && vacancyId) {
-      // const validatedData = vacancySchema.parse(vacancy);
-      const { id, ...vacancyUpdate } = vacancy
+      const { positionId, ...vacancyUpdate } = vacancy
       await VacancyService.updateVacancy(Number(id), vacancyUpdate)
       alert('Vaga atualizada com sucesso!')
     } else {
-      // const validatedData = vacancySchema.parse(vacancy);
       await VacancyService.createVacancy(vacancy)
       alert('Vaga criada com sucesso!')
     }
@@ -72,55 +60,46 @@ export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
             id={vacancy?.positionId ?? 1}
             onChange={(id) => handleChange('positionId', id)}
           />
-          {errors.position && <p className='text-red-500 text-sm'>{errors.position}</p>}
         </div>
 
         <div>
           <input
             type='number'
             placeholder='Quantidade'
-            value={vacancy?.quantity}
+            value={vacancy?.quantity || ''}
             onChange={(e) => handleChange('quantity', Number(e.target.value))}
             className='w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300'
           />
-          {errors.quantity && <p className='text-red-500 text-sm'>{errors.quantity}</p>}
         </div>
 
         <div>
           <input
             type='text'
             placeholder='Descrição'
-            value={vacancy?.description ?? ''}
+            value={vacancy?.description || ''}
             onChange={(e) => handleChange('description', e.target.value)}
             className='w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300'
           />
-          {errors.description && (
-            <p className='text-red-500 text-sm'>{errors.description}</p>
-          )}
         </div>
 
         <div>
           <input
             type='text'
             placeholder='Benefícios'
-            value={vacancy?.benefits ?? ''}
+            value={vacancy?.benefits || ''}
             onChange={(e) => handleChange('benefits', e.target.value)}
             className='w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300'
           />
-          {errors.benefits && <p className='text-red-500 text-sm'>{errors.benefits}</p>}
         </div>
 
         <div>
           <input
             type='text'
             placeholder='Requisitos'
-            value={vacancy?.requirements ?? ''}
+            value={vacancy?.requirements || ''}
             onChange={(e) => handleChange('requirements', e.target.value)}
             className='w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300'
           />
-          {errors.requirements && (
-            <p className='text-red-500 text-sm'>{errors.requirements}</p>
-          )}
         </div>
 
         <div>
@@ -131,7 +110,6 @@ export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
               handleChange('salary', numericValue)
             }}
           />
-          {errors.salary && <p className='text-red-500 text-sm'>{errors.salary}</p>}
         </div>
 
         <button

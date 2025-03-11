@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation'
 export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
   const router = useRouter()
 
-  const userName = 'John'
   return (
     <motion.div
       initial={{ y: '-100%', opacity: 0 }}
@@ -16,12 +15,6 @@ export function DropDownBurger({ isOpen }: DropDownBurgerProps) {
       className="fixed top-0 left-0 w-full h-full bg-[#2F3E29] bg-opacity-90 z-40 backdrop-blur-md"
     >
       <div className="flex flex-col items-center justify-center h-full space-y-6 text-lg text-white font-semibold">
-        {/* Display the username if logged in */}
-        {userName && (
-          <div className="text-center text-xl font-bold">
-            <p>{userName}</p>
-          </div>
-        )}
 
         <ul className="space-y-6 text-center">
           <li

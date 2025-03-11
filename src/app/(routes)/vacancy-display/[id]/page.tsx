@@ -1,26 +1,44 @@
-import VacancyForm from '@/app/components/display/vacancy-form'
-import { Navigation } from '@/app/components/navigation/navigation'
-import { VacancyService } from '@/app/services/vacancyService'
-import { Vacancy } from '@/app/types/vacancy'
-import { useParams, useRouter } from 'next/navigation'
+"use client"; // 🔥 Isso indica que este componente roda no cliente
 
-export default async function EditVacancyPage() {
-  const router = useRouter()
-  const params = useParams()
+import VacancyForm from "@/app/components/display/vacancy-form"
+import { VacancyService } from "@/app/services/vacancyService"
+import { Vacancy } from "@/app/types/vacancy"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
-  const vacancyId = Number(params.id)
-  const vacancy: Vacancy = await VacancyService.getVacancyById(vacancyId)
+export default function EditVacancyClient() {
+  const router = useRouter();
+  const params = useParams();
+  const vacancyId = Number(params.id);
 
-  if (isNaN(vacancyId)) {
-    alert('ID inválido. Redirecionando...')
-    router.replace('/vagas-display/')
-    return
+  const [vacancy, setVacancy] = useState<Vacancy | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (isNaN(vacancyId)) {
+      alert("ID inválido. Redirecionando...");
+      router.replace("/vagas-display/");
+      return;
+    }
+
+    async function fetchVacancy() {
+      try {
+        const data = await VacancyService.getVacancyById(vacancyId);
+        setVacancy(data);
+      } catch (error) {
+        console.error("Erro ao buscar vaga:", error);
+        router.replace("/vagas-display/");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchVacancy();
+  }, [vacancyId, router]);
+
+  if (loading) {
+    return <p className="text-center text-gray-500">Carregando...</p>;
   }
 
-  return (
-    <div className="mx-auto mt-10">
-      <Navigation />
-      <VacancyForm vacancyData={vacancy} />
-    </div>
-  )
+  return vacancy ? <VacancyForm vacancyData={vacancy} /> : <p>Vaga não encontrada.</p>;
 }

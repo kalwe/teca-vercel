@@ -1,3 +1,5 @@
+'use client'
+
 import { User, Users } from '@/app/schemas/userSchema'
 import { UserService } from '@/app/services/userService'
 import { useRouter } from 'next/navigation'

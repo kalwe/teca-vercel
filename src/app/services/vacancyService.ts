@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios'
 import api from './api'
 
 const endpoint = '/vacancy'
@@ -11,7 +10,7 @@ export const VacancyService = {
         return response.data
       }
     } catch (error) {
-      this.handleError(error, 'Erro ao criar vaga')
+
     }
   },
 
@@ -22,7 +21,7 @@ export const VacancyService = {
         return response.data
       }
     } catch (error) {
-      this.handleError(error, 'Erro ao buscar vaga por ID')
+
     }
   },
 
@@ -33,7 +32,7 @@ export const VacancyService = {
         return response.data
       }
     } catch (error) {
-      this.handleError(error, 'Erro ao buscar todas as vagas')
+
     }
     return null
   },
@@ -46,7 +45,7 @@ export const VacancyService = {
         return response.data
       }
     } catch (error) {
-      this.handleError(error, 'Erro ao atualizar vaga')
+
     }
   },
 
@@ -57,16 +56,10 @@ export const VacancyService = {
         return true
       }
     } catch (error) {
-      this.handleError(error, 'Erro ao excluir vaga')
+
     }
     return false
   },
 
-  handleError(error: unknown, message: any) {
-    if (error instanceof AxiosError) {
-      console.error(`${message}:`, error.response?.data)
-    } else {
-      console.error(`${message}:`, error)
-    }
-  }
+
 }

@@ -1,30 +1,16 @@
 'use client'
 
-import { EmployeeService } from '@/app/services/employeeService'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export default function EmployeeForm({ employeeData = {}, isEditable, onPrev }: any) {
+export default function EmployeeForm({ employeeData = {}, onPrev }: any) {
   const [employee, setEmployee] = useState<any>(employeeData || {})
+
 
   const handleInputChange = (field: any, value: any) => {
     setEmployee((prev: any) => ({ ...prev, [field]: value }))
-  }
-
-  useEffect(() => {
-    setEmployee(employeeData || {})
-  }, [employeeData])
-
-  const handleSave = async () => {
-    try {
-      const createdEmployee = await EmployeeService.createEmployee(employee)
-      console.log('Funcionário cadastrado com sucesso:', createdEmployee)
-    } catch (error) {
-      alert('Erro ao cadastrar funcionário.')
-      console.error('Erro ao enviar para API:', error)
-    }
   }
 
   return (
@@ -39,7 +25,6 @@ export default function EmployeeForm({ employeeData = {}, isEditable, onPrev }: 
           onChange={(e) => handleInputChange('registration', e.target.value)}
           placeholder='Digite a matrícula'
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
-          disabled={!isEditable}
         />
       </div>
 
@@ -50,7 +35,6 @@ export default function EmployeeForm({ employeeData = {}, isEditable, onPrev }: 
           onChange={(date) => handleInputChange('contractDate', date)}
           dateFormat='yyyy-MM-dd'
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
-          disabled={!isEditable}
         />
       </div>
 
@@ -61,7 +45,6 @@ export default function EmployeeForm({ employeeData = {}, isEditable, onPrev }: 
           onChange={(date) => handleInputChange('removalDate', date)}
           dateFormat='yyyy-MM-dd'
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
-          disabled={!isEditable}
         />
       </div>
 
@@ -80,7 +63,6 @@ export default function EmployeeForm({ employeeData = {}, isEditable, onPrev }: 
           Voltar
         </button>
         <button
-          onClick={handleSave}
           className='px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600'
         >
           Próximo

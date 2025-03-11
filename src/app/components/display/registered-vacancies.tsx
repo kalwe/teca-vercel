@@ -35,7 +35,7 @@ export default function VacancyList({ vacanciesData }: { vacanciesData: Vacancie
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-extrabold text-white">Vagas</h1>
           <button
-            onClick={() => router.push('/vacancy-display/')}
+            onClick={() => router.push('/vacancy-display/nova-vaga')}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-transform transform hover:scale-105"
           >
             Adicionar Vaga
@@ -53,11 +53,9 @@ export default function VacancyList({ vacanciesData }: { vacanciesData: Vacancie
           {loading && <p className="text-white text-center">Carregando vagas...</p>}
           {error && <p className="text-red-500 text-center">{error}</p>}
 
-          {!loading && !error && vacancies.length === 0 && (
-            <p className="text-gray-300 text-center">Nenhuma vaga cadastrada</p>
-          )}
 
-          {!loading && !error && vacancies.length > 0 && (
+
+
             <div className="overflow-y-auto rounded-lg" style={{ maxHeight: '300px' }}>
               {vacancies.map((vacancy) => (
                 <div
@@ -93,7 +91,7 @@ export default function VacancyList({ vacanciesData }: { vacanciesData: Vacancie
                 </div>
               ))}
             </div>
-          )}
+
         </div>
       </div>
     </div>
