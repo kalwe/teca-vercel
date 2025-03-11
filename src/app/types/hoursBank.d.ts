@@ -6,5 +6,5 @@ export interface HoursBank {
   date: string;
   createdAt?: string | null;
   updatedAt?: string | null;
-  employeeId: number;
+  employeeId?: any | null;
 }

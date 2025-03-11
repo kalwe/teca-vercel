@@ -10,11 +10,11 @@ export enum AccountTypeEnum {
 // type accountType = keyof typeof AccountTypeEnum
 
 type BankAccountT = {
-  bank: string
-  agency: string
-  account: string
-  type: string
-  employeeId: number
+  bank?: any | null
+  agency?: any | null
+  account?: any | null
+  type?: any | null
+  employeeId?: any | null
 }
 
 export type ModeType = 'edit' | 'add' | 'view' | 'create'
@@ -28,5 +28,5 @@ export type BankProps = {
   onNext: () => void
   onPrev: () => void
   mode: ModeType
-  employeeId: number
+  employeeId?: any | null
 }

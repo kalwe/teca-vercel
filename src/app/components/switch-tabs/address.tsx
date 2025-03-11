@@ -1,14 +1,13 @@
 'use client'
 
 import { AddressService } from '@/app/services/addressService'
-import { Address, AddressProps } from '@/app/types/address'
 import { useState } from 'react'
 
-export function Address({ data, onChange, onNext, onPrev, employeeId }: AddressProps) {
-  const [addressData, setAddressData] = useState<Address>(data)
+export function Address({ data = {}, onChange, onNext, onPrev, employeeId }: any) {
+  const [addressData, setAddressData] = useState<any>(data || {})
   const [loading, setLoading] = useState(false)
 
-  const handleInputChange = (field: keyof Address, value: any) => {
+  const handleInputChange = (field: any, value: any) => {
     const updatedAddress = { ...addressData, [field]: value }
     setAddressData(updatedAddress)
     onChange(updatedAddress)
@@ -31,8 +30,6 @@ export function Address({ data, onChange, onNext, onPrev, employeeId }: AddressP
     }
   }
 
-  const valueFromField = (field: keyof Address, obj: Address) => obj[field] ?? ''
-
   return (
     <div className='p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full'>
       <h2 className='text-white text-xl font-bold'>Endereço</h2>
@@ -48,10 +45,8 @@ export function Address({ data, onChange, onNext, onPrev, employeeId }: AddressP
           <input
             type='text'
             name={field.name}
-            value={String(valueFromField(field.name as keyof Address, addressData))}
-            onChange={(e) =>
-              handleInputChange(field.name as keyof Address, e.target.value)
-            }
+            value={addressData?.[field.name] || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
             placeholder={field.placeholder}
             className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
           />
@@ -62,39 +57,15 @@ export function Address({ data, onChange, onNext, onPrev, employeeId }: AddressP
       <div className='w-full'>
         <select
           name='state'
-          value={addressData.state || ''}
+          value={addressData?.state || ''}
           onChange={(e) => handleInputChange('state', e.target.value)}
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         >
           <option value=''>Selecione o estado</option>
           {[
-            'AC',
-            'AL',
-            'AP',
-            'AM',
-            'BA',
-            'CE',
-            'DF',
-            'ES',
-            'GO',
-            'MA',
-            'MT',
-            'MS',
-            'MG',
-            'PA',
-            'PB',
-            'PR',
-            'PE',
-            'PI',
-            'RJ',
-            'RN',
-            'RS',
-            'RO',
-            'RR',
-            'SC',
-            'SP',
-            'SE',
-            'TO'
+            'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+            'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+            'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
           ].map((estado) => (
             <option key={estado} value={estado}>
               {estado}
@@ -103,20 +74,12 @@ export function Address({ data, onChange, onNext, onPrev, employeeId }: AddressP
         </select>
       </div>
 
-      {/* Botões */}
       <div className='flex justify-between mt-6'>
-        <button
-          onClick={onPrev}
-          className='px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600'
-        >
+        <button onClick={onPrev} className='px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600'>
           Voltar
         </button>
 
-        <button
-          onClick={handleSave}
-          className='px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600'
-          disabled={loading}
-        >
+        <button onClick={handleSave} className='px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600' disabled={loading}>
           {loading ? 'Salvando...' : 'Próximo'}
         </button>
       </div>

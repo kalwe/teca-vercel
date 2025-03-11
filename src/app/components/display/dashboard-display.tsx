@@ -100,17 +100,7 @@ export default function DashboardDisplay({
             loading={loading}
             bgGradient='from-[#3A3B38] to-[#2B2C25]'
           />
-          <DashboardWidget
-            title='Currículos'
-            data={(resumes ?? []).map((d) => ({
-              name: d.fullName || '',
-              misc: d.position?.name
-            }))}
-            maxItems={maxItemsToShow}
-            navigateTo='/curriculo-display/visualize-cv'
-            loading={loading}
-            bgGradient='from-[#3A3B38] to-[#2B2C25]'
-          />
+
         </div>
 
         {/* Card de Ações Rápidas - Ocupando bem o espaço */}

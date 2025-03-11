@@ -1,11 +1,10 @@
 import { AxiosError } from 'axios'
-import { ReminderInput } from '../schemas/reminderSchema'
 import api from './api'
 
 const endpoint = '/reminder'
 
 export const ReminderService = {
-  async createReminder(reminderData: ReminderInput) {
+  async createReminder(reminderData: any) {
     try {
       const response = await api.post(endpoint, reminderData)
       if (response.status == 200) {

@@ -1,47 +1,43 @@
-import { Address } from './address'
-import { BankAccount } from './bank'
-import { Clothing } from './clothing'
-import { Contact } from './contact'
 import { Position } from './position'
 
 type EmployeeT = {
-  id?: number
-  active?: boolean
-  name: string
-  fullName?: string
-  dateOfBirth?: string
-  taxId: string
-  nationalId: string
-  issuingBody?: string
-  registration: string
-  supervisor?: boolean
-  manager?: boolean
-  salary?: number
-  contractDate?: Date
-  removalDate?: Date
-  positionId?: number
-  position?: Position
-  address?: Address
-  contact?: Contact
-  bank?: BankAccount
-  clothing?: Clothing
-  gender?: string
-  maritalStatus?: string
+  id?: any | null
+  active?: any | null
+  name?: any | null
+  fullName?: any | null
+  dateOfBirth?: any | null
+  taxId?: any | null
+  nationalId: any | null
+  issuingBody?: any | null
+  registration: any | null
+  supervisor?: any | null
+  manager?: any | null
+  salary?: any | null
+  contractDate?: Date | null
+  removalDate?: Date | null
+  positionId?: any | null
+  position?: Position | null
+  address?: any | null
+  contact?: any | null
+  bank?: any | null
+  clothing?: any | null
+  gender?: any | null
+  maritalStatus?: any | null
 }
 
 export type Employee = EmployeeT | Partial<EmployeeT>
 export type Employees = EmployeeT[] | Partial<EmployeeT>[]
 
 export interface EmployeeFormProps {
-  employeeData: Employee | null
-  isEditable: boolean
+  employeeData?: Employee | null
+  isEditable?: boolean
   onNext: () => void
   onPrev: () => void
 }
 
 export interface ContractFormProps {
-  employeeData: Employee | null
-  isEditable: boolean
+  employeeData?: Employee | null
+  isEditable?: boolean
 }
 
 export interface CpfMaskProps {

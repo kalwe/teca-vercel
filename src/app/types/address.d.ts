@@ -1,11 +1,11 @@
 type AddressT = {
-  street?: string
-  number?: string
-  neighborhood?: string
-  city?: string
-  zipCode?: string
-  state?: string
-  employeeId?: number
+  street?: any | null
+  number?: any | null
+  neighborhood?: any | null
+  city?: any | null
+  zipCode?: any | null
+  state?: any | null
+  employeeId?: any | null
 }
 
 export type Address = AddressT | Partial<AddressT>
@@ -16,5 +16,5 @@ export type AddressProps = {
   onChange: (updatedData: Address) => void
   onNext: () => void
   onPrev: () => void
-  employeeId: number
+  employeeId?: any
 }

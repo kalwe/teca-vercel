@@ -1,9 +1,9 @@
 type ResumeT = {
-  id: number
-  fullName: string
-  position: Position
-  positionId: number
-  fileUrl: string
+  id: any | null
+  fullName: any | null
+  position: any | null
+  positionId: any | null
+  fileUrl: any | null
 }
 
 

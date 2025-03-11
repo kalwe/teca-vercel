@@ -1,25 +1,24 @@
-import { Role } from '@/app/schemas/authSchema';
-import { UserAuthInput } from '../schemas/authSchema';
+import { UserAuthInput } from '../schemas/authSchema'
 
 export type AuthResponse = {
-  id: number;
-  name: string;
-  token: string;
-  authenticated;
-  expires: string;
+  id?: any | null;
+  name?: any | null;
+  token?: any | null;
+  authenticated?;
+  expires?: any | null;
 };
 
 export type User = {
-  id: number;
-  name: string;
-  email?: string;
-  password?: string;
-  role?: Role;
+  id?: any | null;
+  name?: any | null;
+  email?: any | null;
+  password?: any | null;
+  role?: any | null;
 };
 
 export type AuthContextType = {
-  user: User | null;
-  isAuthenticated: boolean;
+  user?: User | null;
+  isAuthenticated?: any | null;
   login: (credentials: UserAuthInput) => Promise<void>;
   logout: () => void;
 };

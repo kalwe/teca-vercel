@@ -1,10 +1,9 @@
-import { Clothing } from "../types/clothing"
 import api from "./api"
 
 const endpoint = "/clothing";
 
 export const ClothingService = {
-  async createClothing(ClothingData: Clothing) {
+  async createClothing(ClothingData: any) {
     try {
       const response = await api.post(endpoint, ClothingData)
       if (response.status == 201)
@@ -16,7 +15,7 @@ export const ClothingService = {
     }
   },
 
-  async getClothingById(id: number) {
+  async getClothingById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`);
       return response.data;
@@ -36,7 +35,7 @@ export const ClothingService = {
     }
   },
 
-  async updateClothing(id: number, clothingData: any){
+  async updateClothing(id: any, clothingData: any){
     try {
       const response = await api.put(`${endpoint}/${id}`, clothingData);
       return response.data;
@@ -46,7 +45,7 @@ export const ClothingService = {
     }
   },
 
-  async deleteClothing(id: number) {
+  async deleteClothing(id: any) {
     try {
       const response = await api.delete(`${endpoint}/${id}`);
       return response.data;

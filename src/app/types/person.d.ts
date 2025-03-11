@@ -1,15 +1,14 @@
-import { GenderEnum } from '../schemas/enums/gender'
-import { MaritalStatusEnum } from '../schemas/enums/maritalStatus'
+
 
 export type PersonType = {
-  name: string
-  fullName?: string | null
-  taxId: string
-  nationalId: string
-  dateOfBirth?: string
-  issuingBody?: string
-  gender: GenderEnum
-  maritalStatus: MaritalStatusEnum
+  name?: any | null
+  fullName?: any | null
+  taxId?: any | null
+  nationalId?: any | null
+  dateOfBirth?: any | null
+  issuingBody?: any | null
+  gender?: any | null
+  maritalStatus?: any | null
 }
 
 export type Person = PersonType

@@ -1,8 +1,8 @@
 export type ClothingT = {
-  shirt_size: string;
-  pants_size: string;
-  shoe_size: string;
-  employeeId?: number;
+  shirt_size?: any | null
+  pants_size?: any | null
+  shoe_size?: any | null
+  employeeId?: any | null
 };
 
 export type Clothing = ClothingT | Partial<ClothingT>

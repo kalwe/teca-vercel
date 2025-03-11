@@ -6,15 +6,16 @@ import {
   userAuthResponseSchema,
 } from '../schemas/authSchema'
 import {
-  UserInput,
+
   userInputSchema,
-  UserResponse,
+
   userResponseSchema,
 } from '../schemas/userSchema'
 import api from './api'
+import { UserResponse } from '../types/user'
 
 export const AuthService = {
-  async register(userInput: UserInput): Promise<UserResponse> {
+  async register(userInput: any): Promise<UserResponse> {
     try {
       const validUser = userInputSchema.parse(userInput)
 

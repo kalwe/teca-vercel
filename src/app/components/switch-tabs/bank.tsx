@@ -1,15 +1,13 @@
 'use client'
 
 import { BankService } from '@/app/services/bankService'
-import { BankAccount, BankProps } from '@/app/types/bank'
-
 import { useState } from 'react'
 
-export default function Bank({ data, onChange, onNext, onPrev, employeeId }: BankProps) {
-  const [bankData, setBankData] = useState<BankAccount>(data)
+export default function Bank({ data = {}, onChange, onNext, onPrev, employeeId }: any) {
+  const [bankData, setBankData] = useState<any>(data || {})
   const [loading] = useState(false)
 
-  const handleInputChange = (field: keyof BankAccount, value: any) => {
+  const handleInputChange = (field: any, value: any) => {
     const updatedBankData = { ...bankData, [field]: value }
     setBankData(updatedBankData)
     onChange(updatedBankData)
@@ -18,7 +16,7 @@ export default function Bank({ data, onChange, onNext, onPrev, employeeId }: Ban
   const handleSave = async () => {
     try {
       const createdBankAccount = await BankService.createBankAccount({
-        ...data,
+        ...bankData,
         employeeId
       })
       console.log(createdBankAccount)
@@ -28,8 +26,6 @@ export default function Bank({ data, onChange, onNext, onPrev, employeeId }: Ban
       console.error(error)
     }
   }
-
-  const valueFromField = (field: keyof BankAccount, obj: BankAccount) => obj[field] ?? ''
 
   return (
     <div className='p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full'>
@@ -44,10 +40,8 @@ export default function Bank({ data, onChange, onNext, onPrev, employeeId }: Ban
           <input
             type='text'
             name={field.name}
-            value={valueFromField(field.name as keyof BankAccount, bankData)}
-            onChange={(e) =>
-              handleInputChange(field.name as keyof BankAccount, e.target.value)
-            }
+            value={bankData?.[field.name] || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
             placeholder={field.placeholder}
             className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
           />
@@ -58,8 +52,8 @@ export default function Bank({ data, onChange, onNext, onPrev, employeeId }: Ban
       <div className='w-full'>
         <select
           name='account_type'
-          value={bankData.accountType || ''}
-          onChange={(e) => handleInputChange('type', e.target.value)}
+          value={bankData?.accountType || ''}
+          onChange={(e) => handleInputChange('accountType', e.target.value)}
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         >
           <option value=''>Selecione o tipo de conta</option>
@@ -69,7 +63,6 @@ export default function Bank({ data, onChange, onNext, onPrev, employeeId }: Ban
         </select>
       </div>
 
-      {/* Botões */}
       <div className='flex justify-between mt-6'>
         <button
           onClick={onPrev}

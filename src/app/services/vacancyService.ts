@@ -1,11 +1,10 @@
 import { AxiosError } from 'axios'
-import { Vacancy } from '../types/vacancy'
 import api from './api'
 
 const endpoint = '/vacancy'
 
 export const VacancyService = {
-  async createVacancy(vacancyData: Vacancy) {
+  async createVacancy(vacancyData: any) {
     try {
       const response = await api.post(endpoint, vacancyData)
       if (response.status === 201) {
@@ -16,7 +15,7 @@ export const VacancyService = {
     }
   },
 
-  async getVacancyById(id: number) {
+  async getVacancyById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`)
       if (response.status === 200) {
@@ -39,7 +38,7 @@ export const VacancyService = {
     return null
   },
 
-  async updateVacancy(id: number, vacancyData: Vacancy) {
+  async updateVacancy(id: any, vacancyData: any) {
     try {
       console.log(vacancyData)
       const response = await api.put(`${endpoint}/${id}`, vacancyData)
@@ -51,7 +50,7 @@ export const VacancyService = {
     }
   },
 
-  async deleteVacancy(id: number) {
+  async deleteVacancy(id: any) {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
       if (response.status === 204) {
@@ -63,7 +62,7 @@ export const VacancyService = {
     return false
   },
 
-  handleError(error: unknown, message: string) {
+  handleError(error: unknown, message: any) {
     if (error instanceof AxiosError) {
       console.error(`${message}:`, error.response?.data)
     } else {

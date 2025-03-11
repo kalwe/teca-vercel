@@ -1,8 +1,8 @@
 type ContactT = {
-  phone: string
-  email?: string
-  webSite?: string
-  employeeId: number
+  phone: any | null
+  email?: any | null
+  webSite?: any | null
+  employeeId?: any | null
 }
 
 export type Contact = ContactT | Partial<ContactT>

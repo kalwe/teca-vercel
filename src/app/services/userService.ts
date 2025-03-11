@@ -18,7 +18,7 @@ export const UserService = {
     }
   },
 
-  async getUserById(id: number) {
+  async getUserById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`)
       if (response.status == 200) {
@@ -31,7 +31,7 @@ export const UserService = {
     }
   },
 
-  async updateUser(id: number, userData: Partial<UserInput>) {
+  async updateUser(id: any, userData: Partial<UserInput>) {
     try {
       const response = await api.put(`${endpoint}/${id}`, userData)
       if (response.status == 200) {
@@ -44,7 +44,7 @@ export const UserService = {
     }
   },
 
-  async deleteUser(id: number) {
+  async deleteUser(id: any) {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
       if (response.status == 204) {

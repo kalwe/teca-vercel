@@ -10,7 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { z } from 'zod'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export default async function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
+export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
   const router = useRouter()
   const { id } = useParams()
   const isEditMode = !!id

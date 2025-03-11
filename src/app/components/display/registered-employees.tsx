@@ -3,7 +3,7 @@
 import { EmployeeService } from '@/app/services/employeeService'
 import { Employees } from '@/app/types/employee'
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function EmployeesDisplay() {
   const [employees, setEmployees] = useState<Employees>([])
@@ -14,28 +14,31 @@ export default function EmployeesDisplay() {
   const lastEmployeeRef = useRef<HTMLTableRowElement | null>(null)
   const router = useRouter()
 
-  // const fetchEmployees = async () => {
-  //   setLoading(true)
-  //   try {
-  //     const employeeList = await EmployeeService.getAllEmployees()
-  //     if (!Array.isArray(employeeList)) {
-  //       throw new Error('Dados inválidos recebidos do servidor.')
-  //     }
-  //     setEmployees((prev) => [...prev, ...employeeList])
-  //   } catch (error) {
-  //     console.error('Erro ao carregar funcionários:', error)
-  //     setError('Erro ao carregar funcionários.')
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+  useEffect(() => {
+    fetchEmployees()
+  }, [])
+
+  const fetchEmployees = async () => {
+    setLoading(true)
+    try {
+      const employeeList = await EmployeeService.getAllEmployees()
+      if (!Array.isArray(employeeList)) {
+        throw new Error('Dados inválidos recebidos do servidor.')
+      }
+      setEmployees(employeeList)
+    } catch (error) {
+      console.error('Erro ao carregar funcionários:', error)
+      setError('Erro ao carregar funcionários.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const toggleEmployeeStatus = async (employeeId: number, isActive: boolean) => {
     try {
       const updatedEmployee = await EmployeeService.updateEmployee(employeeId, {
         active: !isActive
       })
-
       setEmployees((prevEmployees) =>
         prevEmployees.map((emp) => (emp.id === employeeId ? updatedEmployee : emp))
       )
@@ -45,19 +48,17 @@ export default function EmployeesDisplay() {
     }
   }
 
+  const filteredEmployees = employees.filter(emp =>
+    emp.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
-    <div
-      className="flex items-center justify-center min-h-screen p-4"
-      style={{
-        background: 'linear-gradient(to bottom right, rgb(11, 20, 11), rgb(79, 116, 82))'
-      }}
-    >
+    <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-green-900 to-green-600">
       <div className="w-full max-w-7xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-extrabold text-white">Funcionários</h1>
             <button
-              onClick={() => router.push('/contract-display/')}
               onClick={() => router.push('/contract-display/')}
               className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all transform hover:scale-105"
             >
@@ -76,18 +77,10 @@ export default function EmployeesDisplay() {
           </div>
 
           {error && <div className="p-4 bg-red-500 text-white text-center">{error}</div>}
+          {loading && <div className="p-6 text-center text-gray-300">Carregando funcionários...</div>}
 
-          {loading && (
-            <div className="p-6 text-center text-gray-300">
-              Carregando funcionários...
-            </div>
-          )}
-
-          <div
-            className="overflow-y-auto border-t border-gray-600"
-            style={{ maxHeight: '400px' }}
-          >
-            <table className="w-full table-auto border-collapse border border-gray-700 text-gray-300 rounded-lg">
+          <div className="overflow-y-auto border-t border-gray-600 max-h-96">
+            <table className="w-full table-auto border-collapse border border-gray-700 text-gray-300">
               <thead className="bg-gray-900">
                 <tr>
                   <th className="px-4 py-2 border border-gray-700">#</th>
@@ -104,63 +97,32 @@ export default function EmployeesDisplay() {
                   filteredEmployees.map((employee, index) => (
                     <tr
                       key={employee.id}
-                      className={`hover:bg-gray-700 transition duration-200 cursor-pointer ${
-                        !employee.active ? 'bg-gray-700 text-gray-400' : ''
-                        !employee.active ? 'bg-gray-700 text-gray-400' : ''
-                      }`}
+                      className={`hover:bg-gray-700 transition duration-200 cursor-pointer ${!employee.active ? 'bg-gray-700 text-gray-400' : ''}`}
                       onClick={() => router.push(`/contract-display/${employee.id}`)}
-                      ref={
-                        index === filteredEmployees.length - 1 ? lastEmployeeRef : null
-                      }
+                      ref={index === filteredEmployees.length - 1 ? lastEmployeeRef : null}
                     >
                       <td className="px-4 py-2 border border-gray-700">{index + 1}</td>
+                      <td className="px-4 py-2 border border-gray-700">{employee.name || 'Não informado'}</td>
+                      <td className="px-4 py-2 border border-gray-700">{employee.position?.name || 'Não informado'}</td>
+                      <td className="px-4 py-2 border border-gray-700">{employee.registration || 'Não informado'}</td>
+                      <td className="px-4 py-2 border border-gray-700">{employee.taxId || 'Não informado'}</td>
+                      <td className="px-4 py-2 border border-gray-700">{employee.active ? 'Ativo' : 'Inativo'}</td>
                       <td className="px-4 py-2 border border-gray-700">
-                        {employee.name || 'Não informado'}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-700">
-                        {employee.position?.name || 'Não informado'}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-700">
-                        {employee.registration || 'Não informado'}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-700">
-                        {employee?.taxId || 'Não informado'}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-700">
-                        {employee.active ? 'Ativo' : 'Inativo'}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-700">
-                      <button
+                        <button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            if (employee.id !== undefined) {
-                              toggleEmployeeStatus(employee.id, employee.active ?? false);
-                            }
                             e.stopPropagation()
-                            employee.id &&
-                              toggleEmployeeStatus(employee.id, !!employee.active)
+                            toggleEmployeeStatus(employee.id, employee.active ?? false)
                           }}
-                          className={`px-3 py-1 rounded ${
-                            employee.active
-                              ? 'bg-red-500 hover:bg-red-600'
-                              : 'bg-green-500 hover:bg-green-600'
-                          } text-white`}
+                          className={`px-3 py-1 rounded ${employee.active ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white`}
                         >
                           {employee.active ? 'Desativar' : 'Ativar'}
-                          {employee.active ? 'Desativar' : 'Ativar'}
                         </button>
-
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan={7}
-                      className="px-4 py-2 text-center border border-gray-700"
-                    >
-                      Nenhum funcionário encontrado.
-                    </td>
+                    <td colSpan={7} className="px-4 py-2 text-center border border-gray-700">Nenhum funcionário encontrado.</td>
                   </tr>
                 )}
               </tbody>

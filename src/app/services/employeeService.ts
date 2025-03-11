@@ -1,11 +1,10 @@
 import { AxiosError } from 'axios'
-import { EmployeeType } from '../types/employee'
 import api from './api'
 
 const endpoint = '/employee'
 
 export const EmployeeService = {
-  async createEmployee(EmployeeData: EmployeeType) {
+  async createEmployee(EmployeeData: any) {
     try {
       const response = await api.post(endpoint, EmployeeData)
       if (response.status === 201) {
@@ -47,7 +46,7 @@ export const EmployeeService = {
     }
   },
 
-  async updateEmployee(id: number, employeeData: Partial<EmployeeType>) {
+  async updateEmployee(id: number, employeeData: Partial<any>) {
     try {
       const response = await api.put(`${endpoint}/${id}`, employeeData)
       if (response.status === 200) {

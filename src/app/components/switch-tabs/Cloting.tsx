@@ -1,36 +1,33 @@
 'use client'
 
 import { ClothingService } from '@/app/services/clothingService'
-import type { Clothing, ClothingProps, ClothingT } from '@/app/types/clothing'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function Clothing({ data = {}, onChange, onPrev, employeeId}: ClothingProps) {
-  const [clothing, setClothing] = useState<Partial<Clothing>>(data);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+export function Clothing({ data = {}, onChange, onPrev, employeeId }: any) {
+  const [clothing, setClothing] = useState<any>(data || {})
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
-  const handleInputChange = (field: keyof Clothing, value: any) => {
-    const updatedClothing = { ...clothing, [field]: value };
-    setClothing(updatedClothing);
-    onChange(updatedClothing);
-  };
+  const handleInputChange = (field: any, value: any) => {
+    const updatedClothing = { ...clothing, [field]: value }
+    setClothing(updatedClothing)
+    onChange(updatedClothing)
+  }
 
   const handleSave = async () => {
     try {
-      setLoading(true);
-      await ClothingService.createClothing({ ...clothing, employeeId: Number(employeeId) });
-      alert("Dados de vestuário cadastrados com sucesso!");
-      router.push('/contract-display/employee');
+      setLoading(true)
+      await ClothingService.createClothing({ ...clothing, employeeId: Number(employeeId) })
+      alert('Dados de vestuário cadastrados com sucesso!')
+      router.push('/contract-display/employee')
     } catch (error) {
-      console.error("Erro ao cadastrar vestuário:", error);
-      alert("Erro ao cadastrar vestuário. Tente novamente.");
+      console.error('Erro ao cadastrar vestuário:', error)
+      alert('Erro ao cadastrar vestuário. Tente novamente.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  const valueFromField = (field: string, obj: Record<string, any>) => obj[field] ?? '';
+  }
 
   return (
     <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
@@ -45,25 +42,20 @@ export function Clothing({ data = {}, onChange, onPrev, employeeId}: ClothingPro
           <input
             type="text"
             name={field.name}
-            value={String(valueFromField(field.name, clothing))}
-            onChange={(e) => handleInputChange(field.name as keyof ClothingT, e.target.value)}
+            value={clothing?.[field.name] || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
             placeholder={field.placeholder}
             className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
           />
         </div>
       ))}
 
-      {/* Botões */}
       <div className="flex justify-between mt-6">
         <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
           Voltar
         </button>
-        <button
-          onClick={handleSave}
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={loading}
-        >
-          {loading ? "Salvando..." : "Salvar"}
+        <button onClick={handleSave} className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" disabled={loading}>
+          {loading ? 'Salvando...' : 'Salvar'}
         </button>
       </div>
     </div>

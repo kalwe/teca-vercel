@@ -1,10 +1,9 @@
-import { Resume } from '../types/resume'
 import api from './api'
 
 const endpoint = '/resume';
 
 export const ResumeService = {
-  async uploadResumeFile(formData: any, file: File) {
+  async uploadResumeFile(formData: any, _file: File) {
     try {
       const response = await api.post(`${endpoint}/upload`, formData, {
         headers: {
@@ -20,7 +19,7 @@ export const ResumeService = {
     }
   },
 
-  async createResume(resumeData: Resume) {
+  async createResume(resumeData: any) {
     try {
       const response = await api.post(endpoint, resumeData);
       if (response.status === 201) {
@@ -31,7 +30,7 @@ export const ResumeService = {
     }
   },
 
-  async updateResume(id: number, resumeData: Resume) {
+  async updateResume(id: any, resumeData: any) {
     try {
       const response = await api.put(`${endpoint}/${id}`, resumeData);
       if (response.status === 200) {
@@ -42,7 +41,7 @@ export const ResumeService = {
     }
   },
 
-  async getResumeById(id: number) {
+  async getResumeById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`);
       if (response.status === 200) {
@@ -64,7 +63,7 @@ export const ResumeService = {
     }
   },
 
-  async deleteResume(id: number) {
+  async deleteResume(id: any) {
     try {
       const response = await api.delete(`${endpoint}/${id}`);
       if (response.status === 204) {

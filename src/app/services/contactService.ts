@@ -1,11 +1,10 @@
-import { Contact } from "../types/contact"
 import api from "./api"; // Importa a instância do Axios configurada
 
 const endpoint = '/contact'
 
 export const ContactService = {
 
-  async createContact(contactData: Contact) {
+  async createContact(contactData: any) {
     try {
       const response = await api.post(endpoint, contactData)
       if (response.status == 201){
@@ -16,7 +15,7 @@ export const ContactService = {
 
     }
   },
-  async getContactById(id: number){
+  async getContactById(id: any){
     try {
       const response = await api.get(`${endpoint}/${id}`);
       return response.data;
@@ -36,7 +35,7 @@ export const ContactService = {
     }
   },
 
-  updateContact: async (id: number, contactData: any) => {
+  updateContact: async (id: any, contactData: any) => {
     try {
       const response = await api.put(`${endpoint}/${id}`, contactData);
       return response.data;
@@ -46,7 +45,7 @@ export const ContactService = {
     }
   },
 
-  deleteContact: async (id: number) => {
+  deleteContact: async (id: any) => {
     try {
       const response = await api.delete(`${endpoint}/${id}`);
       return response.data;

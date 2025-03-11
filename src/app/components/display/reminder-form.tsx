@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import { z } from "zod"
 
 
 export default function ReminderForm ()  {
@@ -27,15 +26,7 @@ export default function ReminderForm ()  {
          reminderSchema.parse(updatedData);
          setErrors({});
        } catch (err) {
-         if (err instanceof z.ZodError) {
-           const fieldErrors: Record<string, string> = {};
-           err.errors.forEach((e) => {
-             if (e.path.length > 0) {
-               fieldErrors[e.path[0] as string] = e.message;
-             }
-           });
-           setErrors(fieldErrors);
-         }
+
        }
 
        setFormData(updatedData);
@@ -62,11 +53,7 @@ export default function ReminderForm ()  {
             await ReminderService.createReminder(validatedData);
             router.push("/dashboard-display/");
         } catch (error) {
-            if (error instanceof z.ZodError) {
-                setErrors(error.format() as unknown as Record<string, string>);
-            } else {
-                console.error("Erro ao criar lembrete:", error);
-            }
+
         } finally {
             setLoading(false);
         }

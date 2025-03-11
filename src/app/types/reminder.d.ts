@@ -1,17 +1,17 @@
 export interface Reminder {
-  id?: number
-  date: string
-  time: string
-  reason: string
-  description?: string
+  id?: any | null
+  date?: any | null
+  time?: any | null
+  reason?: any | null
+  description?: any | null
 }
 // TODO: remove um tipo e verifica onde usa pra o mesmo
 export type ReminderType = {
-  id?: number
-  date: string
-  time: string
-  reason: string
-  description?: string
+  id?: any | null
+  date?: any | null
+  time?: any | null
+  reason?: any | null
+  description?: any | null
 }
 
 export type Reminders = ReminderType[]

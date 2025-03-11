@@ -1,10 +1,9 @@
-import { Address } from '../types/address'
 import api from './api'
 
 const endpoint = '/address';
 
 export const AddressService = {
-  async createAddress(addressData: Address) {
+  async createAddress(addressData: any) {
     try {
       const response = await api.post(endpoint, addressData)
       if (response.status == 201){
@@ -15,7 +14,7 @@ export const AddressService = {
       throw error
     }
   },
-  async getAddressById(id: number) {
+  async getAddressById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`);
       if (response.status == 200) {
@@ -39,7 +38,7 @@ export const AddressService = {
     }
   },
 
-  async updateAddress(id: number, addressData: any): Promise<any> {
+  async updateAddress(id: any, addressData: any){
     try {
       const response = await api.put(`${endpoint}/${id}`, addressData);
       if (response.status == 200) {
@@ -51,7 +50,7 @@ export const AddressService = {
     }
   },
 
-  async deleteAddress(id: number) {
+  async deleteAddress(id: any) {
     try {
       const response = await api.delete(`${endpoint}/${id}`);
       if (response.status == 204) {

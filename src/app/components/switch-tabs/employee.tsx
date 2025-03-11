@@ -1,29 +1,20 @@
 'use client'
 
 import { EmployeeService } from '@/app/services/employeeService'
-import { Employee, EmployeeFormProps } from '@/app/types/employee'
-import { id } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export default function EmployeeForm({
-  employeeData,
-  isEditable,
-  onPrev
-}: EmployeeFormProps) {
-  const [employee, setEmployee] = useState<Employee>({})
+export default function EmployeeForm({ employeeData = {}, isEditable, onPrev }: any) {
+  const [employee, setEmployee] = useState<any>(employeeData || {})
 
-  const handleInputChange = (field: keyof Employee, value: any) => {
-    const employeeVal = { ...employee, [field]: value }
-    setEmployee(employeeVal)
+  const handleInputChange = (field: any, value: any) => {
+    setEmployee((prev: any) => ({ ...prev, [field]: value }))
   }
 
   useEffect(() => {
-    if (employeeData) {
-      setEmployee(employeeData)
-    }
+    setEmployee(employeeData || {})
   }, [employeeData])
 
   const handleSave = async () => {
@@ -53,7 +44,7 @@ export default function EmployeeForm({
       </div>
 
       <div className='w-full'>
-        <label className='block text-gray-400 mb-2'>Employee de Admissão</label>
+        <label className='block text-gray-400 mb-2'>Data de Admissão</label>
         <DatePicker
           selected={employee?.contractDate ? new Date(employee.contractDate) : null}
           onChange={(date) => handleInputChange('contractDate', date)}
@@ -64,7 +55,7 @@ export default function EmployeeForm({
       </div>
 
       <div className='w-full'>
-        <label className='block text-gray-400 mb-2'>Employee de Remoção</label>
+        <label className='block text-gray-400 mb-2'>Data de Remoção</label>
         <DatePicker
           selected={employee?.removalDate ? new Date(employee.removalDate) : null}
           onChange={(date) => handleInputChange('removalDate', date)}
@@ -77,7 +68,7 @@ export default function EmployeeForm({
       <div>
         <DropdownCheckboxPosition
           id={employee?.positionId ?? 1}
-          onChange={() => handleInputChange('positionId', id)}
+          onChange={(val: any) => handleInputChange('positionId', val)}
         />
       </div>
 
