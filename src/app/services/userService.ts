@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios'
-import { UserInput } from '../schemas/userSchema'
+import { UserInput } from '../types/user'
 import api from './api'
 
 const endpoint = '/user'

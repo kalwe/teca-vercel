@@ -31,7 +31,7 @@ export default function DashboardDisplay({
 
   useEffect(() => {
     if (loading) {
-      setEmployees(employeesData ?? []) // Garante que não seja undefined
+      setEmployees(employeesData ?? [])
       setVacancies(vacanciesData ?? [])
       setReminders(remindersData ?? [])
       setResumes(resumesData ?? [])

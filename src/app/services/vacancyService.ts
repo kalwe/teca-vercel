@@ -4,62 +4,27 @@ const endpoint = '/vacancy'
 
 export const VacancyService = {
   async createVacancy(vacancyData: any) {
-    try {
-      const response = await api.post(endpoint, vacancyData)
-      if (response.status === 201) {
-        return response.data
-      }
-    } catch (error) {
-
-    }
+    const response = await api.post(endpoint, vacancyData)
+    return response.status === 201 ? response.data : null
   },
 
   async getVacancyById(id: any) {
-    try {
-      const response = await api.get(`${endpoint}/${id}`)
-      if (response.status === 200) {
-        return response.data
-      }
-    } catch (error) {
-
-    }
+    const response = await api.get(`${endpoint}/${id}`)
+    return response.status === 200 ? response.data : null
   },
 
   async getAllVacancies() {
-    try {
-      const response = await api.get(endpoint)
-      if (response.status === 200) {
-        return response.data
-      }
-    } catch (error) {
-
-    }
-    return null
+    const response = await api.get(endpoint)
+    return response.status === 200 ? response.data : null
   },
 
   async updateVacancy(id: any, vacancyData: any) {
-    try {
-      console.log(vacancyData)
-      const response = await api.put(`${endpoint}/${id}`, vacancyData)
-      if (response.status == 200) {
-        return response.data
-      }
-    } catch (error) {
-
-    }
+    const response = await api.put(`${endpoint}/${id}`, vacancyData)
+    return response.status === 200 ? response.data : null
   },
 
   async deleteVacancy(id: any) {
-    try {
-      const response = await api.delete(`${endpoint}/${id}`)
-      if (response.status === 204) {
-        return true
-      }
-    } catch (error) {
-
-    }
-    return false
-  },
-
-
+    const response = await api.delete(`${endpoint}/${id}`)
+    return response.status === 204
+  }
 }

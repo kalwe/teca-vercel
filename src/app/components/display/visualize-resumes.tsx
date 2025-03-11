@@ -24,7 +24,7 @@ export default function VisualizeCV() {
 
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 

@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { DropdownCheckboxMaritalStatusProps } from "@/app/types/dropdown";
-import { MaritalStatusEnum } from "@/app/schemas/enums/maritalStatus";
+import { MaritalStatusEnum } from "@/app/schemas/enums/maritalStatus"
+import { DropdownCheckboxMaritalStatusProps } from "@/app/types/dropdown"
+import { useEffect, useRef, useState } from "react"
 
 export function DropdownCheckboxMaritalStatus({
   value = "", // Define um valor inicial vazio
@@ -36,11 +36,17 @@ export function DropdownCheckboxMaritalStatus({
   }, []);
 
   // Atualiza seleção de estado civil
-  const handleSelection = (selectedValue: string) => {
-    setSelectedStatus(selectedValue); // Atualiza estado local
-    onChange(selectedValue); // Passa o valor para o componente pai
-    setIsDropdownOpen(false); // Fecha o dropdown
-  };
+ // Atualiza a seleção
+const handleSelection = (selectedValue: string) => {
+  setSelectedStatus(selectedValue) // Atualiza estado local
+
+  if (onChange) { // Verifica se a função onChange foi passada
+    onChange(selectedValue) // Passa o valor para o componente pai
+  }
+
+  setIsDropdownOpen(false) // Fecha o dropdown
+}
+
 
   return (
     <div className="relative" ref={dropdownRef}>

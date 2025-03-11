@@ -38,7 +38,7 @@ export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
   const handleSave = async () => {
     setLoading(true)
     if (isEditMode && vacancyId) {
-      const { positionId, ...vacancyUpdate } = vacancy
+      const { ...vacancyUpdate } = vacancy
       await VacancyService.updateVacancy(Number(id), vacancyUpdate)
       alert('Vaga atualizada com sucesso!')
     } else {

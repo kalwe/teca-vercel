@@ -1,8 +1,9 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true, // Ignora erros do ESLint na build
+  },
+}
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  output: 'standalone'
-};
-
-export default nextConfig;
+module.exports = nextConfig

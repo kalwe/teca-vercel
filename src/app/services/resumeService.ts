@@ -3,6 +3,7 @@ import api from './api'
 const endpoint = '/resume';
 
 export const ResumeService = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async uploadResumeFile(formData: any, _file: File) {
     try {
       const response = await api.post(`${endpoint}/upload`, formData, {

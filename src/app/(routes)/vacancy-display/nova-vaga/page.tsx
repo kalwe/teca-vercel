@@ -8,15 +8,12 @@ export default async function Page() {
     <div className="mx-auto mt-10">
       <Navigation />
       <VacancyForm vacancyData={{
-        id: undefined,
+        positionId: undefined,
         quantity: undefined,
         description: undefined,
-        requirements: undefined,
         benefits: undefined,
-        salary: undefined,
-        active: undefined,
-        positionId: undefined,
-        position: undefined
+        requirements: undefined,
+        salary: undefined
       }}  />
     </div>
   );

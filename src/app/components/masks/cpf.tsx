@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { cpfSchema } from "@/app/schemas/common/cpfSchema";
-import { CpfMaskProps } from "@/app/types/employee";
-import { ZodError, ZodIssue } from "zod"
+import { cpfSchema } from "@/app/schemas/common/cpfSchema"
+import { CpfMaskProps } from "@/app/types/employee"
+import React, { useState } from "react"
 
 export function CpfMask({ value, onChange, disabled = false }: CpfMaskProps) {
   const [error, setError] = useState<string | null>(null);
