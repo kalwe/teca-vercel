@@ -4,7 +4,7 @@ import { ClothingService } from '@/app/services/clothingService'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function Clothing({ data = {}, onChange, onPrev, employeeId }: any) {
+export function Clothing({ data = {}, onPrev, employeeId }: any) {
   const [clothing, setClothing] = useState<any>(data || {})
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -49,7 +49,7 @@ export function Clothing({ data = {}, onChange, onPrev, employeeId }: any) {
           label: 'Tamanho da Calça'
         },
         {
-          name: 'shoe',
+          name: 'shoes',
           placeholder: 'Digite o tamanho do calçado',
           label: 'Tamanho do Calçado'
         }
