@@ -3,18 +3,19 @@
 import { BankService } from '@/app/services/bankService'
 import { useState } from 'react'
 
-export default function Bank({ data = {}, onChange, onNext, onPrev, employeeId }: any) {
+export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
   const [bankData, setBankData] = useState<any>(data || {})
   const [loading] = useState(false)
 
   const handleInputChange = (field: any, value: any) => {
     const updatedBankData = { ...bankData, [field]: value }
     setBankData(updatedBankData)
-    onChange(updatedBankData)
+    // onChange(updatedBankData)
   }
 
   const handleSave = async () => {
     try {
+      employeeId = localStorage.getItem('employeeId')
       const createdBankAccount = await BankService.createBankAccount({
         ...bankData,
         employeeId
@@ -51,15 +52,15 @@ export default function Bank({ data = {}, onChange, onNext, onPrev, employeeId }
       {/* Tipo de Conta */}
       <div className='w-full'>
         <select
-          name='account_type'
-          value={bankData?.accountType || ''}
-          onChange={(e) => handleInputChange('accountType', e.target.value)}
+          name='type'
+          value={bankData?.['type'] || ''}
+          onChange={(e) => handleInputChange('type', e.target.value)}
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         >
           <option value=''>Selecione o tipo de conta</option>
-          <option value='corrente'>Conta Corrente</option>
-          <option value='poupança'>Conta Poupança</option>
-          <option value='salário'>Conta Salário</option>
+          <option value='CORRENTE'>Conta Corrente</option>
+          <option value='POUPANCA'>Conta Poupança</option>
+          <option value='SALARIO'>Conta Salário</option>
         </select>
       </div>
 

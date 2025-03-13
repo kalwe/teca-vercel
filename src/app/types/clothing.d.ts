@@ -1,18 +1,17 @@
-export type ClothingT = {
-  shirt_size?: any | null
-  pants_size?: any | null
-  shoe_size?: any | null
-  employeeId?: any | null
-};
+type ClothingT = {
+  shirt?: any | null
+  pants?: any | null
+  shoe?: any | null
+  employeeId: number | null
+}
 
 export type Clothing = ClothingT | Partial<ClothingT>
 export type Clothings = ClothingT[] | Partial<ClothingT>[]
 
-
 export type ClothingProps = {
-  data: Clothing;
-  onChange: (updatedData: Clothing) => void;
-  mode: 'add' | 'edit' | 'view' | 'create';
-  onPrev: () => void;
-  employeeId: number;
-};
+  data: Clothing | null
+  onChange: (updatedData: Clothing) => void
+  onNext: () => void
+  onPrev: () => void
+  employeeId: number | null
+}

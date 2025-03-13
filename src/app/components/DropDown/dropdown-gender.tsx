@@ -36,17 +36,17 @@ export function DropdownCheckboxGender({
   }, [])
 
   // Atualiza a seleção
-// Atualiza a seleção
-const handleSelection = (selectedValue: string) => {
-  setSelectedGender(selectedValue) // Atualiza estado local
+  // Atualiza a seleção
+  const handleSelection = (selectedValue: string) => {
+    setSelectedGender(selectedValue) // Atualiza estado local
 
-  if (onChange) { // Verifica se a função onChange foi passada
-    onChange(selectedValue) // Passa o valor para o componente pai
+    if (onChange) {
+      // Verifica se a função onChange foi passada
+      onChange(selectedValue) // Passa o valor para o componente pai
+    }
+
+    setIsDropdownOpen(false) // Fecha o dropdown
   }
-
-  setIsDropdownOpen(false) // Fecha o dropdown
-}
-
 
   return (
     <div ref={dropdownRef} className='relative'>
@@ -92,7 +92,7 @@ const handleSelection = (selectedValue: string) => {
                   <input
                     id={`radio-item-${key}`}
                     type='radio' // Radio para garantir seleção única
-                    value={genderValue}
+                    value={key}
                     checked={selectedGender == genderValue} // Apenas uma opção marcada
                     onChange={(e) => handleSelection(e.target.value)} // Atualiza seleção
                     disabled={disabled}

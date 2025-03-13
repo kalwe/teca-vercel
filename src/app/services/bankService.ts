@@ -1,18 +1,16 @@
-import api from './api'; //  Importa a instância do Axios configurada
+import api from './api' //  Importa a instância do Axios configurada
 
 const endpoint = '/bank-account' //  Define o endpoint base
 
 export const BankService = {
-
   async createBankAccount(BankAccountData: any) {
     try {
       const response = await api.post(endpoint, BankAccountData)
-      if (response.status == 201) return response.data
-
-
+      if (response.status == 201) {
+        return response.data
+      }
     } catch (error) {
       console.error('Erro ao cadastrar dados bancário', error)
-
     }
   },
 
@@ -22,17 +20,15 @@ export const BankService = {
       return response.data
     } catch (error) {
       console.error('Erro ao buscar conta bancária:', error)
-
     }
   },
 
-  async getAllBankAccounts(){
+  async getAllBankAccounts() {
     try {
       const response = await api.get(endpoint)
       return response.data
     } catch (error) {
       console.error(' Erro ao buscar todas as contas bancárias:', error)
-
     }
   },
 
@@ -42,7 +38,6 @@ export const BankService = {
       return response.data
     } catch (error) {
       console.error(' Erro ao atualizar conta bancária:', error)
-
     }
   },
 
@@ -52,7 +47,6 @@ export const BankService = {
       return response.data
     } catch (error) {
       console.error(' Erro ao deletar conta bancária:', error)
-
     }
   }
 }

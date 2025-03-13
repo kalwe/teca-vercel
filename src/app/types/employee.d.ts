@@ -1,3 +1,7 @@
+import { Address } from './address'
+import { BankAccount } from './bank'
+import { Clothing } from './clothing'
+import { Contact } from './contact'
 import { Position } from './position'
 
 type EmployeeT = {
@@ -17,10 +21,10 @@ type EmployeeT = {
   removalDate?: Date | null
   positionId?: any | null
   position?: Position | null
-  address?: any | null
-  contact?: any | null
-  bank?: any | null
-  clothing?: any | null
+  address?: Address | null
+  contact?: Contact | null
+  bank?: BankAccount | null
+  clothing?: Clothing | null
   gender?: any | null
   maritalStatus?: any | null
 }
@@ -29,14 +33,15 @@ export type Employee = EmployeeT | Partial<EmployeeT>
 export type Employees = EmployeeT[] | Partial<EmployeeT>[]
 
 export interface EmployeeFormProps {
-  employeeData?: Employee | null
-  isEditable?: boolean
+  data?: Employee | null
+  onChange: (updatedData: Employee) => void
   onNext: () => void
   onPrev: () => void
+  employeeId: number | null
 }
 
 export interface ContractFormProps {
-  employeeData?: Employee | null
+  data?: Employee | null
   isEditable?: boolean
 }
 

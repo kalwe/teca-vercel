@@ -3,16 +3,15 @@
 import { EmployeeService } from '@/app/services/employeeService'
 import { Employees } from '@/app/types/employee'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function EmployeesDisplay() {
   const [employees, setEmployees] = useState<Employees>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [uploadedFiles, setUploadedFiles] = useState<{ [key: number]: File | null }>({})
 
-  const lastEmployeeRef = useRef<HTMLTableRowElement | null>(null)
+
   const router = useRouter()
 
   useEffect(() => {
@@ -20,12 +19,9 @@ export default function EmployeesDisplay() {
   }, [])
 
   const fetchEmployees = async () => {
-    setLoading(true)
     try {
+      setLoading(true)
       const employeeList = await EmployeeService.getAllEmployees()
-      if (!Array.isArray(employeeList)) {
-        throw new Error('Dados inválidos recebidos do servidor.')
-      }
       setEmployees(employeeList)
     } catch (error) {
       console.error('Erro ao carregar funcionários:', error)
@@ -49,78 +45,83 @@ export default function EmployeesDisplay() {
     }
   }
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, employeeId: number) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0]
-      setUploadedFiles((prevFiles) => ({
-        ...prevFiles,
-        [employeeId]: file
-      }))
-      console.log(`Arquivo anexado para funcionário ${employeeId}:`, file.name)
-    }
+  const filterEmployee = (searchVal: string) => {
+    setSearchTerm(searchVal)
+    const filteredEmployees = employees.filter((emp) =>
+      emp.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    setEmployees(filteredEmployees)
   }
 
-  const filteredEmployees = employees.filter(emp =>
-    emp.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-green-900 to-green-600">
-      <div className="w-full max-w-7xl bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-extrabold text-white">Funcionários</h1>
+    <div className='flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-green-900 to-green-600'>
+      <div className='w-full max-w-7xl bg-gray-800 rounded-lg shadow-lg overflow-hidden'>
+        <div className='p-6'>
+          <div className='flex justify-between items-center mb-6'>
+            <h1 className='text-3xl font-extrabold text-white'>Funcionários</h1>
             <button
               onClick={() => router.push('/contract-display/')}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all transform hover:scale-105"
+              className='px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all transform hover:scale-105'
             >
               Adicionar Funcionário
             </button>
           </div>
 
-          <div className="mb-6">
+          <div className='mb-6'>
             <input
-              type="text"
-              placeholder="Buscar funcionário..."
-              className="w-full px-4 py-2 bg-gray-700 text-gray-300 border border-gray-600 rounded-lg"
+              type='text'
+              placeholder='Buscar funcionário...'
+              className='w-full px-4 py-2 bg-gray-700 text-gray-300 border border-gray-600 rounded-lg'
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => filterEmployee(e.target.value)}
             />
           </div>
 
-          {error && <div className="p-4 bg-red-500 text-white text-center">{error}</div>}
-          {loading && <div className="p-6 text-center text-gray-300">Carregando funcionários...</div>}
+          {error && <div className='p-4 bg-red-500 text-white text-center'>{error}</div>}
+          {loading && (
+            <div className='p-6 text-center text-gray-300'>
+              Carregando funcionários...
+            </div>
+          )}
 
-          <div className="overflow-y-auto border-t border-gray-600 max-h-96">
-            <table className="w-full table-auto border-collapse border border-gray-700 text-gray-300">
-              <thead className="bg-gray-900">
+          <div className='overflow-y-auto border-t border-gray-600 max-h-96'>
+            <table className='w-full table-auto border-collapse border border-gray-700 text-gray-300'>
+              <thead className='bg-gray-900'>
                 <tr>
-                  <th className="px-4 py-2 border border-gray-700">#</th>
-                  <th className="px-4 py-2 border border-gray-700">Nome</th>
-                  <th className="px-4 py-2 border border-gray-700">Função</th>
-                  <th className="px-4 py-2 border border-gray-700">Matrícula</th>
-                  <th className="px-4 py-2 border border-gray-700">CPF</th>
-                  <th className="px-4 py-2 border border-gray-700">Ativo</th>
-                  <th className="px-4 py-2 border border-gray-700">Ação</th>
-                  <th className="px-4 py-2 border border-gray-700">Anexar Arquivo</th>
+                  <th className='px-4 py-2 border border-gray-700'>#</th>
+                  <th className='px-4 py-2 border border-gray-700'>Nome</th>
+                  <th className='px-4 py-2 border border-gray-700'>Função</th>
+                  <th className='px-4 py-2 border border-gray-700'>Matrícula</th>
+                  <th className='px-4 py-2 border border-gray-700'>CPF</th>
+                  <th className='px-4 py-2 border border-gray-700'>Ativo</th>
+                  <th className='px-4 py-2 border border-gray-700'>Ação</th>
                 </tr>
               </thead>
-              <tbody className="bg-gray-800">
-                {filteredEmployees.length > 0 ? (
-                  filteredEmployees.map((employee, index) => (
+              <tbody className='bg-gray-800'>
+                {employees.length > 0 ? (
+                  employees.map((employee) => (
                     <tr
                       key={employee.id}
                       className={`hover:bg-gray-700 transition duration-200 cursor-pointer ${!employee.active ? 'bg-gray-700 text-gray-400' : ''}`}
                       onClick={() => router.push(`/contract-display/${employee.id}`)}
-                      ref={index === filteredEmployees.length - 1 ? lastEmployeeRef : null}
                     >
-                      <td className="px-4 py-2 border border-gray-700">{index + 1}</td>
-                      <td className="px-4 py-2 border border-gray-700">{employee.name || 'Não informado'}</td>
-                      <td className="px-4 py-2 border border-gray-700">{employee.position?.name || 'Não informado'}</td>
-                      <td className="px-4 py-2 border border-gray-700">{employee.registration || 'Não informado'}</td>
-                      <td className="px-4 py-2 border border-gray-700">{employee.taxId || 'Não informado'}</td>
-                      <td className="px-4 py-2 border border-gray-700">{employee.active ? 'Ativo' : 'Inativo'}</td>
-                      <td className="px-4 py-2 border border-gray-700">
+                      <td className='px-4 py-2 border border-gray-700'>{employee.id}</td>
+                      <td className='px-4 py-2 border border-gray-700'>
+                        {employee.name || 'Não informado'}
+                      </td>
+                      <td className='px-4 py-2 border border-gray-700'>
+                        {employee.position?.name || 'Não informado'}
+                      </td>
+                      <td className='px-4 py-2 border border-gray-700'>
+                        {employee.registration || 'Não informado'}
+                      </td>
+                      <td className='px-4 py-2 border border-gray-700'>
+                        {employee.taxId || 'Não informado'}
+                      </td>
+                      <td className='px-4 py-2 border border-gray-700'>
+                        {employee.active ? 'Ativo' : 'Inativo'}
+                      </td>
+                      <td className='px-4 py-2 border border-gray-700'>
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
@@ -131,21 +132,17 @@ export default function EmployeesDisplay() {
                           {employee.active ? 'Desativar' : 'Ativar'}
                         </button>
                       </td>
-                      <td className="px-4 py-2 border border-gray-700">
-                        <input
-                          type="file"
-                          onChange={(e) => handleFileUpload(e, employee.id)}
-                          className="text-gray-300"
-                        />
-                        {uploadedFiles[employee.id] && (
-                          <p className="text-sm text-green-400">Arquivo anexado: {uploadedFiles[employee.id]?.name}</p>
-                        )}
-                      </td>
+
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={8} className="px-4 py-2 text-center border border-gray-700">Nenhum funcionário encontrado.</td>
+                    <td
+                      colSpan={7}
+                      className='px-4 py-2 text-center border border-gray-700'
+                    >
+                      Nenhum funcionário encontrado.
+                    </td>
                   </tr>
                 )}
               </tbody>
