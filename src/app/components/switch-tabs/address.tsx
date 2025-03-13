@@ -12,7 +12,6 @@ export function Address({ data = {}, onChange, onNext, onPrev, employeeId }: any
     setAddressData(updatedAddress)
     onChange(updatedAddress)
   }
-
   const handleSave = async () => {
     try {
       setLoading(true)
@@ -29,17 +28,16 @@ export function Address({ data = {}, onChange, onNext, onPrev, employeeId }: any
       setLoading(false)
     }
   }
-
   return (
     <div className='p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full'>
       <h2 className='text-white text-xl font-bold'>Endereço</h2>
-
       {[
-        { name: 'street', placeholder: 'Digite o logradouro', label: 'Logradouro' },
-        { name: 'number', placeholder: 'Digite o número', label: 'Número' },
-        { name: 'neighborhood', placeholder: 'Digite o bairro', label: 'Bairro' },
-        { name: 'city', placeholder: 'Digite a cidade', label: 'Cidade' },
-        { name: 'zipCode', placeholder: 'Digite o CEP', label: 'CEP' }
+        { name: 'street', placeholder: 'Digite o logradouro', label: 'Logradouro'},
+        { name: 'number', placeholder: 'Digite o número', label: 'Número'},
+        { name: 'neighborhood', placeholder: 'Digite o bairro', label: 'Bairro'},
+        { name: 'complet', placeholder: 'Digite o complemento', label: 'Complemento'},
+        { name: 'city', placeholder: 'Digite a cidade', label: 'Cidade'},
+        { name: 'zipCode', placeholder: 'Digite o CEP', label: 'CEP'}
       ].map((field) => (
         <div key={field.name} className='w-full'>
           <input
@@ -52,7 +50,6 @@ export function Address({ data = {}, onChange, onNext, onPrev, employeeId }: any
           />
         </div>
       ))}
-
       {/* Estado (Dropdown) */}
       <div className='w-full'>
         <select
@@ -73,7 +70,6 @@ export function Address({ data = {}, onChange, onNext, onPrev, employeeId }: any
           ))}
         </select>
       </div>
-
       <div className='flex justify-between mt-6'>
         <button onClick={onPrev} className='px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600'>
           Voltar

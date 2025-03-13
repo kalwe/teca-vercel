@@ -10,6 +10,7 @@ export default function EmployeesDisplay() {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: number]: File | null }>({})
 
   const lastEmployeeRef = useRef<HTMLTableRowElement | null>(null)
   const router = useRouter()
@@ -45,6 +46,17 @@ export default function EmployeesDisplay() {
     } catch (error) {
       console.error('Erro ao atualizar status:', error)
       setError('Erro ao atualizar status do funcionário.')
+    }
+  }
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, employeeId: number) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0]
+      setUploadedFiles((prevFiles) => ({
+        ...prevFiles,
+        [employeeId]: file
+      }))
+      console.log(`Arquivo anexado para funcionário ${employeeId}:`, file.name)
     }
   }
 
@@ -90,6 +102,7 @@ export default function EmployeesDisplay() {
                   <th className="px-4 py-2 border border-gray-700">CPF</th>
                   <th className="px-4 py-2 border border-gray-700">Ativo</th>
                   <th className="px-4 py-2 border border-gray-700">Ação</th>
+                  <th className="px-4 py-2 border border-gray-700">Anexar Arquivo</th>
                 </tr>
               </thead>
               <tbody className="bg-gray-800">
@@ -118,11 +131,21 @@ export default function EmployeesDisplay() {
                           {employee.active ? 'Desativar' : 'Ativar'}
                         </button>
                       </td>
+                      <td className="px-4 py-2 border border-gray-700">
+                        <input
+                          type="file"
+                          onChange={(e) => handleFileUpload(e, employee.id)}
+                          className="text-gray-300"
+                        />
+                        {uploadedFiles[employee.id] && (
+                          <p className="text-sm text-green-400">Arquivo anexado: {uploadedFiles[employee.id]?.name}</p>
+                        )}
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-4 py-2 text-center border border-gray-700">Nenhum funcionário encontrado.</td>
+                    <td colSpan={8} className="px-4 py-2 text-center border border-gray-700">Nenhum funcionário encontrado.</td>
                   </tr>
                 )}
               </tbody>

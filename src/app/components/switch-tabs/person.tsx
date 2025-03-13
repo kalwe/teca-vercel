@@ -37,6 +37,17 @@ export function PessoaFisica({ data = {}, onChange, onNext, onPrev }: any) {
         </div>
       ))}
 
+<div className="w-full">
+        <DatePicker
+          selected={person?.dateOfBirth ? new Date(person.dateOfBirth) : null}
+          onChange={(date) => handleInputChange('dateOfBirth', date)}
+          dateFormat="dd/MM/yyyy"
+          placeholderText="Data de Dxpedição"
+          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
+        />
+      </div>
+
+
       <div className="w-full">
         <DatePicker
           selected={person?.dateOfBirth ? new Date(person.dateOfBirth) : null}
@@ -46,6 +57,8 @@ export function PessoaFisica({ data = {}, onChange, onNext, onPrev }: any) {
           className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3"
         />
       </div>
+
+
 
       <DropdownCheckboxGender value={person?.gender || ''} onChange={(val) => handleInputChange('gender', val)} />
       <DropdownCheckboxMaritalStatus value={person?.maritalStatus || ''} onChange={(val) => handleInputChange('maritalStatus', val)} />

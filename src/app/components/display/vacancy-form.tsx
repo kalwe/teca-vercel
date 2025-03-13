@@ -9,12 +9,12 @@ import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
 // Definição do tipo para a vaga
 type Vacancy = {
-  positionId?: number
-  quantity?: number
-  description?: string
-  benefits?: string
-  requirements?: string
-  salary?: number
+  positionId?: any | null
+  quantity?: any | null
+  description?: any | null
+  benefits?: any | null
+  requirements?: any | null
+  salary?: any | null
 }
 
 export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
@@ -29,7 +29,7 @@ export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
     if (isEditMode && vacancyId) {
       setVacancy(vacancyData)
     }
-  }, [])
+  }, [isEditMode, vacancyData, vacancyId])
 
   const handleChange = (field: keyof Vacancy, value: any) => {
     setVacancy({ ...vacancy, [field]: value })
