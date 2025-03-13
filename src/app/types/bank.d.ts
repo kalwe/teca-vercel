@@ -14,19 +14,16 @@ type BankAccountT = {
   agency?: any | null
   account?: any | null
   type?: any | null
-  employeeId?: any | null
+  employeeId: number | null
 }
-
-export type ModeType = 'edit' | 'add' | 'view' | 'create'
 
 export type BankAccount = BankAccountT | Partial<BankAccountT>
 export type BankAccounts = BankAccountT[] | Partial<BankAccountT>[]
 
 export type BankProps = {
-  data: BankAccount
+  data: BankAccount | null
   onChange: (updatedData: BankAccount) => void
   onNext: () => void
   onPrev: () => void
-  mode: ModeType
-  employeeId?: any | null
+  employeeId: number | null
 }

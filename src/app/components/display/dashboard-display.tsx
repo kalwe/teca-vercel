@@ -31,13 +31,13 @@ export default function DashboardDisplay({
 
   useEffect(() => {
     if (loading) {
-      setEmployees(employeesData ?? [])
-      setVacancies(vacanciesData ?? [])
-      setReminders(remindersData ?? [])
-      setResumes(resumesData ?? [])
+      setEmployees(employeesData)
+      setVacancies(vacanciesData)
+      setReminders(remindersData)
+      setResumes(resumesData)
     }
     setLoading(false)
-  }, [loading, employeesData, vacanciesData, remindersData, resumesData])
+  }, [])
 
   const maxItemsToShow = 5
 
@@ -93,14 +93,13 @@ export default function DashboardDisplay({
             title='Currículos'
             data={(resumes ?? []).map((d) => ({
               name: d.fullName || '',
-              misc: d.position
+              misc: d.position?.name || ''
             }))}
             maxItems={maxItemsToShow}
             navigateTo='/curriculo-display/visualize-cv'
             loading={loading}
             bgGradient='from-[#3A3B38] to-[#2B2C25]'
           />
-
         </div>
 
         {/* Card de Ações Rápidas - Ocupando bem o espaço */}
