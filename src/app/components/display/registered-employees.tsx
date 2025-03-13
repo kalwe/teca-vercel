@@ -11,7 +11,6 @@ export default function EmployeesDisplay() {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
 
-
   const router = useRouter()
 
   useEffect(() => {
@@ -132,7 +131,6 @@ export default function EmployeesDisplay() {
                           {employee.active ? 'Desativar' : 'Ativar'}
                         </button>
                       </td>
-
                     </tr>
                   ))
                 ) : (
