@@ -1,6 +1,6 @@
 import api from './api' //  Importa a instância do Axios configurada
 
-const endpoint = '/bank-account' //  Define o endpoint base
+const endpoint = '/bank' //  Define o endpoint base
 
 export const BankService = {
   async createBankAccount(BankAccountData: any) {

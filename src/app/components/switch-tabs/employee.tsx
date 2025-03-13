@@ -19,11 +19,14 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
   const handleSave = async () => {
     try {
       setLoading(true)
+      const { maritalStatus, ...employeeInput } = employee
+      console.info(employeeInput)
       const employeeCreated = await EmployeeService.createEmployee({
-        ...employee
+        ...employeeInput
       })
+      console.info(employeeCreated)
       setEmployee(employeeCreated)
-      localStorage.setItem('employeeId', employee.id)
+      localStorage.setItem('employeeId', employeeCreated.id)
       // alert('Funcionario cadastrado com sucesso!')
       onNext()
     } catch (error) {
