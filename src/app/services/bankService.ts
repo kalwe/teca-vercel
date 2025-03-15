@@ -1,6 +1,7 @@
+import { AxiosError } from 'axios'
 import api from './api' //  Importa a instância do Axios configurada
 
-const endpoint = '/bank' //  Define o endpoint base
+const endpoint = '/bank'
 
 export const BankService = {
   async createBankAccount(BankAccountData: any) {
@@ -10,43 +11,66 @@ export const BankService = {
         return response.data
       }
     } catch (error) {
-      console.error('Erro ao cadastrar dados bancário', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao cadastrar dados bancário: ', error)
     }
   },
 
   async getBankAccountById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`)
-      return response.data
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error('Erro ao buscar conta bancária:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao buscar conta bancária: ', error)
     }
   },
 
   async getAllBankAccounts() {
     try {
       const response = await api.get(endpoint)
-      return response.data
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error(' Erro ao buscar todas as contas bancárias:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error(' Erro ao buscar todas as contas bancárias: ', error)
     }
   },
 
   async updateBankAccount(id: any, bankData: any) {
     try {
       const response = await api.put(`${endpoint}/${id}`, bankData)
-      return response.data
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error(' Erro ao atualizar conta bancária:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error(' Erro ao atualizar conta bancária: ', error)
     }
   },
 
   async deleteBankAccount(id: any) {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
-      return response.data
+      if (response.status == 204) {
+        return response.data
+      }
     } catch (error) {
-      console.error(' Erro ao deletar conta bancária:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error(' Erro ao deletar conta bancária: ', error)
     }
   }
 }

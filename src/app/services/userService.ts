@@ -13,8 +13,9 @@ export const UserService = {
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('Erro ao buscar usuário: ', error.response?.data)
+        console.error('Axios erro: ', error.response?.data)
       }
+      console.error('Erro ao buscar usuário: ', error)
     }
   },
 
@@ -26,8 +27,9 @@ export const UserService = {
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('Erro ao buscar usuário: ', error.response?.data)
+        console.error('Axios erro: ', error.response?.data)
       }
+      console.error('Erro ao buscar usuário: ', error)
     }
   },
 
@@ -39,8 +41,9 @@ export const UserService = {
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('Erro ao atualizar usuário: ', error.response?.data)
+        console.error('Axios erro: ', error.response?.data)
       }
+      console.error('Erro ao buscar usuário: ', error)
     }
   },
 
@@ -52,8 +55,9 @@ export const UserService = {
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('Erro ao excluir usuário: ', error.response?.data)
+        console.error('Axios erro: ', error.response?.data)
       }
+      console.error('Erro ao buscar usuário: ', error)
     }
   }
 }

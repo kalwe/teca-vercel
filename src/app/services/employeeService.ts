@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios'
 import api from './api'
 
 const endpoint = '/employee'
@@ -10,8 +11,10 @@ export const EmployeeService = {
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error('Axios error: ', error.response?.data)
+      }
       console.error('Erro ao criar funcionário:', error)
-      throw error
     }
   },
 
@@ -22,8 +25,10 @@ export const EmployeeService = {
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error('Axios error: ', error.response?.data)
+      }
       console.error('Erro ao buscar funcionário por ID:', error)
-      throw error
     }
   },
 
@@ -34,10 +39,13 @@ export const EmployeeService = {
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error('Axios error: ', error.response?.data)
+      }
       console.error('Erro ao buscar todos os funcionários:', error)
-      return [] // retorna array vazio para evitar lançar exceção
     }
   },
+
   async updateEmployee(id: any, employeeData: any) {
     try {
       const response = await api.put(`${endpoint}/${id}`, employeeData)
@@ -45,18 +53,24 @@ export const EmployeeService = {
         return response.data
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error('Axios error: ', error.response?.data)
+      }
       console.error('Erro ao atualizar funcionário:', error)
-      throw error
     }
   },
 
   async deleteEmployee(id: any) {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
-      return response.data
+      if (response.status == 204) {
+        return response.data
+      }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error('Axios error: ', error.response?.data)
+      }
       console.error('Erro ao deletar funcionário:', error)
-      throw error
     }
   }
 }

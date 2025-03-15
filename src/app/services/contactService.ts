@@ -1,4 +1,5 @@
-import api from './api' // Importa a instância do Axios configurada
+import { AxiosError } from 'axios'
+import api from './api'
 
 const endpoint = '/contact'
 
@@ -10,9 +11,13 @@ export const ContactService = {
         return response.data
       }
     } catch (error) {
-      console.error('Erro ao criar contato:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao criar contato: ', error)
     }
   },
+
   async getContactById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`)
@@ -20,36 +25,52 @@ export const ContactService = {
         return response.data
       }
     } catch (error) {
-      console.error('Erro ao buscar contato:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao buscar contato: ', error)
     }
   },
 
   async getAllContacts() {
     try {
-      const response = await api.get(`/${endpoint}`)
+      const response = await api.get(`${endpoint}`)
       if (response.status == 200) {
         return response.data
       }
     } catch (error) {
-      console.error('Erro ao buscar todos os contatos:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao buscar todos os contatos: ', error)
     }
   },
 
   updateContact: async (id: any, contactData: any) => {
     try {
       const response = await api.put(`${endpoint}/${id}`, contactData)
-      return response.data
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error('Erro ao atualizar contato:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao atualizar contato: ', error)
     }
   },
 
   deleteContact: async (id: any) => {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
-      return response.data
+      if (response.status == 204) {
+        return response.data
+      }
     } catch (error) {
-      console.error('Erro ao deletar contato:', error)
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao deletar contato: ', error)
     }
   }
 }
