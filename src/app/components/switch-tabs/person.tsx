@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxGender from '../DropDown/dropdown-gender'
 import DropdownCheckboxMaritalStatus from '../DropDown/dropdown-marital-status'
 
-export function PessoaFisica({ data = {}, onChange, onNext, onPrev }: any) {
+export function PessoaFisica({ data = {}, onNext, onPrev }: any) {
   const [person, setPerson] = useState<any>(data || {})
 
   const formatDateForBackend = (date: any) =>

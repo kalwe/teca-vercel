@@ -3,10 +3,10 @@
 import { ContractFormProps, Employee } from '@/app/types/employee'
 import { useEffect, useState } from 'react'
 import { Address } from '../switch-tabs/address'
-import { Bank } from '../switch-tabs/Bank'
+import { Bank } from "../switch-tabs/bank"
 import { Clothing } from '../switch-tabs/Cloting'
 import { Contact } from '../switch-tabs/Contact'
-import { EmployeeForm } from '../switch-tabs/Employee'
+import { EmployeeForm } from "../switch-tabs/employee"
 
 export default function ContractForm({ data, isEditable }: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0)
@@ -47,7 +47,7 @@ export default function ContractForm({ data, isEditable }: ContractFormProps) {
 
   return (
     <>
-      <div className='flex items-center justify-center min-h-screen p-4'>
+      <div className='flex items-center justify-center min-h-screen p-24'>
         <div className='w-full max-w-5xl bg-gray-800 rounded-lg shadow-lg overflow-hidden'>
           <div className='flex flex-col md:flex-row'>
             {/* Sidebar Menu */}

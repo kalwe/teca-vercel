@@ -4,10 +4,8 @@ import { z } from 'zod'
 export const baseSchema = z.object({
   id: z
     .number()
-    .positive()
-    .refine((val) => {
-      val > 0
-    }),
+    .positive(),
+
   active: z.boolean().optional(),
   createdAt: z.string().optional()
 })

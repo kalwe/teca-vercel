@@ -81,6 +81,6 @@ export interface RgMaskProps {
 }
 
 export interface MoneyInputProps {
-  value: string
+  value: any | null
   onChange: (newValue: string) => void
 }

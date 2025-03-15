@@ -12,7 +12,6 @@ export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
     setAddressData(updatedAddress)
     // onChange(updatedAddress)
   }
-
   const handleSave = async () => {
     try {
       setLoading(true)
@@ -30,11 +29,9 @@ export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
       setLoading(false)
     }
   }
-
   return (
     <div className='p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full'>
       <h2 className='text-white text-xl font-bold'>Endereço</h2>
-
       {[
         { name: 'street', placeholder: 'Digite o logradouro', label: 'Logradouro' },
         { name: 'number', placeholder: 'Digite o número', label: 'Número' },
@@ -53,7 +50,6 @@ export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
           />
         </div>
       ))}
-
       {/* Estado (Dropdown) */}
       <div className='w-full'>
         <select
@@ -98,7 +94,6 @@ export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
           ))}
         </select>
       </div>
-
       <div className='flex justify-between mt-6'>
         <button
           onClick={onPrev}

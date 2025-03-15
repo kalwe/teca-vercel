@@ -37,7 +37,7 @@ export default function DashboardDisplay({
       setResumes(resumesData)
     }
     setLoading(false)
-  }, [])
+  }, [employeesData, loading, remindersData, resumesData, vacanciesData])
 
   const maxItemsToShow = 5
 

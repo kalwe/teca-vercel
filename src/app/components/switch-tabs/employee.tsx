@@ -102,6 +102,7 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
         />
       </div>
 
+      {/* Data de Admissão */}
       <div className='w-full'>
         <label className='block text-gray-400 mb-2'>Data de Admissão</label>
         <DatePicker
@@ -122,6 +123,8 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
         />
       </div>
 
+
+      {/* Cargo */}
       <div>
         <DropdownCheckboxPosition
           id={employee?.positionId ?? 1}
@@ -129,6 +132,7 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
         />
       </div>
 
+      {/* Botões */}
       <div className='flex justify-between mt-6'>
         <button
           onClick={onPrev}
