@@ -1,3 +1,4 @@
+import { Position } from './position'
 
 type VacancyT = {
   id?: any | null
@@ -8,7 +9,7 @@ type VacancyT = {
   salary?: any | null
   active?: any | null
   positionId?: any | null
-  position?: any | null
+  position?: Position | null
 }
 
 export type Vacancy = VacancyT | Partial<VacancyT>

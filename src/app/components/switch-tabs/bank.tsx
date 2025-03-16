@@ -15,10 +15,10 @@ export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
 
   const handleSave = async () => {
     try {
-      employeeId = localStorage.getItem('employeeId')
+      employeeId = Number(localStorage.getItem('id'))
       const createdBankAccount = await BankService.createBankAccount({
         ...bankData,
-        employeeId
+        employeeId: Number(employeeId)
       })
       console.log(createdBankAccount)
       onNext()
@@ -33,7 +33,7 @@ export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
       <h2 className='text-white text-xl font-bold'>Dados Bancários</h2>
 
       {[
-        { name: 'bank', placeholder: 'Digite o nome do banco', label: 'Banco' },
+        { name: 'name', placeholder: 'Digite o nome do banco', label: 'Banco' },
         { name: 'agency', placeholder: 'Digite a agência', label: 'Agência' },
         { name: 'account', placeholder: 'Digite a conta', label: 'Conta' }
       ].map((field) => (

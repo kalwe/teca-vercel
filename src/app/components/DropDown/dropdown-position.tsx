@@ -1,5 +1,6 @@
 'use client'
 
+import { PositionService } from '@/app/services/positionService'
 import { useEffect, useRef, useState } from 'react'
 
 export default function DropdownCheckboxPosition({
@@ -15,29 +16,22 @@ export default function DropdownCheckboxPosition({
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const fetchPositions = async () => {
-      try {
-        const response = await fetch('/data/positions.json') // PEGA DA API
-        if (!response.ok) {
-          throw new Error('Erro ao carregar cargos.')
-        }
-        const data = await response.json()
-        setPositions(data)
+    const fetchPosition = async () => {
+      const positions = await PositionService.getAllPositions() // PEGA DA API
+      setPositions(positions)
 
-        // Se já tiver um ID, busca o nome correspondente e define no estado
-        if (id !== null) {
-          const selected = data.find((p: { id: number }) => p.id === id)
-          if (selected) {
-            setSelectedName(selected.name)
-          }
+      // Se já tiver um ID, busca o nome correspondente e define no estado
+      if (id !== null) {
+        const selected = positions.find((p: { id: number }) => p.id === id)
+        if (selected) {
+          setSelectedName(selected.name)
         }
-      } catch (error) {
-        console.error('Erro ao carregar cargos:', error)
       }
     }
-
-    fetchPositions()
-  }, [id]) // Adiciona id na dependência pra caso ele mude dinamicamente
+    if (!positions) {
+      fetchPosition()
+    }
+  }, [id])
 
   const handleSelect = (id: number, name: string) => {
     setSelectedName(name) // Atualiza o nome exibido no frontend

@@ -2,20 +2,11 @@
 
 import MoneyInput from '@/app/components/masks/salary'
 import { VacancyService } from '@/app/services/vacancyService'
+import { Vacancy } from '@/app/types/vacancy'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
-
-// Definição do tipo para a vaga
-type Vacancy = {
-  positionId?: any | null
-  quantity?: any | null
-  description?: any | null
-  benefits?: any | null
-  requirements?: any | null
-  salary?: any | null
-}
 
 export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
   const router = useRouter()
