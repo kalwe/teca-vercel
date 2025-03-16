@@ -4,7 +4,7 @@ import { ContractFormProps, Employee } from '@/app/types/employee'
 import { useEffect, useState } from 'react'
 import { Address } from '../switch-tabs/Address'
 import { Bank } from '../switch-tabs/Bank'
-import { Clothing } from '../switch-tabs/Cloting'
+import { Clothing } from '../switch-tabs/Clothing'
 import { Contact } from '../switch-tabs/Contact'
 import { EmployeeForm } from '../switch-tabs/Employee'
 

@@ -19,7 +19,9 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
   const handleSave = async () => {
     try {
       setLoading(true)
+
       const { maritalStatus, ...employeeInput } = employee
+      console.log(maritalStatus)
       console.info(employeeInput)
       const employeeCreated = await EmployeeService.createEmployee({
         ...employeeInput
@@ -122,7 +124,6 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         />
       </div>
-
 
       {/* Cargo */}
       <div>
