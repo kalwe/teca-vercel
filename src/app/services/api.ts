@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const host = process.env.NEXT_PUBLIC_HOST || '3.95.149.55'
+const host = process.env.NEXT_PUBLIC_HOST || 'ec2-3-95-149-55.compute-1.amazonaws.com'
 const port = process.env.NEXT_PUBLIC_PORT || '8080'
 const api_prefix = 'api/v1'
 
