@@ -1,9 +1,9 @@
 "use client";
 
 
-import ResumeForm from "@/app/components/display/resume-form";
+import ResumeForm from "@/app/components/display/resume-form"
 
-import { Navigation } from "@/app/components/navigation/navigation";
+import { Navigation } from "@/app/components/navigation/navigation"
 
 export default function ResumeRoutes() {
 
@@ -16,9 +16,7 @@ export default function ResumeRoutes() {
   }}>
     <Navigation/>
       <ResumeForm
-         mode="create"
 
-         isEditable={true}
       />
     </div>
   );

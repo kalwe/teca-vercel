@@ -3,18 +3,14 @@ import {
   UserAuthInput,
   userAuthInputSchema,
   UserAuthResponse,
-  userAuthResponseSchema,
+  userAuthResponseSchema
 } from '../schemas/authSchema'
-import {
-  UserInput,
-  userInputSchema,
-  UserResponse,
-  userResponseSchema,
-} from '../schemas/userSchema'
+import { userInputSchema, userResponseSchema } from '../schemas/userSchema'
+import { UserResponse } from '../types/user'
 import api from './api'
 
 export const AuthService = {
-  async register(userInput: UserInput): Promise<UserResponse> {
+  async register(userInput: any): Promise<UserResponse> {
     try {
       const validUser = userInputSchema.parse(userInput)
 
@@ -36,9 +32,7 @@ export const AuthService = {
   async login(credentials: UserAuthInput): Promise<UserAuthResponse> {
     try {
       const validCredentials = userAuthInputSchema.parse(credentials)
-
       const response = await api.post('/auth/login', validCredentials)
-
       const authResponse = userAuthResponseSchema.parse(response.data)
 
       if (authResponse.name == validCredentials.name) {
@@ -93,5 +87,5 @@ export const AuthService = {
     localStorage.removeItem('authenticated')
     localStorage.removeItem('expire')
     window.location.href = '/' // Redireciona para login após logout
-  },
+  }
 }

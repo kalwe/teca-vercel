@@ -1,19 +1,22 @@
-import { GenderEnum } from '../schemas/enums/gender'
-import { MaritalStatusEnum } from '../schemas/enums/maritalStatus'
+
 
 export type PersonType = {
-  fullName: string
-  taxId: string
-  nationalId: string
-  dateOfBirth: Date | null
-  issuingBody: string
-  gender: GenderEnum
-  maritalStatus: MaritalStatusEnum
+  name?: any | null
+  fullName?: any | null
+  taxId?: any | null
+  nationalId?: any | null
+  dateOfBirth?: any | null
+  issuingBody?: any | null
+  gender?: any | null
+  maritalStatus?: any | null
 }
 
+export type Person = PersonType
+export type Persons = Person[]
+
 export type PersonProps = {
-  data: PersonType
-  onChange: (data: PersonType) => void
+  data: Person
+  onChange: (data: Person) => void
   isEditable: boolean
   onNext: () => void
   onPrev: () => void

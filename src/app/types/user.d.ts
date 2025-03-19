@@ -4,12 +4,10 @@ import { z } from 'zod'
 export const baseSchema = z.object({
   id: z
     .number()
-    .positive()
-    .refine((val) => {
-      val > 0
-    }),
-  active: z.boolean(),
-  createdAt: z.string(),
+    .positive(),
+
+  active: z.boolean().optional(),
+  createdAt: z.string().optional()
 })
 
 export const userBaseSchema = baseSchema.extend({
@@ -25,7 +23,7 @@ export const userBaseSchema = baseSchema.extend({
     .email('O email deve ser válido.')
     .max(63, 'O email não pode ter mais de 63 caracteres.')
     .optional(),
-  role: z.nativeEnum(Role),
+  role: z.nativeEnum(Role).optional()
 })
 
 export const userInputSchema = userBaseSchema.extend({
@@ -37,13 +35,14 @@ export const userInputSchema = userBaseSchema.extend({
     .trim()
     .min(6, 'A senha deve ter pelo menos 6 caracteres.')
     .max(32, 'A senha não pode ter mais de 32 caracteres.'),
-  role: z.nativeEnum(Role).optional(),
+  role: z.nativeEnum(Role).optional()
 })
 
 export const userResponseSchema = userBaseSchema.extend({
   updatedAt: z.string().optional(),
-  deletedAt: z.string().optional(),
+  deletedAt: z.string().optional()
 })
 
 export type UserInput = z.infer<typeof userInputSchema>
 export type UserResponse = z.infer<typeof userResponseSchema>
+export type Users = UserResponse[] | Partial<UserResponse>[]

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 // Dynamic Metadata
 export const metadata: Metadata = {
-  title: "COIF Dashboard",
+  title: "SIGFLOR",
   description: "Centralized dashboard for employees, reminders, and tasks.",
 };
 

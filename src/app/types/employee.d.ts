@@ -1,50 +1,48 @@
 import { Address } from './address'
-import { BankAccount } from './BankAccount'
+import { BankAccount } from './bank'
 import { Clothing } from './clothing'
 import { Contact } from './contact'
 import { Position } from './position'
 
-export type EmployeeType = {
-  id?: number
-  active?: boolean
-  name: string
-  fullName?: string
-  dateOfBirth: string
-  taxId: string
-  nationalId: string
-  issuingBody: string
-  registration: string
-  supervisor?: boolean
-  manager?: boolean
-  salary: number
-  contractDate: Date
-  removalDate?: Date
-  positionId?: number
-  position?: Position
-  address?: Address
-  contact?: Contact
-  bank?: BankAccount
-  clothing?: Clothing
-  gender: string
-  maritalStatus: string
+type EmployeeT = {
+  id?: any | null
+  active?: any | null
+  name?: any | null
+  fullName?: any | null
+  dateOfBirth?: any | null
+  taxId?: any | null
+  nationalId: any | null
+  issuingBody?: any | null
+  registration: any | null
+  supervisor?: any | null
+  manager?: any | null
+  salary?: any | null
+  contractDate?: Date | null
+  removalDate?: Date | null
+  positionId?: any | null
+  position?: Position | null
+  address?: Address | null
+  contact?: Contact | null
+  bank?: BankAccount | null
+  clothing?: Clothing | null
+  gender?: any | null
+  maritalStatus?: any | null
 }
 
-export type Employee = EmployeeType
-export type Employees = EmployeeType[]
+export type Employee = EmployeeT | Partial<EmployeeT>
+export type Employees = EmployeeT[] | Partial<EmployeeT>[]
 
-export interface EmployeeProps {
-  data: EmployeeType
-  onChange: (updatedData: EmployeeType) => void
-  isEditable: boolean
+export interface EmployeeFormProps {
+  data?: Employee | null
+  onChange: (updatedData: Employee) => void
   onNext: () => void
   onPrev: () => void
+  employeeId: number | null
 }
+
 export interface ContractFormProps {
-  mode: 'edit' | 'create'
-  employeeData?: EmployeeType | null
-  onSave: (updatedData: EmployeeType) => Promise<void>
-  onCancel: () => void
-  isEditable: boolean
+  data?: Employee | null
+  isEditable?: boolean
 }
 
 export interface CpfMaskProps {
@@ -83,6 +81,6 @@ export interface RgMaskProps {
 }
 
 export interface MoneyInputProps {
-  value: string
+  value: any | null
   onChange: (newValue: string) => void
 }

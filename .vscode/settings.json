@@ -1,0 +1,56 @@
+// {
+//   "editor.minimap.enabled": false,
+//   "files.insertFinalNewline": true,
+//   "files.trimTrailingWhitespace": true,
+//   "typescript.suggest.completeFunctionCalls": true,
+//   "typescript.suggest.paths": true,
+//   "[typescript]": {
+//     "editor.rulers": [ { "column": 79, "color": "#3d2020" } ],
+//     "prettier.endOfLine": "lf",
+//     "prettier.trailingComma": "none",
+//     "typescript.preferences.quoteStyle": "single",
+//     "editor.formatOnSave": true,
+//     "editor.defaultFormatter": "esbenp.prettier-vscode",
+//     "prettier.singleQuote": true,
+//     "editor.codeActionsOnSave": {
+//       "source.removeUnused.ts": "always",
+//       "source.organizeImports": "always",
+//       "source.addMissingImports.ts": "always",
+//       "source.sortImports": "always",
+//     },
+//   },
+//   "[typescriptreact]": {
+//     "editor.rulers": [ { "column": 119, "color": "#3d2020" } ],
+//     "prettier.endOfLine": "lf",
+//     "prettier.singleQuote": true,
+//     "typescript.preferences.quoteStyle": "double",
+//     "editor.formatOnSave": true,
+//     "editor.defaultFormatter": "esbenp.prettier-vscode",
+//     "editor.codeActionsOnSave": {
+//       "source.organizeImports": "always",
+//       "source.addMissingImports": "always",
+//       "source.removeUnusedImports": "always",
+//       "source.sortImports": "always",
+//     },
+//   },
+//   "workbench.colorCustomizations": {
+//     // "editorError.background": "#ff0000e7",
+//   },
+//   "git.commandsToLog": [
+//     "switch",
+//     "checkout",
+//     "commit",
+//     "fetch",
+//     "merge",
+//     "stash",
+//     "push",
+//     "pull",
+//     "branch",
+//     "reset",
+//     "rm"
+//   ],
+//   "git.ignoredRepositories": [
+//     "backup",
+//     "log"
+//   ],
+// }

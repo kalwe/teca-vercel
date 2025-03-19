@@ -1,165 +1,126 @@
 "use client";
 
-import "react-datepicker/dist/react-datepicker.css";
-import { useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { resumeSchema } from "@/app/schemas/cvSchema";
-import { ResumeService } from "@/app/services/resumeService";
-import { z } from "zod";
-import DatePicker from "react-datepicker";
-import DropdownCheckboxPosition from "../DropDown/dropdown-position";
-import { ResumeFormProps } from "@/app/schemas/cvSchema";
+import { ResumeService } from "@/app/services/resumeService"
+import type { Resume } from "@/app/types/resume"
+import { useParams, useRouter } from "next/navigation"
+import { useState } from "react"
+import "react-datepicker/dist/react-datepicker.css"
+import DropdownCheckboxPosition from "../DropDown/dropdown-position"
 
-function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
+export default function ResumeForm() {
   const router = useRouter();
-
-  // Estado do formulário com fallback para valores vazios
-  const [formData, setFormData] = useState<z.infer<typeof resumeSchema>>(
-    curriculoData || ({} as z.infer<typeof resumeSchema>)
-  );
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { id } = useParams();
+  const isEditMode = !!id;
+  const resumeId = isEditMode ? Number(id) : null;
+  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [registrationDate, setRegistrationDate] = useState<Date | null>(new Date());
+  const [resume, setResume] = useState<Partial<Resume>>({});
 
-  // Atualiza os campos do formulário e faz a validação instantânea
-  const handleChange = useCallback(
-    <K extends keyof z.infer<typeof resumeSchema>>(key: K, value: z.infer<typeof resumeSchema>[K]) => {
-      const updatedData = { ...formData, [key]: value };
+  const handleChange = <K extends keyof Resume>(field: K, value: Resume[K]) => {
+    setResume((prev) => ({ ...prev, [field]: value }));
+  };
 
-      try {
-        resumeSchema.parse(updatedData);
-        setErrors({});
-      } catch (err) {
-        if (err instanceof z.ZodError) {
-          const fieldErrors: Record<string, string> = {};
-          err.errors.forEach((error) => {
-            if (error.path.length > 0) {
-              fieldErrors[error.path[0] as string] = error.message;
-            }
-          });
-          setErrors(fieldErrors);
-        }
-      }
-
-      setFormData(updatedData);
-    },
-    [formData]
-  );
-
-  // Upload de arquivo
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
-
     if (uploadedFile) {
       setFile(uploadedFile);
-    } else {
-      alert("Por favor, selecione um arquivo válido.");
     }
   };
 
-  // Salvar currículo utilizando createResume
-  const handleSave = async () => {
+  const handleSaveAll = async () => {
     try {
       setLoading(true);
-      if (!file) {
-        alert("Por favor, selecione um arquivo.");
-        return;
+
+      const resumeIdSaved = await handleSave();
+
+      if (resumeIdSaved && file) {
+        await ResumeService.uploadResumeFile(resumeIdSaved, file);
       }
 
-      // Cria um FormData com todos os dados do currículo
-      const formDataToSend = new FormData();
-      formDataToSend.append("file", file);
-      formDataToSend.append("registrationDate", registrationDate ? registrationDate.toISOString() : "");
-      formDataToSend.append("fullName", formData.fullName || "");
-      formDataToSend.append("position", formData.position || "");
-      // Se houver outros campos no formData, adicione-os aqui conforme necessário.
-
-      // Chama o método createResume do serviço
-      await ResumeService.createResume(formDataToSend);
-      alert("✅ Currículo enviado com sucesso!");
+      alert("Currículo salvo com sucesso!");
       router.push("/curriculo-display/visualize-cv");
     } catch (error) {
       console.error("Erro ao salvar currículo:", error);
-      alert("Erro ao salvar currículo. Verifique o console para mais detalhes.");
+      alert("Erro ao salvar currículo. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (file) {
-      console.log("Arquivo selecionado:", file.name);
+  const handleSave = async (): Promise<number | null> => {
+    try {
+      let savedResume;
+      if (isEditMode && resumeId) {
+        await ResumeService.updateResume(resumeId, resume);
+        savedResume = { id: resumeId };
+      } else {
+        savedResume = await ResumeService.createResume(resume);
+      }
+      return savedResume.id;
+    } catch (error) {
+      console.error("Erro ao salvar currículo:", error);
+      alert("Erro ao salvar currículo. Tente novamente.");
+      return null;
     }
-  }, [file]);
+  };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="w-full max-w-4xl p-6 bg-gray-800 shadow-md rounded-lg border">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-700">
+      <div className="w-full max-w-4xl p-6 bg-gray-800 shadow-md rounded-lg border border-gray-700">
         <h1 className="text-2xl font-bold text-white mb-6 text-center">
-          {mode === "edit" ? "Editar Currículo" : "Novo Currículo"}
+          {isEditMode ? "Editar Currículo" : "Novo Currículo"}
         </h1>
+
         <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-          {/* Upload de Arquivo */}
+          {/* Upload do Arquivo */}
           <div>
             <label
               htmlFor="file-upload"
-              className="flex items-center gap-4 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100"
+              className="flex items-center gap-4 px-4 py-3 border border-gray-500 rounded-lg bg-gray-700 text-white cursor-pointer hover:bg-gray-600"
             >
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
+              <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                📎
               </div>
-              <span>Anexar Arquivo</span>
+              <span>{file ? file.name : "Anexar Arquivo"}</span>
               <input id="file-upload" type="file" onChange={handleFileUpload} className="hidden" />
             </label>
           </div>
 
-          {/* Campos do Formulário */}
+          {/* Campos de entrada */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <input
                 type="text"
-                value={formData.fullName || ""}
+                value={resume.fullName || ""}
                 onChange={(e) => handleChange("fullName", e.target.value)}
                 placeholder="Nome Completo"
-                className={`w-full px-4 py-2 border ${errors.fullName ? "border-red-500" : "border-gray-300"} rounded-lg bg-gray-50`}
+                className="w-full px-4 py-2 border border-gray-500 rounded-lg bg-gray-700 text-white placeholder-gray-400"
               />
-              {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
             </div>
-
-            <DropdownCheckboxPosition value={formData.position || ""} onChange={(value) => handleChange("position", value)} />
-
-            {/* Selecionador de Data */}
             <div>
-              <label className="block text-white mb-2">Data do Cadastro</label>
-              <DatePicker
-                selected={registrationDate}
-                onChange={(date) => setRegistrationDate(date)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                dateFormat="dd/MM/yyyy"
+            <DropdownCheckboxPosition
+                id={resume.positionId ?? null}
+                onChange={(value) => handleChange("positionId", value)}
               />
             </div>
           </div>
 
-          {/* Botões de Ação */}
-          <div className="flex justify-end space-x-4">
+          {/* Botões de ação */}
+          <div className="flex justify-between">
             <button
               type="button"
               onClick={() => router.push("/curriculo-display/visualize-cv")}
-              className="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600"
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              onClick={handleSave}
+              onClick={handleSaveAll}
               className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? "Salvando..." : "Salvar Currículo"}
+              {loading ? "Salvando..." : isEditMode ? "Atualizar Currículo" : "Salvar Currículo"}
             </button>
           </div>
         </form>
@@ -167,5 +128,3 @@ function ResumeForm({ mode, curriculoData }: ResumeFormProps) {
     </div>
   );
 }
-
-export default ResumeForm;

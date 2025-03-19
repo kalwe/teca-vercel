@@ -1,21 +1,19 @@
-export type ResumeType = {
-  id: number
-  fullName: string
-  email: string
-  taxId: string
-  phone: string
-  zip_code: string
-  position: string
-  region: string
-  scholarity: string
-  dateOfBirth: string
-  pdf_url: string
+import { Position } from './position'
+
+type ResumeT = {
+  id: any | null
+  fullName?: any | null
+  position?: Position | null
+  positionId?: any | null
+  fileUrl?: any | null
 }
 
+export type Resume = ResumeT | Partial<ResumeT>
+export type Resumes = ResumeT[] | Partial<ResumeT>[]
+
 export interface ResumeFormProps {
-  mode: 'edit' | 'create'
-  resumeData?: ResumeType
-  onSave: (updatedData: ResumeType) => Promise<void>
+  data: Resume | null
+  onSave: (updatedData: Resume) => void
   onCancel: () => void
   loading: boolean
 }

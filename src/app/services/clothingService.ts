@@ -1,87 +1,76 @@
-import { ClothingType } from "../types/clothing";
-import api from "./api"; // 🔥 Importa a instância do Axios configurada
+import { AxiosError } from 'axios'
+import api from './api'
 
-const endpoint = "/clothing"; // 🔥 Define o endpoint base
+const endpoint = '/clothing'
 
 export const ClothingService = {
-  /**
-   * 🔥 Cria um novo vestuário para um funcionário
-   * @param {object} clothingData - Dados do vestuário
-   * @returns {Promise<any>} - Resposta da API
-   */
-  async createClothing(ClothingData: ClothingType) {
+  async createClothing(ClothingData: any) {
     try {
       const response = await api.post(endpoint, ClothingData)
-      if (response.status == 201)
+      if (response.status == 201) {
         return response.data
-
-      // TODO: validar se for erro
-
-      // const createdMock = createClothingMock(ClothingData)
-      // return createdMock
+      }
     } catch (error) {
-      console.error("Erro ao cadastrar vestuário:", error)
-      throw error
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao cadastrar vestuário: ', error)
     }
   },
 
-  /**
-   * 🔍 Busca um vestuário pelo ID
-   * @param {number} id - ID do vestuário
-   * @returns {Promise<any>} - Dados do vestuário
-   */
-  async getClothingById(id: number): Promise<any> {
+  async getClothingById(id: any) {
     try {
-      const response = await api.get(`${endpoint}/${id}`);
-      return response.data;
+      const response = await api.get(`${endpoint}/${id}`)
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error("❌ Erro ao buscar vestuário:", error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error(' Erro ao buscar vestuário: ', error)
     }
   },
 
-  /**
-   * 📋 Retorna todos os vestuários cadastrados
-   * @returns {Promise<any[]>} - Lista de vestuários
-   */
-  async getAllClothing(): Promise<any[]> {
+  async getAllClothing() {
     try {
-      const response = await api.get(endpoint);
-      return response.data;
+      const response = await api.get(endpoint)
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error("❌ Erro ao buscar todos os vestuários:", error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao buscar todos os vestuários: ', error)
     }
   },
 
-  /**
-   * 🔄 Atualiza um vestuário existente
-   * @param {number} id - ID do vestuário
-   * @param {object} clothingData - Novos dados do vestuário
-   * @returns {Promise<any>} - Dados atualizados
-   */
-  async updateClothing(id: number, clothingData: any){
+  async updateClothing(id: any, clothingData: any) {
     try {
-      const response = await api.put(`${endpoint}/${id}`, clothingData);
-      return response.data;
+      const response = await api.put(`${endpoint}/${id}`, clothingData)
+      if (response.status == 200) {
+        return response.data
+      }
     } catch (error) {
-      console.error("❌ Erro ao atualizar vestuário:", error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error(' Erro ao atualizar vestuário: ', error)
     }
   },
 
-  /**
-   * 🗑️ Exclui um vestuário pelo ID
-   * @param {number} id - ID do vestuário a ser removido
-   * @returns //{Promise<any>} - Confirmação da exclusão
-   */
-  async deleteClothing(id: number) {
+  async deleteClothing(id: any) {
     try {
-      const response = await api.delete(`${endpoint}/${id}`);
-      return response.data;
+      const response = await api.delete(`${endpoint}/${id}`)
+      if (response.status == 204) {
+        return response.data
+      }
     } catch (error) {
-      console.error(" Erro ao deletar vestuário:", error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error(' Erro ao deletar vestuário: ', error)
     }
-  },
-};
+  }
+}

@@ -16,7 +16,7 @@ export const resumeSchema = z.object({
     .max(100, "O nome completo deve ter no máximo 100 caracteres")
     .trim(),
 
-  pdf_url: z
+  fileUrl: z
     .string()
     .trim()
     .regex(/^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/, "Formato de URL inválido")
@@ -29,6 +29,8 @@ export const resumeSchema = z.object({
     .refine((date) => !isNaN(Date.parse(date)), {
       message: "Data inválida. Use um formato de data válido (dd-mm-yyyy ou ISO8601).",
     }),
+  positionId: z
+    .number(),
 });
 
 export interface ResumeFormProps {

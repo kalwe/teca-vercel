@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios'
-import { UserInput } from '../schemas/userSchema'
+import { UserInput } from '../types/user'
 import api from './api'
 
 const endpoint = '/user'
@@ -11,53 +11,53 @@ export const UserService = {
       if (response.status == 200) {
         return response.data
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('Erro ao buscar usuário: ', error.response?.data)
+        console.error('Axios erro: ', error.response?.data)
       }
-      throw new Error('Erro ao buscar usuário: ', error.message)
+      console.error('Erro ao buscar usuário: ', error)
     }
   },
 
-  async getUserById(id: number) {
+  async getUserById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`)
       if (response.status == 200) {
         return response.data
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('Erro ao buscar usuário: ', error.response?.data)
+        console.error('Axios erro: ', error.response?.data)
       }
-      throw new Error('Erro ao buscar usuário: ', error.message)
+      console.error('Erro ao buscar usuário: ', error)
     }
   },
 
-  async updateUser(id: number, userData: Partial<UserInput>) {
+  async updateUser(id: any, userData: Partial<UserInput>) {
     try {
       const response = await api.put(`${endpoint}/${id}`, userData)
       if (response.status == 200) {
         return response.data
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('Erro ao atualizar usuário: ', error.response?.data)
+        console.error('Axios erro: ', error.response?.data)
       }
-      throw new Error('Erro ao atualizar usuário: ', error.message)
+      console.error('Erro ao buscar usuário: ', error)
     }
   },
 
-  async deleteUser(id: number) {
+  async deleteUser(id: any) {
     try {
       const response = await api.delete(`${endpoint}/${id}`)
       if (response.status == 204) {
         return response.data
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('Erro ao excluir usuário: ', error.response?.data)
+        console.error('Axios erro: ', error.response?.data)
       }
-      throw new Error('Erro ao excluir usuário: ', error.message)
+      console.error('Erro ao buscar usuário: ', error)
     }
-  },
+  }
 }

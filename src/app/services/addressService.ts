@@ -1,67 +1,76 @@
-import { AddressType } from '../types/address';
-import api from './api';
+import { AxiosError } from 'axios'
+import api from './api'
 
-const endpoint = '/address';
+const endpoint = '/address'
 
 export const AddressService = {
-  async createAddress(addressData: AddressType) {
+  async createAddress(addressData: any) {
     try {
-      const response = await api.post(endpoint, addressData);
+      const response = await api.post(endpoint, addressData)
       if (response.status == 201) {
-        return response.data;
+        return response.data
       }
     } catch (error) {
-      console.error('Erro ao criar endereço:', error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao criar endereço: ', error)
     }
   },
 
-  async getAddressById(id: number) {
+  async getAddressById(id: any) {
     try {
-      const response = await api.get(`${endpoint}/${id}`);
+      const response = await api.get(`${endpoint}/${id}`)
       if (response.status == 200) {
-        return response.data;
+        return response.data
       }
     } catch (error) {
-      console.error('Erro ao pegar endereço:', error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao pegar endereço: ', error)
     }
   },
 
   async getAllAddresses() {
-    // TODO: muito importante verificar se pega o retorno da primisse ao chamar esse metodo
     try {
-      const response = await api.get(endpoint);
+      const response = await api.get(endpoint)
       if (response.status == 200) {
-        return response.data;
+        return response.data
       }
     } catch (error) {
-      console.error('Erro ao buscar todos os endereços:', error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao buscar todos os endereços: ', error)
     }
   },
 
-  async updateAddress(id: number, addressData: any): Promise<any> {
+  async updateAddress(id: any, addressData: any) {
     try {
-      const response = await api.put(`${endpoint}/${id}`, addressData);
+      const response = await api.put(`${endpoint}/${id}`, addressData)
       if (response.status == 200) {
-        return response.data;
+        return response.data
       }
     } catch (error) {
-      console.error('Erro ao atualizar endereço:', error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao atualizar endereço:', error)
     }
   },
 
-  async deleteAddress(id: number) {
+  async deleteAddress(id: any) {
     try {
-      const response = await api.delete(`${endpoint}/${id}`);
+      const response = await api.delete(`${endpoint}/${id}`)
       if (response.status == 204) {
-        return response.data;
+        return response.data
       }
     } catch (error) {
-      console.error('Erro ao deletar endereço:', error);
-      throw error;
+      if (error instanceof AxiosError) {
+        console.error('AxiosError response.data: ', error.response?.data)
+      }
+      console.error('Erro ao deletar endereço: ', error)
     }
-  },
-};
+  }
+}

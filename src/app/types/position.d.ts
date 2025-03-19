@@ -1,4 +1,5 @@
 export type Position = {
-  id?: string
-  name: string
+  id?: any | null
+  name?: any | null
+  active?: boolean | null
 }

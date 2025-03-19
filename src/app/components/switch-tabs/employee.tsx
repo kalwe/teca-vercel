@@ -1,193 +1,154 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { employeeSchema } from "@/app/schemas/employeeSchema";
-import { Employee } from "@/app/types/old/employee";
-import { EmployeeService } from "@/app/services/employeeService";
-import { z } from "zod";
-import DropdownCheckboxPosition from "../DropDown/dropdown-position";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { EmployeeProps } from "@/app/types/employee";
+import { EmployeeService } from '@/app/services/employeeService'
+import { useState } from 'react'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import DropdownCheckboxGender from '../DropDown/dropdown-gender'
+import DropdownCheckboxMaritalStatus from '../DropDown/dropdown-marital-status'
+import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export function Funcionario({
-  data,
-  onChange,
-  isEditable,
-  onNext,
-  onPrev,
-}: EmployeeProps) {
-  const [errors, setErrors] = useState<Partial<Record<keyof Employee, string>>>({});
-  const [isNextEnabled, setIsNextEnabled] = useState(false);
+export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
+  const [employee, setEmployee] = useState<any>(employeeData || {})
+  const [loading, setLoading] = useState(false)
 
-  const formatDateForBackend = (value: string | Date | null): string => {
-    if (!value) return "";
-    if (typeof value === "string") {
-      return value.includes("-") ? value : value.replace(/\//g, "-");
-    }
-    if (value instanceof Date) {
-      const day = String(value.getDate()).padStart(2, "0");
-      const month = String(value.getMonth() + 1).padStart(2, "0");
-      const year = value.getFullYear();
-      return `${day}-${month}-${year}`;
-    }
-    return "";
-  };
+  const handleInputChange = (field: any, value: any) => {
+    setEmployee((prev: any) => ({ ...prev, [field]: value }))
+  }
 
-  const parseDateFromBackend = (dateStr?: string): Date | null => {
-    if (!dateStr) return null;
-    const parts = dateStr.split("-");
-    if (parts.length !== 3) return null;
-    const [day, month, year] = parts;
-    return new Date(Number(year), Number(month) - 1, Number(day));
-  };
-
-  const handleInputChange = (field: keyof Employee, value: unknown) => {
-    let formattedValue = value;
-    if ((field === "contractDate" || field === "removalDate") && value instanceof Date) {
-      formattedValue = formatDateForBackend(value);
-    }
-    const updatedData = { ...data, [field]: formattedValue };
-
-    try {
-      employeeSchema.parse(updatedData);
-      setErrors({});
-      setIsNextEnabled(true);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        const newErrors: Partial<Record<keyof Employee, string>> = {};
-        err.errors.forEach((e) => {
-          newErrors[e.path[0] as keyof Employee] = e.message;
-        });
-        setErrors(newErrors);
-        setIsNextEnabled(false);
-      }
-    }
-
-    onChange(updatedData);
-  };
-
-  /**
-   * Calls the EmployeeService to save the employee data and then proceeds to the next step.
-   */
   const handleSave = async () => {
     try {
-      const createdEmployee = await EmployeeService.createEmployee(data);
-      console.log(createdEmployee);
-      onNext();
+      setLoading(true)
+
+      const { maritalStatus, ...employeeInput } = employee
+      console.log(maritalStatus)
+      console.info(employeeInput)
+      const employeeCreated = await EmployeeService.createEmployee({
+        ...employeeInput
+      })
+      console.info(employeeCreated)
+      setEmployee(employeeCreated)
+      localStorage.setItem('employeeId', employeeCreated.id)
+      // alert('Funcionario cadastrado com sucesso!')
+      onNext()
     } catch (error) {
-      alert("Erro ao cadastrar funcionário. Verifique os campos.");
-      console.error(error);
+      console.error('Erro ao cadastrar endereço:', error)
+      alert('Erro ao cadastrar endereço. Tente novamente.')
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
-      <h2 className="text-white text-xl font-bold">Funcionário</h2>
+    <div className='p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full'>
+      <h2 className='text-white text-xl font-bold'>Funcionário</h2>
+      {[
+        { name: 'name', placeholder: 'Digite o nome', label: 'Nome' },
+        {
+          name: 'fullName',
+          placeholder: 'Digite o Nome Completo',
+          label: 'Nome Completo'
+        },
+        { name: 'taxId', placeholder: 'Digite o CPF', label: 'CPF' },
+        { name: 'nationalId', placeholder: 'Digite o RG', label: 'RG' },
+        {
+          name: 'issuingBody',
+          placeholder: 'Digite o Órgão Expedidor',
+          label: 'Órgão Expedidor'
+        }
+      ].map((field) => (
+        <div key={field.name} className='w-full'>
+          <input
+            type='text'
+            name={field.name}
+            value={employee?.[field.name] || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
+            placeholder={`${field.placeholder}`}
+            className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
+          />
+        </div>
+      ))}
 
-      {/* Registration Field */}
-      <div className="w-full">
-        <label className="block text-gray-400 mb-2">Digite a matrícula</label>
+      <div className='w-full'>
+        <DatePicker
+          selected={employee?.dateOfBirth ? new Date(employee?.dateOfBirth) : null}
+          onChange={(date) => handleInputChange('dateOfBirth', date)}
+          dateFormat='dd/MM/yyyy'
+          placeholderText='Data de Nascimento'
+          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
+        />
+      </div>
+
+      <div className='flex-auto'>
+        <DropdownCheckboxGender
+          value={employee?.gender || ''}
+          onChange={(val) => handleInputChange('gender', val)}
+        />
+      </div>
+      <div className='flex-auto'>
+        <DropdownCheckboxMaritalStatus
+          value={employee?.maritalStatus || ''}
+          onChange={(val) => handleInputChange('maritalStatus', val)}
+        />
+      </div>
+
+      <div className='w-full'>
+        <label className='block text-gray-400 mb-2'>Digite a matrícula</label>
         <input
-          type="text"
-          name="registration"
-          value={data.registration || ""}
-          onChange={(e) => handleInputChange("registration", e.target.value)}
-          placeholder="Digite a matrícula"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.registration ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
+          type='text'
+          name='registration'
+          value={employee?.registration || ''}
+          onChange={(e) => handleInputChange('registration', e.target.value)}
+          placeholder='Digite a matrícula'
+          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         />
-        {errors.registration && <p className="text-red-500 text-sm mt-1">{errors.registration}</p>}
       </div>
 
-      {/* Contract Date Field with DatePicker */}
-      <div className="w-full">
-        <label className="block text-gray-400 mb-2">Data de Admissão</label>
+      {/* Data de Admissão */}
+      <div className='w-full'>
+        <label className='block text-gray-400 mb-2'>Data de Admissão</label>
         <DatePicker
-          selected={parseDateFromBackend(data.contractDate)}
-          onChange={(date: Date | null) => handleInputChange("contractDate", date)}
-          dateFormat="dd-MM-yyyy"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.contractDate ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
+          selected={employee?.contractDate ? new Date(employee?.contractDate) : null}
+          onChange={(date) => handleInputChange('contractDate', date)}
+          dateFormat='yyyy-MM-dd'
+          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         />
-        {errors.contractDate && (
-          <p className="text-red-500 text-sm mt-1">{errors.contractDate}</p>
-        )}
       </div>
 
-      {/* Removal Date Field with DatePicker */}
-      <div className="w-full">
-        <label className="block text-gray-400 mb-2">Data de Remoção</label>
+      <div className='w-full'>
+        <label className='block text-gray-400 mb-2'>Data de Remoção</label>
         <DatePicker
-          selected={parseDateFromBackend(data.removalDate)}
-          onChange={(date: Date | null) => handleInputChange("removalDate", date)}
-          dateFormat="dd-MM-yyyy"
-          className={`w-full bg-gray-700 text-white border ${
-            errors.removalDate ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
+          selected={employee?.removalDate ? new Date(employee?.removalDate) : null}
+          onChange={(date) => handleInputChange('removalDate', date)}
+          dateFormat='yyyy-MM-dd'
+          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         />
-        {errors.removalDate && (
-          <p className="text-red-500 text-sm mt-1">{errors.removalDate}</p>
-        )}
       </div>
 
-      {/* Dropdown for Position (using positionId as per schema) */}
-      <div className="w-full">
+      {/* Cargo */}
+      <div>
         <DropdownCheckboxPosition
-          value={data.positionId || ""}
-          onChange={(value) => handleInputChange("positionId", value)}
-          disabled={!isEditable}
+          id={employee?.positionId ?? 1}
+          onChange={(val: any) => handleInputChange('positionId', val)}
         />
-        {errors.positionId && (
-          <p className="text-red-500 text-sm mt-1">{errors.positionId}</p>
-        )}
       </div>
 
-      {/* Supervisor Checkbox */}
-      <div className="w-full flex items-center">
-        <input
-          type="checkbox"
-          checked={!!data.supervisor}
-          onChange={(e) => handleInputChange("supervisor", e.target.checked)}
-          className="mr-2"
-          disabled={!isEditable}
-        />
-        <label className="text-gray-400">Encarregado</label>
-      </div>
-
-      {/* Manager Checkbox */}
-      <div className="w-full flex items-center">
-        <input
-          type="checkbox"
-          checked={!!data.manager}
-          onChange={(e) => handleInputChange("manager", e.target.checked)}
-          className="mr-2"
-          disabled={!isEditable}
-        />
-        <label className="text-gray-400">Gerente</label>
-      </div>
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-6">
+      {/* Botões */}
+      <div className='flex justify-between mt-6'>
         <button
           onClick={onPrev}
-          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          className='px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600'
         >
           Voltar
         </button>
         <button
           onClick={handleSave}
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={!isNextEnabled}
+          className='px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600'
+          disabled={loading}
         >
-          Próximo
+          {loading ? 'Salvando...' : 'Próximo'}
         </button>
       </div>
     </div>
-  );
+  )
 }

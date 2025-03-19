@@ -1,135 +1,95 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useVacancyContext } from "@/app/context/VacancyContext";
-import { VacancyService } from "@/app/services/vacancyService";
+import { VacancyService } from '@/app/services/vacancyService'
+import { Vacancies } from '@/app/types/vacancy'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
-const VacancyList: React.FC = () => {
-  const { vacancies, setVacancies } = useVacancyContext();
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export default function VacancyList({ vacanciesData }: { vacanciesData: Vacancies }) {
+  const [vacancies, setVacancies] = useState<Vacancies>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
-  /**
-   * Carrega as vagas automaticamente ao abrir a página
-   */
-  useEffect(() => {
-    const fetchVacancies = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const fetchedVacancies = await VacancyService.getAllVacancies();
-
-        if (!Array.isArray(fetchedVacancies)) {
-          throw new Error("Dados inválidos recebidos.");
-        }
-
-        // Remove duplicatas com base no ID da vaga
-        const uniqueVacancies = fetchedVacancies.filter(
-          (v, index, self) =>
-            index === self.findIndex((t) => t.id === v.id)
-        );
-
-        setVacancies(uniqueVacancies);
-      } catch (error) {
-        console.error("Erro ao buscar vagas:", error);
-        setError("Erro ao carregar vagas. Tente novamente.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVacancies();
-  }, [setVacancies]);
-
-  /**
-   * Exclui uma vaga específica
-   */
-  const handleDelete = async (vacancyId: number) => {
-    if (!confirm("Tem certeza que deseja excluir esta vaga?")) return;
-
-    try {
-      // Deleta na API
-      await VacancyService.deleteVacancy(vacancyId);
-
-      // Remove imediatamente da lista na tela
-      setVacancies((prev) => prev.filter((v) => v.id !== vacancyId));
-    } catch (error) {
-      console.error("Erro ao excluir vaga:", error);
-      alert("Erro ao excluir vaga. Tente novamente.");
+  const fetchVacancies = () => {
+    if (loading) {
+      setVacancies(vacanciesData)
+      setLoading(false)
     }
-  };
+  }
+  fetchVacancies()
+
+  const handleDelete = async (vacancyId: number) => {
+    if (!confirm('Tem certeza que deseja excluir esta vaga?')) return
+
+    const success = await VacancyService.deleteVacancy(vacancyId)
+    if (success) {
+      setVacancies(vacancies.filter((v) => v.id != vacancyId))
+    }
+    setError('Erro ao excluir vaga. Tente novamente.')
+  }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600">
-      <div className="w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border flex flex-col gap-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-extrabold text-white">Vagas</h1>
+    <div className='flex justify-center items-center min-h-screen bg-gradient-to-br from-green-900 to-green-600'>
+      <div className='w-full max-w-5xl p-6 bg-gray-800 shadow-md rounded-lg border flex flex-col gap-6'>
+        <div className='flex justify-between items-center'>
+          <h1 className='text-4xl font-extrabold text-white'>Vagas</h1>
           <button
-            onClick={() => router.push("/vagas-display/nova-vaga")}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-transform transform hover:scale-105"
+            onClick={() => router.push('/vacancy-display/nova-vaga')}
+            className='px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-transform transform hover:scale-105'
           >
-            Adicionar Vagas
+            Adicionar Vaga
           </button>
         </div>
 
-        {/* Lista de Vacancy */}
-        <div className="p-4 bg-gray-700 rounded-lg shadow-inner w-full">
-          <div className="flex justify-between items-center border-b border-gray-600 pb-4 mb-2">
-            <h1 className="text-gray-300 font-semibold w-2/5">Cargo</h1>
-            <h1 className="text-gray-300 font-semibold w-1/5 text-center">Quantidade</h1>
-            <h1 className="text-gray-300 font-semibold w-2/5 text-right">Ações</h1>
+        {/* Lista de Vagas */}
+        <div className='p-4 bg-gray-700 rounded-lg shadow-inner w-full'>
+          <div className='flex justify-between items-center border-b border-gray-600 pb-4 mb-2'>
+            <h1 className='text-gray-300 font-semibold w-2/5'>Cargo</h1>
+            <h1 className='text-gray-300 font-semibold w-1/5 text-center'>Quantidade</h1>
+            <h1 className='text-gray-300 font-semibold w-2/5 text-right'>Ações</h1>
           </div>
 
-          {loading && <p className="text-white text-center">Carregando vagas...</p>}
-          {error && <p className="text-red-500 text-center">{error}</p>}
+          {loading && <p className='text-white text-center'>Carregando vagas...</p>}
+          {error && <p className='text-red-500 text-center'>{error}</p>}
 
-          {!loading && !error && (
-            <div className="overflow-y-auto rounded-lg" style={{ maxHeight: "300px" }}>
-              {vacancies.length > 0 ? (
-                vacancies.map((vacancy) => (
-                  <div
-                    key={vacancy.id}
-                    className="flex justify-between items-center p-2 bg-gray-800 rounded-md mb-2 hover:bg-gray-700"
+          <div className='overflow-y-auto rounded-lg' style={{ maxHeight: '300px' }}>
+            {vacancies.map((vacancy) => (
+              <div
+                key={vacancy.id}
+                className='flex justify-between items-center p-2 bg-gray-800 rounded-md mb-2 hover:bg-gray-700'
+              >
+                {/* Cargo */}
+                <span className='text-gray-300 font-medium w-2/5'>
+                  {vacancy.position?.name || 'Sem posição'}
+                </span>
+
+                {/* Quantidade */}
+                <span className='text-gray-300 font-medium w-1/5 text-center'>
+                  {vacancy.quantity}
+                </span>
+
+                {/* Ações */}
+                <div className='flex justify-end w-2/5 gap-2'>
+                  <button
+                    onClick={() => router.push(`/vacancy-display/${vacancy.id}`)}
+                    className='px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all'
                   >
-                    {/* Cargo */}
-                    <span className="text-gray-300 font-medium w-2/5">
-                      {vacancy.position}
-                    </span>
+                    Editar
+                  </button>
 
-                    {/* Quantidade */}
-                    <span className="text-gray-300 font-medium w-1/5 text-center">
-                      {vacancy.quantity}
-                    </span>
-
-                    {/* Ações */}
-                    <div className="flex justify-end w-2/5 gap-2">
-                      <button
-                        onClick={() => router.push(`/vagas-display/nova-vaga/${vacancy.id}`)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
-                      >
-                        Editar
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(vacancy.id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all"
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-300 text-center">Nenhuma vaga carregada</p>
-              )}
-            </div>
-          )}
+                  <button
+                    onClick={() => handleDelete(Number(vacancy.id))}
+                    className='px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all'
+                  >
+                    Excluir
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
-
-export default VacancyList;

@@ -1,18 +1,20 @@
-export type AddressType = {
-  street?: string;
-  number?: string;
-  neighborhood?: string;
-  city?: string;
-  zipCode?: string;
-  state?: string;
-  employee?: number;
-};
+type AddressT = {
+  street?: any | null
+  number?: any | null
+  neighborhood?: any | null
+  city?: any | null
+  zipCode?: any | null
+  state?: any | null
+  employeeId: number | null
+}
+
+export type Address = AddressT | Partial<AddressT>
+export type Addresses = AddressT[] | Partial<AddressT>[]
 
 export type AddressProps = {
-  data?: Partial<AddressType>;
-  onChange: (updatedData: AddressType) => void;
-  isEditable: boolean;
-  onNext: () => void;
-  onPrev: () => void;
-  employee?: number;
-};
+  data: Address | null
+  onChange: (updatedData: Address) => void
+  onNext: () => void
+  onPrev: () => void
+  employeeId: number | null
+}

@@ -1,110 +1,83 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import type { BankProps, BankAccountType } from "@/app/types/bank_account"
-import { BankService } from "@/app/services/bankService"
-import { bankAccountSchema } from "@/app/schemas/bankAccountSchema"
-import { z } from "zod"
+import { BankService } from '@/app/services/bankService'
+import { useState } from 'react'
 
-export function Bank({
-  data = {},
-  onChange,
-  isEditable,
-  onNext,
-  onPrev,
-  employee, // Mantendo mesmo padrão do Address.tsx
-}: BankProps) {
+export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
+  const [bankData, setBankData] = useState<any>(data || {})
+  const [loading] = useState(false)
 
-  const [isNextEnabled, setIsNextEnabled] = useState(false)
-  const [errors, setErrors] = useState<Partial<Record<keyof BankAccountType, string>>>({})
-
-  const handleInputChange = (field: string, value: string) => {
-    const updatedData = { ...data, [field]: value };
-
-    try {
-      bankAccountSchema.parse(updatedData); // Valida os dados
-      setErrors({}); // Limpa os erros ao preencher corretamente
-      setIsNextEnabled(true);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {};
-        error.errors.forEach((e) => {
-          newErrors[e.path[0]] = e.message;
-        });
-        setErrors(newErrors);
-        setIsNextEnabled(false);
-      }
-    }
-
-    onChange(updatedData);
-  };
+  const handleInputChange = (field: any, value: any) => {
+    const updatedBankData = { ...bankData, [field]: value }
+    setBankData(updatedBankData)
+    // onChange(updatedBankData)
+  }
 
   const handleSave = async () => {
     try {
-      const createdBankAccount = await BankService.createBankAccount({ ...data, employee })
+      employeeId = Number(localStorage.getItem('id'))
+      const createdBankAccount = await BankService.createBankAccount({
+        ...bankData,
+        employeeId: Number(employeeId)
+      })
       console.log(createdBankAccount)
       onNext()
     } catch (error) {
-      alert("Erro ao cadastrar conta bancária. Verifique os campos.")
+      alert('Erro ao cadastrar conta bancária. Verifique os campos.')
       console.error(error)
     }
   }
 
   return (
-    <div className="p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full">
-      <h2 className="text-white text-xl font-bold">Dados Bancários</h2>
+    <div className='p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full'>
+      <h2 className='text-white text-xl font-bold'>Dados Bancários</h2>
 
       {[
-        { name: "bank", placeholder: "Digite o nome do banco", label: "Banco" },
-        { name: "agency", placeholder: "Digite a agência", label: "Agência" },
-        { name: "account", placeholder: "Digite a conta", label: "Conta" },
+        { name: 'name', placeholder: 'Digite o nome do banco', label: 'Banco' },
+        { name: 'agency', placeholder: 'Digite a agência', label: 'Agência' },
+        { name: 'account', placeholder: 'Digite a conta', label: 'Conta' }
       ].map((field) => (
-        <div key={field.name} className="w-full">
+        <div key={field.name} className='w-full'>
           <input
-            type="text"
+            type='text'
             name={field.name}
-            value={data[field.name] || ""}
-            onChange={(e) => handleInputChange(e.target.name, e.target.value)}
+            value={bankData?.[field.name] || ''}
+            onChange={(e) => handleInputChange(field.name, e.target.value)}
             placeholder={field.placeholder}
-            className={`w-full bg-gray-700 text-white border ${
-              errors[field.name] ? "border-red-500" : "border-gray-600"
-            } rounded-lg py-2 px-3`}
-            disabled={!isEditable}
+            className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
           />
-          {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
         </div>
       ))}
 
       {/* Tipo de Conta */}
-      <div className="w-full">
+      <div className='w-full'>
         <select
-          name="account_type"
-          value={data.account_type || ""}
-          onChange={(e) => handleInputChange("account_type", e.target.value)}
-          className={`w-full bg-gray-700 text-white border ${
-            errors.account_type ? "border-red-500" : "border-gray-600"
-          } rounded-lg py-2 px-3`}
-          disabled={!isEditable}
+          name='type'
+          value={bankData?.['type'] || ''}
+          onChange={(e) => handleInputChange('type', e.target.value)}
+          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         >
-          <option value="">Selecione o tipo de conta</option>
-          <option value="corrente">Conta Corrente</option>
-          <option value="poupança">Conta Poupança</option>
-          <option value="salário">Conta Salário</option>
+          <option value=''>Selecione o tipo de conta</option>
+          <option value='CORRENTE'>Conta Corrente</option>
+          <option value='POUPANCA'>Conta Poupança</option>
+          <option value='SALARIO'>Conta Salário</option>
         </select>
-        {errors.account_type && <p className="text-red-500 text-sm mt-1">{errors.account_type}</p>}
       </div>
 
-      {/* Botões */}
-      <div className="flex justify-between mt-6">
-        <button onClick={onPrev} className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+      <div className='flex justify-between mt-6'>
+        <button
+          onClick={onPrev}
+          className='px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600'
+        >
           Voltar
         </button>
+
         <button
           onClick={handleSave}
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={!isNextEnabled}
+          className='px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600'
+          disabled={loading}
         >
-          Próximo
+          {loading ? 'Salvando...' : 'Próximo'}
         </button>
       </div>
     </div>

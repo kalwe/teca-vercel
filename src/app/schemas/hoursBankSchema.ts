@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const hoursBankSchema = z.object({
   id: z.number().int().positive('O ID deve ser um número inteiro positivo'),
 
-  employee_id: z
+  employeeId: z
     .number()
     .int()
     .positive('O ID do funcionário deve ser um número inteiro positivo'),
