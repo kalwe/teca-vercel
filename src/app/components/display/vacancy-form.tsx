@@ -6,7 +6,7 @@ import { Vacancy } from '@/app/types/vacancy'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
-import DropdownCheckboxPosition from '../DropDown/dropdown-position'
+import DropdownPosition from '../DropDown/dropdown-position-server'
 
 export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
   const router = useRouter()
@@ -47,7 +47,7 @@ export default function VacancyForm({ vacancyData }: { vacancyData: Vacancy }) {
           {isEditMode ? 'Atualizar Vaga' : 'Nova Vaga'}
         </h1>
         <div>
-          <DropdownCheckboxPosition
+          <DropdownPosition
             id={vacancy?.positionId ?? 1}
             onChange={(id) => handleChange('positionId', id)}
           />

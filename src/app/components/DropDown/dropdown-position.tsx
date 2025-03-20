@@ -1,37 +1,36 @@
 'use client'
 
-import { PositionService } from '@/app/services/positionService'
+import { Positions } from '@/app/types/position'
 import { useEffect, useRef, useState } from 'react'
 
 export default function DropdownCheckboxPosition({
   id,
-  onChange
+  onChange,
+  positionsData
 }: {
   id: number | null
   onChange: (id: number, name: string) => void
+  positionsData: Positions
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [positions, setPositions] = useState<{ id: number; name: string }[]>([])
-  const [selectedName, setSelectedName] = useState<string>('Escolha um cargo') // Estado para o nome
+  const [positions, setPositions] = useState<Positions>([])
+  const [selectedName, setSelectedName] = useState<string>('Escolha um cargo')
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const fetchPosition = async () => {
-      const positions = await PositionService.getAllPositions() // PEGA DA API
-      setPositions(positions)
-
-      // Se já tiver um ID, busca o nome correspondente e define no estado
+      setPositions(positionsData)
       if (id !== null) {
-        const selected = positions.find((p: { id: number }) => p.id === id)
+        const selected = positionsData.find((p) => p.id === id)
         if (selected) {
           setSelectedName(selected.name)
         }
       }
     }
-    if (!positions) {
+    if (positions) {
       fetchPosition()
     }
-  }, [id])
+  }, [id, positions, positionsData])
 
   const handleSelect = (id: number, name: string) => {
     setSelectedName(name) // Atualiza o nome exibido no frontend

@@ -6,13 +6,14 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxGender from '../DropDown/dropdown-gender'
 import DropdownCheckboxMaritalStatus from '../DropDown/dropdown-marital-status'
-import DropdownCheckboxPosition from '../DropDown/dropdown-position'
+import DropdownPosition from '../DropDown/dropdown-position-server'
 
 export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
   const [employee, setEmployee] = useState<any>(employeeData || {})
   const [loading, setLoading] = useState(false)
 
-  const handleInputChange = (field: any, value: any) => {
+  const handleInputChange = (field: string, value: any) => {
+    console.log(`Atualizando ${field}:`, value) // Debug
     setEmployee((prev: any) => ({ ...prev, [field]: value }))
   }
 
@@ -21,19 +22,18 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
       setLoading(true)
 
       const { maritalStatus, ...employeeInput } = employee
-      console.log(maritalStatus)
-      console.info(employeeInput)
-      const employeeCreated = await EmployeeService.createEmployee({
-        ...employeeInput
-      })
-      console.info(employeeCreated)
+      console.log('Estado Civil:', maritalStatus) // Debug
+      console.info('Dados do funcionário:', employeeInput)
+
+      const employeeCreated = await EmployeeService.createEmployee({ ...employeeInput })
+
+      console.info('Funcionário Criado:', employeeCreated)
       setEmployee(employeeCreated)
       localStorage.setItem('employeeId', employeeCreated.id)
-      // alert('Funcionario cadastrado com sucesso!')
       onNext()
     } catch (error) {
-      console.error('Erro ao cadastrar endereço:', error)
-      alert('Erro ao cadastrar endereço. Tente novamente.')
+      console.error('Erro ao cadastrar funcionário:', error)
+      alert('Erro ao cadastrar funcionário. Tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -63,12 +63,13 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
             name={field.name}
             value={employee?.[field.name] || ''}
             onChange={(e) => handleInputChange(field.name, e.target.value)}
-            placeholder={`${field.placeholder}`}
+            placeholder={field.placeholder}
             className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
           />
         </div>
       ))}
 
+      {/* Data de Nascimento */}
       <div className='w-full'>
         <DatePicker
           selected={employee?.dateOfBirth ? new Date(employee?.dateOfBirth) : null}
@@ -79,19 +80,28 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
         />
       </div>
 
+      {/* Dropdowns */}
       <div className='flex-auto'>
         <DropdownCheckboxGender
           value={employee?.gender || ''}
-          onChange={(val) => handleInputChange('gender', val)}
-        />
-      </div>
-      <div className='flex-auto'>
-        <DropdownCheckboxMaritalStatus
-          value={employee?.maritalStatus || ''}
-          onChange={(val) => handleInputChange('maritalStatus', val)}
+          onChange={(val) => {
+            console.log('Gênero Selecionado:', val) // Debug
+            handleInputChange('gender', val)
+          }}
         />
       </div>
 
+      <div className='flex-auto'>
+        <DropdownCheckboxMaritalStatus
+          value={employee?.maritalStatus || ''}
+          onChange={(val) => {
+            console.log('Estado Civil Selecionado:', val) // Debug
+            handleInputChange('maritalStatus', val)
+          }}
+        />
+      </div>
+
+      {/* Matrícula */}
       <div className='w-full'>
         <label className='block text-gray-400 mb-2'>Digite a matrícula</label>
         <input
@@ -104,7 +114,7 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
         />
       </div>
 
-      {/* Data de Admissão */}
+      {/* Datas de Contrato e Remoção */}
       <div className='w-full'>
         <label className='block text-gray-400 mb-2'>Data de Admissão</label>
         <DatePicker
@@ -127,9 +137,12 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
 
       {/* Cargo */}
       <div>
-        <DropdownCheckboxPosition
+        <DropdownPosition
           id={employee?.positionId ?? 1}
-          onChange={(val: any) => handleInputChange('positionId', val)}
+          onChange={(val: any) => {
+            console.log('Cargo Selecionado:', val) // Debug
+            handleInputChange('positionId', val)
+          }}
         />
       </div>
 

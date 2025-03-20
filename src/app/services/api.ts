@@ -5,7 +5,7 @@ const port = process.env.NEXT_PUBLIC_PORT || '8080'
 const api_prefix = 'api/v1'
 
 const api = axios.create({
-  baseURL: `https://${host}:${port}/${api_prefix}`,
+  baseURL: `http://${host}:${port}/${api_prefix}`,
   headers: {
     'Content-Type': 'application/json'
   }
