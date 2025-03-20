@@ -1,44 +1,49 @@
 'use client'
 
-import { Positions } from '@/app/types/position'
+import { PositionService } from '@/app/services/positionService'
 import { useEffect, useRef, useState } from 'react'
 
 export default function DropdownCheckboxPosition({
   id,
-  onChange,
-  positionsData
+  onChange
 }: {
   id: number | null
   onChange: (id: number, name: string) => void
-  positionsData: Positions
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [positions, setPositions] = useState<Positions>([])
+  const [positions, setPositions] = useState<{ id: number; name: string }[]>([])
   const [selectedName, setSelectedName] = useState<string>('Escolha um cargo')
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const fetchPosition = async () => {
-      setPositions(positionsData)
-      if (id !== null) {
-        const selected = positionsData.find((p) => p.id === id)
-        if (selected) {
-          setSelectedName(selected.name)
+      try {
+        const positionsData = await PositionService.getAllPositions()
+        console.log('Cargos carregados:', positionsData)
+        setPositions(positionsData)
+
+        // Se houver um ID passado, definir o nome correspondente
+        if (id !== null) {
+          const selected = positionsData.find((p: { id: number }) => p.id === id)
+          if (selected) {
+            setSelectedName(selected.name)
+          }
         }
+      } catch (error) {
+        console.error('Erro ao carregar cargos:', error)
       }
     }
-    if (positions) {
-      fetchPosition()
-    }
-  }, [id, positions, positionsData])
+
+    fetchPosition() // Chamar apenas UMA VEZ
+  }, [id]) // Apenas quando `id` mudar
 
   const handleSelect = (id: number, name: string) => {
-    setSelectedName(name) // Atualiza o nome exibido no frontend
-    onChange(id, name) // Envia apenas o ID para a função de callback
+    setSelectedName(name)
+    onChange(id, name)
     setIsDropdownOpen(false)
   }
 
-  // TIRA useEffect()
+  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -58,7 +63,7 @@ export default function DropdownCheckboxPosition({
         onClick={() => setIsDropdownOpen((prev) => !prev)}
         className='bg-gray-200 hover:bg-gray-300 p-2 rounded-md w-full flex justify-between items-center text-left'
       >
-        <span>{selectedName}</span> {/* Mostra o nome ao invés do ID */}
+        <span>{selectedName}</span>
         <svg
           className='w-2.5 h-2.5 ms-3'
           aria-hidden='true'

@@ -5,7 +5,7 @@ import type { Resume } from '@/app/types/resume'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
-import DropdownPosition from '../DropDown/dropdown-position-server'
+import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
 export default function ResumeForm() {
   const router = useRouter()
@@ -103,7 +103,7 @@ export default function ResumeForm() {
               />
             </div>
             <div>
-              <DropdownPosition
+              <DropdownCheckboxPosition
                 id={resume.positionId ?? null}
                 onChange={(value) => handleChange('positionId', value)}
               />
