@@ -3,3 +3,5 @@ export type Position = {
   name?: any | null
   active?: boolean | null
 }
+
+export type Positions = Position[]
