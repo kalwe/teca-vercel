@@ -33,11 +33,11 @@ export default function ResumeForm() {
 
       const resumeIdSaved = await handleSave()
 
-      if (resumeIdSaved && file) {
-        await ResumeService.uploadResumeFile(resumeIdSaved, file)
-      }
+      // if (resumeIdSaved && file) {
+      //   await ResumeService.uploadResumeFile(resumeIdSaved, file)
+      // }
 
-      alert('Currículo salvo com sucesso!')
+      alert(`Currículo salvo com sucesso! ${resumeIdSaved}`)
       router.push('/curriculo-display/visualize-cv')
     } catch (error) {
       console.error('Erro ao salvar currículo:', error)
@@ -47,10 +47,11 @@ export default function ResumeForm() {
     }
   }
 
-  const handleSave = async (): Promise<number | null> => {
+  const handleSave = async () => {
     try {
       let savedResume
       if (isEditMode && resumeId) {
+        console.log('RESUME-ID', resumeId)
         await ResumeService.updateResume(resumeId, resume)
         savedResume = { id: resumeId }
       } else {
