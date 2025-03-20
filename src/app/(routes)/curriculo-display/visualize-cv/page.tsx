@@ -1,9 +1,9 @@
 'use client'
 
-import VisualizeCV from '@/app/components/display/visualize-resumes'
 import '../style.css'
 
 import ComebackButton from '@/app/components/button/comeback'
+import VisualizeCV from '@/app/components/display/visualize-resumes'
 import { Navigation } from '@/app/components/navigation/navigation'
 
 export default function Contract() {
