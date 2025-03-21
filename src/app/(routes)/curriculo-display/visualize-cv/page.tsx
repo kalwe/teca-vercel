@@ -1,22 +1,18 @@
-'use client'
-
-import '../style.css'
-
 import ComebackButton from '@/app/components/button/comeback'
 import VisualizeCV from '@/app/components/display/visualize-resumes'
 import { Navigation } from '@/app/components/navigation/navigation'
+import { ResumeService } from '@/app/services/resumeService'
+import { Resumes } from '@/app/types/resume'
+import '../style.css'
 
-export default function Contract() {
-  // const router = useRouter()
-
-  // const handleClick = () => {
-  //   router.push('/dashboard-display/')
-  // }
+export default async function Page() {
+  const fetchedResumes: Resumes = await ResumeService.getAllResumes()
+  console.log(fetchedResumes)
 
   return (
     <div>
       <Navigation />
-      <VisualizeCV />
+      <VisualizeCV resumesData={fetchedResumes} />
       <ComebackButton />
     </div>
   )

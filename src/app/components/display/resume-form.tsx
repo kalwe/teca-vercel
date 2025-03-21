@@ -2,19 +2,26 @@
 
 import { ResumeService } from '@/app/services/resumeService'
 import type { Resume } from '@/app/types/resume'
-import { useParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export default function ResumeForm() {
+export default function ResumeForm({ resumeData }: { resumeData: Resume }) {
   const router = useRouter()
-  const { id } = useParams()
-  const isEditMode = !!id
-  const resumeId = isEditMode ? Number(id) : null
+  const [isEditable, setIsEditable] = useState(false)
   const [loading, setLoading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
-  const [resume, setResume] = useState<Partial<Resume>>({})
+  const [resume, setResume] = useState<Resume>({})
+
+  useEffect(() => {
+    if (resumeData) {
+      setLoading(true)
+      setResume(resumeData)
+      setIsEditable(true)
+      setLoading(false)
+    }
+  }, [resumeData, resume, isEditable])
 
   const handleChange = <K extends keyof Resume>(field: K, value: Resume[K]) => {
     setResume((prev) => ({ ...prev, [field]: value }))
@@ -32,12 +39,12 @@ export default function ResumeForm() {
       setLoading(true)
 
       const resumeIdSaved = await handleSave()
+      console.log(resumeIdSaved)
 
-      if (resumeIdSaved && file) {
-        await ResumeService.uploadResumeFile(resumeIdSaved, file)
-      }
+      //   if (resumeIdSaved && file) {
+      //   await ResumeService.uploadResumeFile(resumeIdSaved, file)
+      // }
 
-      alert('Currículo salvo com sucesso!')
       router.push('/curriculo-display/visualize-cv')
     } catch (error) {
       console.error('Erro ao salvar currículo:', error)
@@ -47,16 +54,18 @@ export default function ResumeForm() {
     }
   }
 
-  const handleSave = async (): Promise<number | null> => {
+  const handleSave = async () => {
     try {
       let savedResume
-      if (isEditMode && resumeId) {
-        await ResumeService.updateResume(resumeId, resume)
-        savedResume = { id: resumeId }
+      if (isEditable) {
+        const { id, ...resumeUpdate } = resume
+        savedResume = await ResumeService.updateResume(id, resumeUpdate)
       } else {
         savedResume = await ResumeService.createResume(resume)
       }
-      return savedResume.id
+      if (savedResume) {
+        return savedResume.id
+      }
     } catch (error) {
       console.error('Erro ao salvar currículo:', error)
       alert('Erro ao salvar currículo. Tente novamente.')
@@ -68,7 +77,7 @@ export default function ResumeForm() {
     <div className='flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-700'>
       <div className='w-full max-w-4xl p-6 bg-gray-800 shadow-md rounded-lg border border-gray-700'>
         <h1 className='text-2xl font-bold text-white mb-6 text-center'>
-          {isEditMode ? 'Editar Currículo' : 'Novo Currículo'}
+          {isEditable ? 'Editar Currículo' : 'Novo Currículo'}
         </h1>
 
         <form onSubmit={(e) => e.preventDefault()} className='space-y-6'>
@@ -127,7 +136,7 @@ export default function ResumeForm() {
             >
               {loading
                 ? 'Salvando...'
-                : isEditMode
+                : isEditable
                   ? 'Atualizar Currículo'
                   : 'Salvar Currículo'}
             </button>

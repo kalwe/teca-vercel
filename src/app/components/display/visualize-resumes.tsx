@@ -1,40 +1,33 @@
 'use client'
 
-import { ResumeService } from '@/app/services/resumeService'
-import { Resume } from '@/app/types/resume'
+import { Resumes } from '@/app/types/resume'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
 import resumeImage from '../assets/cvImage.png'
 
-export default function VisualizeCV() {
+export default function VisualizeCV({ resumesData }: { resumesData: Resumes }) {
   const router = useRouter()
   const observerRef = useRef<IntersectionObserver | null>(null)
   const lastResumeRef = useRef<HTMLDivElement | null>(null)
 
-  const [resumes, setResumes] = useState<Resume[]>([])
+  const [resumes, setResumes] = useState<Resumes>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [, setLoading] = useState<boolean>(true)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [page, setPage] = useState(1)
-
-  const fetchResumes = useCallback(async () => {
-    try {
-      setLoading(true)
-      const fetchedResumes = await ResumeService.getAllResumes(page)
-      setResumes((prevResumes) => [...prevResumes, ...fetchedResumes])
-    } catch (error) {
-      console.error('Erro ao carregar currículos:', error)
-      setErrorMessage('Erro ao carregar currículos.')
-    } finally {
-      setLoading(false)
-    }
-  }, [page])
+  const [errorMessage] = useState<string | null>(null)
+  const [, setPage] = useState(1)
 
   useEffect(() => {
-    fetchResumes()
-  }, [fetchResumes])
+    const fetchResumes = () => {
+      setLoading(true)
+      setResumes(resumesData)
+    }
+    if (resumes) {
+      setLoading(false)
+      fetchResumes()
+    }
+  }, [resumes, resumesData])
 
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect()

@@ -12,7 +12,6 @@ export default function ContractForm({ data, isEditable }: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
-
   const [employee, setEmployee] = useState<Employee>()
 
   useEffect(() => {
