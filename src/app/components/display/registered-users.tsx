@@ -5,24 +5,30 @@ import { UserService } from '@/app/services/userService'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-export default function UserList({}: { usersData: Users }) {
+export default function UserList({ usersData }: { usersData: Users }) {
   const router = useRouter()
-  const [users, setUsers] = useState<Users>([])
+  const [users, setUsers] = useState<Users>(usersData || [])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true)
-      setError(null)
-      setUsers(users)
-
-      setLoading(false)
-    }
-    if (users.length > 0) {
+    if (!usersData.length) {
+      const fetchUsers = async () => {
+        try {
+          setLoading(true)
+          setError(null)
+          const response = await UserService.getAllUsers()
+          setUsers(response)
+        } catch (err) {
+          console.error('Erro ao buscar usuários:', err)
+          setError('Erro ao carregar usuários.')
+        } finally {
+          setLoading(false)
+        }
+      }
       fetchUsers()
     }
-  }, [setUsers, setLoading, setError])
+  }, [usersData])
 
   const handleEditUser = (id: number) => {
     router.push(`/user-display/${id}`)
@@ -31,7 +37,7 @@ export default function UserList({}: { usersData: Users }) {
   const toggleUserStatus = async (userId: number, user: User) => {
     try {
       await UserService.updateUser(userId, { active: !user.active })
-      setUsers(users.filter((u) => u.id !== userId))
+      setUsers(users.map((u) => (u.id === userId ? { ...u, active: !u.active } : u)))
     } catch (err) {
       console.error('Erro ao alterar status do usuário:', err)
       setError('Erro ao atualizar status do usuário.')
@@ -42,7 +48,7 @@ export default function UserList({}: { usersData: Users }) {
     try {
       if (confirm('Tem certeza que deseja excluir este usuário?')) {
         await UserService.deleteUser(userId)
-        setUsers(users.filter((user) => user.id != userId))
+        setUsers(users.filter((user) => user.id !== userId))
       }
     } catch (err) {
       console.error('Erro ao deletar usuário:', err)

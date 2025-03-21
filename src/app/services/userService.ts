@@ -32,6 +32,19 @@ export const UserService = {
       console.error('Erro ao buscar usuário: ', error)
     }
   },
+  async getAllUsers() {
+    try {
+      const response = await api.get(`${endpoint}`)
+      if (response.status == 200) {
+        return response.data
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error('Axios erro: ', error.response?.data)
+      }
+      console.error('Erro ao buscar usuários: ', error)
+    }
+  },
 
   async updateUser(id: any, userData: Partial<UserInput>) {
     try {
