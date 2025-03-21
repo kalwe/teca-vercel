@@ -1,14 +1,22 @@
 import axios from 'axios'
 
-const host = process.env.NEXT_PUBLIC_HOST || 'ec2-3-95-149-55.compute-1.amazonaws.com'
-const port = process.env.NEXT_PUBLIC_PORT || '8080'
+const api_host = process.env.NEXT_PUBLIC_HOST || 'ec2-3-95-149-55.compute-1.amazonaws.com'
+const api_port = process.env.NEXT_PUBLIC_PORT || '8080'
 const api_prefix = 'api/v1'
+const api_protocol = 'http'
+const api_url = `${api_protocol}://${api_host}:${api_port}/${api_prefix}`
+
+const axios_header = {
+  'Content-Type': 'application/json'
+}
+
+// const axios_header_multpart = {
+//   'Content-Type': 'multipart/form-data'
+// }
 
 const api = axios.create({
-  baseURL: `http://${host}:${port}/${api_prefix}`,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: `${api_url}`,
+  headers: axios_header
 })
 
 // axios.interceptors.request.use(
