@@ -3,6 +3,8 @@ import ContractForm from '@/app/components/display/contract-form'
 import { Navigation } from '@/app/components/navigation/navigation'
 
 export default function Page() {
+  console.log('ALO')
+
   return (
     <div className='bg-gradient-to-br from-[#0B140B] to-[#4F7452] min-h-screen relative'>
       <Navigation />

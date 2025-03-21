@@ -12,6 +12,7 @@ export default function ContractForm({ data, isEditable }: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
+
   const [employee, setEmployee] = useState<Employee>()
 
   useEffect(() => {
@@ -72,10 +73,11 @@ export default function ContractForm({ data, isEditable }: ContractFormProps) {
             <div className='w-full md:w-3/4 p-6'>
               {error && <p className='text-red-500 text-sm mb-4'>{error}</p>}
               <CurrentComponent
-                data={employee}
+                data={employee?.[tabs[selectedTab].key as keyof Employee] ?? null}
                 isEditable={isEditable}
                 onNext={handleNextTab}
                 onPrev={handlePrevTab}
+                employeeId={employee?.id}
               />
               {loading && <p className='text-white text-sm mt-2'>Salvando...</p>}
             </div>

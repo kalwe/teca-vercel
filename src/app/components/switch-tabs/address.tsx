@@ -1,34 +1,46 @@
 'use client'
 
 import { AddressService } from '@/app/services/addressService'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
   const [addressData, setAddressData] = useState<any>(data || {})
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    setAddressData(data || {})
+  }, [data])
+
   const handleInputChange = (field: any, value: any) => {
-    const updatedAddress = { ...addressData, [field]: value }
-    setAddressData(updatedAddress)
-    // onChange(updatedAddress)
+    setAddressData((prev: any) => ({ ...prev, [field]: value }))
   }
+
   const handleSave = async () => {
     try {
       setLoading(true)
-      employeeId = localStorage.getItem('employeeId')
-      await AddressService.createAddress({
-        ...addressData,
-        employeeId: Number(employeeId)
-      })
-      alert('Endereço cadastrado com sucesso!')
+      const id = employeeId || localStorage.getItem('employeeId')
+
+      if (addressData?.id) {
+        await AddressService.updateAddress(addressData.id, {
+          ...addressData,
+          employeeId: Number(id)
+        })
+      } else {
+        await AddressService.createAddress({
+          ...addressData,
+          employeeId: Number(id)
+        })
+      }
+      alert('Endereço salvo com sucesso!')
       onNext()
     } catch (error) {
-      console.error('Erro ao cadastrar endereço:', error)
-      alert('Erro ao cadastrar endereço. Tente novamente.')
+      console.error('Erro ao salvar endereço:', error)
+      alert('Erro ao salvar endereço. Tente novamente.')
     } finally {
       setLoading(false)
     }
   }
+
   return (
     <div className='p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full'>
       <h2 className='text-white text-xl font-bold'>Endereço</h2>

@@ -16,12 +16,10 @@ export default function ResumeForm({ resumeData }: { resumeData: Resume }) {
 
   useEffect(() => {
     if (resumeData) {
-      setLoading(true)
       setResume(resumeData)
       setIsEditable(true)
-      setLoading(false)
     }
-  }, [resumeData, resume, isEditable])
+  }, [resumeData])
 
   const handleChange = <K extends keyof Resume>(field: K, value: Resume[K]) => {
     setResume((prev) => ({ ...prev, [field]: value }))

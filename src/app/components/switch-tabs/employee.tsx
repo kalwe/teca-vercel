@@ -1,7 +1,7 @@
 'use client'
 
 import { EmployeeService } from '@/app/services/employeeService'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxGender from '../DropDown/dropdown-gender'
@@ -12,6 +12,12 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
   const [employee, setEmployee] = useState<any>(employeeData || {})
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if (employeeData && Object.keys(employeeData).length > 0) {
+      setEmployee(employeeData)
+    }
+  }, [employeeData])
+
   const handleInputChange = (field: any, value: any) => {
     setEmployee((prev: any) => ({ ...prev, [field]: value }))
   }
@@ -20,20 +26,22 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
     try {
       setLoading(true)
 
-      const { maritalStatus, ...employeeInput } = employee
-      console.log(maritalStatus)
-      console.info(employeeInput)
-      const employeeCreated = await EmployeeService.createEmployee({
-        ...employeeInput
-      })
-      console.info(employeeCreated)
-      setEmployee(employeeCreated)
-      localStorage.setItem('employeeId', employeeCreated.id)
-      // alert('Funcionario cadastrado com sucesso!')
+      const id = employee?.id
+      const payload = { ...employee }
+
+      if (id) {
+        await EmployeeService.updateEmployee(id, payload)
+      } else {
+        const created = await EmployeeService.createEmployee(payload)
+        setEmployee(created)
+        localStorage.setItem('employeeId', created.id)
+      }
+
+      alert('Funcionário salvo com sucesso!')
       onNext()
     } catch (error) {
-      console.error('Erro ao cadastrar endereço:', error)
-      alert('Erro ao cadastrar endereço. Tente novamente.')
+      console.error('Erro ao salvar funcionário:', error)
+      alert('Erro ao salvar funcionário. Tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -100,27 +108,6 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
           value={employee?.registration || ''}
           onChange={(e) => handleInputChange('registration', e.target.value)}
           placeholder='Digite a matrícula'
-          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
-        />
-      </div>
-
-      {/* Data de Admissão */}
-      <div className='w-full'>
-        <label className='block text-gray-400 mb-2'>Data de Admissão</label>
-        <DatePicker
-          selected={employee?.contractDate ? new Date(employee?.contractDate) : null}
-          onChange={(date) => handleInputChange('contractDate', date)}
-          dateFormat='yyyy-MM-dd'
-          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
-        />
-      </div>
-
-      <div className='w-full'>
-        <label className='block text-gray-400 mb-2'>Data de Remoção</label>
-        <DatePicker
-          selected={employee?.removalDate ? new Date(employee?.removalDate) : null}
-          onChange={(date) => handleInputChange('removalDate', date)}
-          dateFormat='yyyy-MM-dd'
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         />
       </div>

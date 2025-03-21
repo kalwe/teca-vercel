@@ -1,30 +1,43 @@
 'use client'
 
 import { BankService } from '@/app/services/bankService'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
   const [bankData, setBankData] = useState<any>(data || {})
-  const [loading] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setBankData(data || {})
+  }, [data])
 
   const handleInputChange = (field: any, value: any) => {
-    const updatedBankData = { ...bankData, [field]: value }
-    setBankData(updatedBankData)
-    // onChange(updatedBankData)
+    setBankData((prev: any) => ({ ...prev, [field]: value }))
   }
 
   const handleSave = async () => {
     try {
-      employeeId = Number(localStorage.getItem('id'))
-      const createdBankAccount = await BankService.createBankAccount({
-        ...bankData,
-        employeeId: Number(employeeId)
-      })
-      console.log(createdBankAccount)
+      setLoading(true)
+      const id = employeeId || localStorage.getItem('employeeId')
+
+      if (bankData?.id) {
+        await BankService.updateBankAccount(bankData.id, {
+          ...bankData,
+          employeeId: Number(id)
+        })
+      } else {
+        await BankService.createBankAccount({
+          ...bankData,
+          employeeId: Number(id)
+        })
+      }
+      alert('Dados bancários salvos com sucesso!')
       onNext()
     } catch (error) {
-      alert('Erro ao cadastrar conta bancária. Verifique os campos.')
-      console.error(error)
+      console.error('Erro ao salvar conta bancária:', error)
+      alert('Erro ao salvar conta bancária. Tente novamente.')
+    } finally {
+      setLoading(false)
     }
   }
 
