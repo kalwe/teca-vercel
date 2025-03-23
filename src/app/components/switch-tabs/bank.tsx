@@ -1,14 +1,22 @@
 'use client'
 
 import { BankService } from '@/app/services/bankService'
+import { SwitchTabsComponentsProps } from '@/app/types/base'
 import { useEffect, useState } from 'react'
 
-export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
-  const [bankData, setBankData] = useState<any>(data || {})
+export function Bank({ data, onNext, onPrev, employeeId }: SwitchTabsComponentsProps) {
+  const [bankData, setBankData] = useState<any>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    setBankData(data || {})
+    const fetchBank = async () => {
+      setBankData(data)
+      setLoading(false)
+    }
+    if (data) {
+      setLoading(true)
+      fetchBank()
+    }
   }, [data])
 
   const handleInputChange = (field: any, value: any) => {
@@ -18,24 +26,24 @@ export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
   const handleSave = async () => {
     try {
       setLoading(true)
-      const id = employeeId || localStorage.getItem('employeeId')
-
-      if (bankData?.id) {
-        await BankService.updateBankAccount(bankData.id, {
-          ...bankData,
-          employeeId: Number(id)
+      if (employeeId) {
+        const { id, ...bankUpdate } = bankData
+        await BankService.updateBankAccount(id, {
+          ...bankUpdate,
+          employeeId: Number(employeeId)
         })
       } else {
+        const employeeId = localStorage.getItem('employeeId')
         await BankService.createBankAccount({
           ...bankData,
-          employeeId: Number(id)
+          employeeId: Number(employeeId)
         })
       }
-      alert('Dados bancários salvos com sucesso!')
+      alert('Banco salvo com sucesso!')
       onNext()
     } catch (error) {
-      console.error('Erro ao salvar conta bancária:', error)
-      alert('Erro ao salvar conta bancária. Tente novamente.')
+      console.error('Erro ao salvar banco:', error)
+      alert('Erro ao salvar banco. Tente novamente.')
     } finally {
       setLoading(false)
     }

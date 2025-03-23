@@ -9,17 +9,18 @@ import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
 export default function ResumeForm({ resumeData }: { resumeData: Resume }) {
   const router = useRouter()
-  const [isEditable, setIsEditable] = useState(false)
   const [loading, setLoading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [resume, setResume] = useState<Resume>({})
 
+  // ✅ Agora verifica corretamente se é edição ou criação
+  const isEditable = !!resumeData?.id
+
   useEffect(() => {
-    if (resumeData) {
+    if (isEditable) {
       setResume(resumeData)
-      setIsEditable(true)
     }
-  }, [resumeData])
+  }, [isEditable, resumeData])
 
   const handleChange = <K extends keyof Resume>(field: K, value: Resume[K]) => {
     setResume((prev) => ({ ...prev, [field]: value }))
@@ -35,14 +36,8 @@ export default function ResumeForm({ resumeData }: { resumeData: Resume }) {
   const handleSaveAll = async () => {
     try {
       setLoading(true)
-
       const resumeIdSaved = await handleSave()
       console.log(resumeIdSaved)
-
-      //   if (resumeIdSaved && file) {
-      //   await ResumeService.uploadResumeFile(resumeIdSaved, file)
-      // }
-
       router.push('/curriculo-display/visualize-cv')
     } catch (error) {
       console.error('Erro ao salvar currículo:', error)
@@ -61,9 +56,7 @@ export default function ResumeForm({ resumeData }: { resumeData: Resume }) {
       } else {
         savedResume = await ResumeService.createResume(resume)
       }
-      if (savedResume) {
-        return savedResume.id
-      }
+      return savedResume?.id || null
     } catch (error) {
       console.error('Erro ao salvar currículo:', error)
       alert('Erro ao salvar currículo. Tente novamente.')

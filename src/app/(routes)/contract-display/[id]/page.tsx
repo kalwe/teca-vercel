@@ -6,7 +6,6 @@ import { Employee } from '@/app/types/employee'
 export default async function Page({ params }: { params: Promise<{ id: number }> }) {
   const { id } = await params
   const employeeData: Employee = await EmployeeService.getEmployeeById(Number(id))
-  console.log(employeeData)
 
   return (
     <div className='bg-gradient-to-br from-[#0B140B] to-[#4F7452] min-h-screen relative'>

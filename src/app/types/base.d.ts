@@ -7,4 +7,9 @@ export type baseType = {
   version: number
 }
 
-// TODO: tem dois type pra banco remove um
+export interface SwitchTabsComponentsProps {
+  data: any
+  onNext: () => void
+  onPrev: () => void
+  employeeId: number
+}

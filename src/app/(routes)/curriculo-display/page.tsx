@@ -12,15 +12,7 @@ export default function ResumeRoutes() {
       }}
     >
       <Navigation />
-      <ResumeForm
-        resumeData={{
-          id: undefined,
-          fullName: undefined,
-          position: undefined,
-          positionId: undefined,
-          fileUrl: undefined
-        }}
-      />
+      <ResumeForm resumeData={{}} />
     </div>
   )
 }

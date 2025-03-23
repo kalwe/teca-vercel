@@ -1,6 +1,7 @@
 'use client'
 
 import { EmployeeService } from '@/app/services/employeeService'
+import { SwitchTabsComponentsProps } from '@/app/types/base'
 import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -8,15 +9,25 @@ import DropdownCheckboxGender from '../DropDown/dropdown-gender'
 import DropdownCheckboxMaritalStatus from '../DropDown/dropdown-marital-status'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
-  const [employee, setEmployee] = useState<any>(employeeData || {})
+export function EmployeeForm({
+  data,
+  onPrev,
+  onNext,
+  employeeId
+}: SwitchTabsComponentsProps) {
+  const [employee, setEmployee] = useState<any>(data || {})
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (employeeData && Object.keys(employeeData).length > 0) {
-      setEmployee(employeeData)
+    const fetchEmployee = async () => {
+      setEmployee(data)
+      setLoading(false)
     }
-  }, [employeeData])
+    if (data) {
+      setLoading(true)
+      fetchEmployee()
+    }
+  }, [data])
 
   const handleInputChange = (field: any, value: any) => {
     setEmployee((prev: any) => ({ ...prev, [field]: value }))
@@ -25,18 +36,19 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
   const handleSave = async () => {
     try {
       setLoading(true)
-
-      const id = employee?.id
-      const payload = { ...employee }
-
-      if (id) {
-        await EmployeeService.updateEmployee(id, payload)
+      if (employeeId) {
+        const { id, ...employeeUpdate } = employee
+        await EmployeeService.updateEmployee(id, {
+          ...employeeUpdate,
+          employeeId: Number(employeeId)
+        })
       } else {
-        const created = await EmployeeService.createEmployee(payload)
-        setEmployee(created)
-        localStorage.setItem('employeeId', created.id)
+        const employeeId = localStorage.getItem('employeeId')
+        await EmployeeService.createEmployee({
+          ...employee,
+          employeeId: Number(employeeId)
+        })
       }
-
       alert('Funcionário salvo com sucesso!')
       onNext()
     } catch (error) {

@@ -7,25 +7,17 @@ import { useEffect, useState } from 'react'
 
 export default function UserList({ usersData }: { usersData: Users }) {
   const router = useRouter()
-  const [users, setUsers] = useState<Users>(usersData || [])
+  const [users, setUsers] = useState<Users>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!usersData.length) {
-      const fetchUsers = async () => {
-        try {
-          setLoading(true)
-          setError(null)
-          const response = await UserService.getAllUsers()
-          setUsers(response)
-        } catch (err) {
-          console.error('Erro ao buscar usuários:', err)
-          setError('Erro ao carregar usuários.')
-        } finally {
-          setLoading(false)
-        }
-      }
+    const fetchUsers = async () => {
+      setUsers(usersData)
+      setLoading(false)
+    }
+    if (usersData) {
+      setLoading(true)
       fetchUsers()
     }
   }, [usersData])

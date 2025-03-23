@@ -5,20 +5,6 @@ import api from './api'
 const endpoint = '/user'
 
 export const UserService = {
-  async getUsers() {
-    try {
-      const response = await api.get(endpoint)
-      if (response.status == 200) {
-        return response.data
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error('Axios erro: ', error.response?.data)
-      }
-      console.error('Erro ao buscar usuário: ', error)
-    }
-  },
-
   async getUserById(id: any) {
     try {
       const response = await api.get(`${endpoint}/${id}`)
@@ -34,7 +20,7 @@ export const UserService = {
   },
   async getAllUsers() {
     try {
-      const response = await api.get(`${endpoint}`)
+      const response = await api.get(endpoint)
       if (response.status == 200) {
         return response.data
       }

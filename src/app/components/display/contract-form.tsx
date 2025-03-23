@@ -8,7 +8,7 @@ import { Clothing } from '../switch-tabs/Clothing'
 import { Contact } from '../switch-tabs/Contact'
 import { EmployeeForm } from '../switch-tabs/Employee'
 
-export default function ContractForm({ data, isEditable }: ContractFormProps) {
+export default function ContractForm({ data }: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
@@ -74,7 +74,6 @@ export default function ContractForm({ data, isEditable }: ContractFormProps) {
               {error && <p className='text-red-500 text-sm mb-4'>{error}</p>}
               <CurrentComponent
                 data={employee?.[tabs[selectedTab].key as keyof Employee] ?? null}
-                isEditable={isEditable}
                 onNext={handleNextTab}
                 onPrev={handlePrevTab}
                 employeeId={employee?.id}

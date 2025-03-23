@@ -1,34 +1,43 @@
 'use client'
 
 import { AddressService } from '@/app/services/addressService'
+import { SwitchTabsComponentsProps } from '@/app/types/base'
+//import { Address } from '@/app/types/address'
 import { useEffect, useState } from 'react'
 
-export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
-  const [addressData, setAddressData] = useState<any>(data || {})
+export function Address({ data, onNext, onPrev, employeeId }: SwitchTabsComponentsProps) {
+  const [address, setAddress] = useState<any>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    setAddressData(data || {})
+    const fetchAddress = async () => {
+      setAddress(data)
+      setLoading(false)
+    }
+    if (data) {
+      setLoading(true)
+      fetchAddress()
+    }
   }, [data])
 
   const handleInputChange = (field: any, value: any) => {
-    setAddressData((prev: any) => ({ ...prev, [field]: value }))
+    setAddress((prev: any) => ({ ...prev, [field]: value }))
   }
 
   const handleSave = async () => {
     try {
       setLoading(true)
-      const id = employeeId || localStorage.getItem('employeeId')
-
-      if (addressData?.id) {
-        await AddressService.updateAddress(addressData.id, {
-          ...addressData,
-          employeeId: Number(id)
+      if (employeeId) {
+        const { id, ...addressUpdate } = address
+        await AddressService.updateAddress(id, {
+          ...addressUpdate,
+          employeeId: Number(employeeId)
         })
       } else {
+        const employeeId = localStorage.getItem('employeeId')
         await AddressService.createAddress({
-          ...addressData,
-          employeeId: Number(id)
+          ...address,
+          employeeId: Number(employeeId)
         })
       }
       alert('Endereço salvo com sucesso!')
@@ -55,7 +64,7 @@ export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
           <input
             type='text'
             name={field.name}
-            value={addressData?.[field.name] || ''}
+            value={address?.[field.name] || ''}
             onChange={(e) => handleInputChange(field.name, e.target.value)}
             placeholder={field.placeholder}
             className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
@@ -66,7 +75,7 @@ export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
       <div className='w-full'>
         <select
           name='state'
-          value={addressData?.state || ''}
+          value={address?.state || ''}
           onChange={(e) => handleInputChange('state', e.target.value)}
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         >
