@@ -21,7 +21,6 @@ export function DropdownCheckboxMaritalStatus({
     }
   }
 
-  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -35,22 +34,16 @@ export function DropdownCheckboxMaritalStatus({
     }
   }, [])
 
-  // Atualiza seleção de estado civil
-  // Atualiza a seleção
-  const handleSelection = (selectedValue: string) => {
-    setSelectedStatus(selectedValue) // Atualiza estado local
-
+  const handleSelection = (value: string, key: string) => {
+    setSelectedStatus(value)
     if (onChange) {
-      // Verifica se a função onChange foi passada
-      onChange(selectedValue) // Passa o valor para o componente pai
+      onChange(key)
     }
-
-    setIsDropdownOpen(false) // Fecha o dropdown
+    setIsDropdownOpen(false)
   }
 
   return (
     <div className='relative' ref={dropdownRef}>
-      {/* Botão para abrir dropdown */}
       <button
         id='dropdownCheckboxButton'
         onClick={toggleDropdown}
@@ -86,23 +79,23 @@ export function DropdownCheckboxMaritalStatus({
         >
           <ul className='p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200'>
             {/* Opções de Estado Civil */}
-            {maritalStatusOptions.map(([key, statusValue]) => (
-              <li key={key}>
+            {maritalStatusOptions.map(([maritalKey, maritalValue]) => (
+              <li key={maritalKey}>
                 <div className='flex items-center'>
                   <input
-                    id={`radio-item-${key}`}
+                    id={`radio-item-${maritalKey}`}
                     type='radio' // Usa radio para garantir seleção única
-                    value={key}
-                    checked={selectedStatus === statusValue} // Apenas uma opção marcada
-                    onChange={() => handleSelection(statusValue)} // Atualiza seleção
+                    value={maritalKey}
+                    checked={selectedStatus === maritalValue} // Apenas uma opção marcada
+                    onChange={() => handleSelection(maritalValue, maritalKey)} // Atualiza seleção
                     disabled={disabled}
                     className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500'
                   />
                   <label
-                    htmlFor={`radio-item-${key}`}
+                    htmlFor={`radio-item-${maritalKey}`}
                     className='ms-2 text-sm font-medium text-gray-900 dark:text-gray-300'
                   >
-                    {statusValue}
+                    {maritalValue}
                   </label>
                 </div>
               </li>

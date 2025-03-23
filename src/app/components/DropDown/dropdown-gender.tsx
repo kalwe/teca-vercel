@@ -21,7 +21,6 @@ export function DropdownCheckboxGender({
     }
   }
 
-  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -35,22 +34,16 @@ export function DropdownCheckboxGender({
     }
   }, [])
 
-  // Atualiza a seleção
-  // Atualiza a seleção
-  const handleSelection = (selectedValue: string) => {
-    setSelectedGender(selectedValue) // Atualiza estado local
-
+  const handleSelection = (value: string, key: string) => {
+    setSelectedGender(value)
     if (onChange) {
-      // Verifica se a função onChange foi passada
-      onChange(selectedValue) // Passa o valor para o componente pai
+      onChange(key)
     }
-
-    setIsDropdownOpen(false) // Fecha o dropdown
+    setIsDropdownOpen(false)
   }
 
   return (
     <div ref={dropdownRef} className='relative'>
-      {/* Botão para abrir dropdown */}
       <button
         id='dropdownCheckboxButton'
         onClick={toggleDropdown}
@@ -86,20 +79,20 @@ export function DropdownCheckboxGender({
         >
           <ul className='p-3 space-y-3 text-sm text-gray-700 dark:text-gray-200'>
             {/* Opções de Gênero */}
-            {Object.entries(GenderEnum).map(([key, genderValue]) => (
-              <li key={key}>
+            {Object.entries(GenderEnum).map(([genderKey, genderValue]) => (
+              <li key={genderKey}>
                 <div className='flex items-center'>
                   <input
-                    id={`radio-item-${key}`}
+                    id={`radio-item-${genderKey}`}
                     type='radio' // Radio para garantir seleção única
-                    value={key}
+                    value={genderKey}
                     checked={selectedGender == genderValue} // Apenas uma opção marcada
-                    onChange={(e) => handleSelection(e.target.value)} // Atualiza seleção
+                    onChange={() => handleSelection(genderValue, genderKey)} // Atualiza seleção
                     disabled={disabled}
                     className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500'
                   />
                   <label
-                    htmlFor={`radio-item-${key}`}
+                    htmlFor={`radio-item-${genderKey}`}
                     className='ms-2 text-sm font-medium text-gray-900 dark:text-gray-300'
                   >
                     {genderValue}

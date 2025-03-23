@@ -66,7 +66,7 @@ export const ResumeService = {
 
   async getAllResumes() {
     try {
-      const response = await api.get(`${endpoint}`)
+      const response = await api.get(endpoint)
       if (response.status === 200) {
         return response.data
       }

@@ -10,11 +10,3 @@ type AddressT = {
 
 export type Address = AddressT | Partial<AddressT>
 export type Addresses = AddressT[] | Partial<AddressT>[]
-
-export type AddressProps = {
-  data: Address | null
-  onChange: (updatedData: Address) => void
-  onNext: () => void
-  onPrev: () => void
-  employeeId: number | null
-}

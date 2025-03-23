@@ -1,16 +1,15 @@
 'use client'
 
 import { AddressService } from '@/app/services/addressService'
-import { SwitchTabsComponentsProps } from '@/app/types/base'
-//import { Address } from '@/app/types/address'
+import { SwitchTabsComponentProps } from '@/app/types/base'
 import { useEffect, useState } from 'react'
 
-export function Address({ data, onNext, onPrev, employeeId }: SwitchTabsComponentsProps) {
-  const [address, setAddress] = useState<any>([])
+export function Address({ data, onNext, onPrev, employeeId }: SwitchTabsComponentProps) {
+  const [address, setAddress] = useState<any>({})
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const fetchAddress = async () => {
+    const fetchAddress = () => {
       setAddress(data)
       setLoading(false)
     }
@@ -29,12 +28,12 @@ export function Address({ data, onNext, onPrev, employeeId }: SwitchTabsComponen
       setLoading(true)
       if (employeeId) {
         const { id, ...addressUpdate } = address
-        await AddressService.updateAddress(id, {
+        await AddressService.updateAddress(Number(id), {
           ...addressUpdate,
           employeeId: Number(employeeId)
         })
       } else {
-        const employeeId = localStorage.getItem('employeeId')
+        const employeeId = localStorage.getItem('createdEmployeeId')
         await AddressService.createAddress({
           ...address,
           employeeId: Number(employeeId)

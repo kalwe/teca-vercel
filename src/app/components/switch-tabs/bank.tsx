@@ -1,16 +1,16 @@
 'use client'
 
 import { BankService } from '@/app/services/bankService'
-import { SwitchTabsComponentsProps } from '@/app/types/base'
+import { SwitchTabsComponentProps } from '@/app/types/base'
 import { useEffect, useState } from 'react'
 
-export function Bank({ data, onNext, onPrev, employeeId }: SwitchTabsComponentsProps) {
-  const [bankData, setBankData] = useState<any>([])
+export function Bank({ data, onNext, onPrev, employeeId }: SwitchTabsComponentProps) {
+  const [bank, setBank] = useState<any>({})
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const fetchBank = async () => {
-      setBankData(data)
+    const fetchBank = () => {
+      setBank(data)
       setLoading(false)
     }
     if (data) {
@@ -20,22 +20,22 @@ export function Bank({ data, onNext, onPrev, employeeId }: SwitchTabsComponentsP
   }, [data])
 
   const handleInputChange = (field: any, value: any) => {
-    setBankData((prev: any) => ({ ...prev, [field]: value }))
+    setBank((prev: any) => ({ ...prev, [field]: value }))
   }
 
   const handleSave = async () => {
     try {
       setLoading(true)
       if (employeeId) {
-        const { id, ...bankUpdate } = bankData
-        await BankService.updateBankAccount(id, {
+        const { id, ...bankUpdate } = bank
+        await BankService.updateBankAccount(Number(id), {
           ...bankUpdate,
           employeeId: Number(employeeId)
         })
       } else {
-        const employeeId = localStorage.getItem('employeeId')
+        const employeeId = localStorage.getItem('createdEmployeeId')
         await BankService.createBankAccount({
-          ...bankData,
+          ...bank,
           employeeId: Number(employeeId)
         })
       }
@@ -62,7 +62,7 @@ export function Bank({ data, onNext, onPrev, employeeId }: SwitchTabsComponentsP
           <input
             type='text'
             name={field.name}
-            value={bankData?.[field.name] || ''}
+            value={bank?.[field.name] || ''}
             onChange={(e) => handleInputChange(field.name, e.target.value)}
             placeholder={field.placeholder}
             className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
@@ -74,7 +74,7 @@ export function Bank({ data, onNext, onPrev, employeeId }: SwitchTabsComponentsP
       <div className='w-full'>
         <select
           name='type'
-          value={bankData?.['type'] || ''}
+          value={bank?.['type'] || ''}
           onChange={(e) => handleInputChange('type', e.target.value)}
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         >

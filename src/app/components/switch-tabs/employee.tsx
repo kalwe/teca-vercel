@@ -1,7 +1,7 @@
 'use client'
 
 import { EmployeeService } from '@/app/services/employeeService'
-import { SwitchTabsComponentsProps } from '@/app/types/base'
+import { SwitchTabsComponentProps } from '@/app/types/base'
 import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -14,12 +14,12 @@ export function EmployeeForm({
   onPrev,
   onNext,
   employeeId
-}: SwitchTabsComponentsProps) {
-  const [employee, setEmployee] = useState<any>(data || {})
-  const [loading, setLoading] = useState(false)
+}: SwitchTabsComponentProps) {
+  const [employee, setEmployee] = useState<any>({})
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    const fetchEmployee = async () => {
+    const fetchEmployee = () => {
       setEmployee(data)
       setLoading(false)
     }
@@ -38,16 +38,10 @@ export function EmployeeForm({
       setLoading(true)
       if (employeeId) {
         const { id, ...employeeUpdate } = employee
-        await EmployeeService.updateEmployee(id, {
-          ...employeeUpdate,
-          employeeId: Number(employeeId)
-        })
+        await EmployeeService.updateEmployee(Number(id), employeeUpdate)
       } else {
-        const employeeId = localStorage.getItem('employeeId')
-        await EmployeeService.createEmployee({
-          ...employee,
-          employeeId: Number(employeeId)
-        })
+        const createdEmployee = await EmployeeService.createEmployee(employee)
+        localStorage.setItem('createdEmployeeId', createdEmployee.id)
       }
       alert('Funcionário salvo com sucesso!')
       onNext()
@@ -66,8 +60,8 @@ export function EmployeeForm({
         { name: 'name', placeholder: 'Digite o nome', label: 'Nome' },
         {
           name: 'fullName',
-          placeholder: 'Digite o Nome Completo',
-          label: 'Nome Completo'
+          placeholder: 'Digite o sobrenome',
+          label: 'Sobrenome'
         },
         { name: 'taxId', placeholder: 'Digite o CPF', label: 'CPF' },
         { name: 'nationalId', placeholder: 'Digite o RG', label: 'RG' },

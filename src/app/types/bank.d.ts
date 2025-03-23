@@ -7,8 +7,6 @@ export enum AccountTypeEnum {
   EMPRESARIAL = 'Empresarial'
 }
 
-// type accountType = keyof typeof AccountTypeEnum
-
 type BankAccountT = {
   bank?: any | null
   agency?: any | null
@@ -19,11 +17,3 @@ type BankAccountT = {
 
 export type BankAccount = BankAccountT | Partial<BankAccountT>
 export type BankAccounts = BankAccountT[] | Partial<BankAccountT>[]
-
-export type BankProps = {
-  data: BankAccount | null
-  onChange: (updatedData: BankAccount) => void
-  onNext: () => void
-  onPrev: () => void
-  employeeId: number | null
-}

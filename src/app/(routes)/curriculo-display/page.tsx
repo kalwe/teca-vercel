@@ -1,10 +1,8 @@
-'use client'
-
 import ResumeForm from '@/app/components/display/resume-form'
 
 import { Navigation } from '@/app/components/navigation/navigation'
 
-export default function ResumeRoutes() {
+export default function Page() {
   return (
     <div
       style={{

@@ -10,7 +10,7 @@ export default async function Page({ params }: { params: Promise<{ id: number }>
   return (
     <div className='bg-gradient-to-br from-[#0B140B] to-[#4F7452] min-h-screen relative'>
       <Navigation />
-      <ContractForm data={employeeData} isEditable={true} />
+      <ContractForm data={employeeData} />
     </div>
   )
 }

@@ -1,20 +1,15 @@
 'use client'
 
 import { ClothingService } from '@/app/services/clothingService'
-import { SwitchTabsComponentsProps } from '@/app/types/base'
+import { SwitchTabsComponentProps } from '@/app/types/base'
 import { useEffect, useState } from 'react'
 
-export function Clothing({
-  data,
-  onNext,
-  onPrev,
-  employeeId
-}: SwitchTabsComponentsProps) {
-  const [clothing, setClothing] = useState<any>([])
+export function Clothing({ data, onNext, onPrev, employeeId }: SwitchTabsComponentProps) {
+  const [clothing, setClothing] = useState<any>({})
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const fetchClothing = async () => {
+    const fetchClothing = () => {
       setClothing(data)
       setLoading(false)
     }
@@ -35,12 +30,12 @@ export function Clothing({
       setLoading(true)
       if (employeeId) {
         const { id, ...clothingUpdate } = clothing
-        await ClothingService.updateClothing(id, {
+        await ClothingService.updateClothing(Number(id), {
           ...clothingUpdate,
           employeeId: Number(employeeId)
         })
       } else {
-        const employeeId = localStorage.getItem('employeeId')
+        const employeeId = localStorage.getItem('createdEmployeeId')
         await ClothingService.createClothing({
           ...clothing,
           employeeId: Number(employeeId)

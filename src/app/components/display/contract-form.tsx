@@ -12,8 +12,7 @@ export default function ContractForm({ data }: ContractFormProps) {
   const [selectedTab, setSelectedTab] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
-
-  const [employee, setEmployee] = useState<Employee>()
+  const [employee, setEmployee] = useState<Employee>({})
 
   useEffect(() => {
     if (data) {

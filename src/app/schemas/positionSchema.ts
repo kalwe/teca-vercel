@@ -7,7 +7,5 @@ export const positionSchema = z.object({
     .string()
     .max(120, 'O nome da função não pode ter mais de 120 caracteres.')
     .nonempty('O nome da função é obrigatório.'),
-  active: z.boolean().optional(),
+  active: z.boolean().optional()
 })
-
-// export type Position = z.infer<typeof positionSchema>;

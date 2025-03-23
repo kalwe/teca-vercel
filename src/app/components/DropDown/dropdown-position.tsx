@@ -1,35 +1,37 @@
 'use client'
 
+import { PositionService } from '@/app/services/positionService'
+import { Position, Positions } from '@/app/types/position'
 import { useEffect, useRef, useState } from 'react'
 
 export default function DropdownCheckboxPosition({
   id,
-  onChange,
-  dropdownPositionData = []
+  onChange
 }: {
   id: number | null
   onChange: (id: number, name: string) => void
-  dropdownPositionData?: { id: number; name: string }[]
+  positionsData?: Positions
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [positions, setPositions] =
-    useState<{ id: number; name: string }[]>(dropdownPositionData)
+  const [positions, setPositions] = useState<Positions>([])
   const [selectedName, setSelectedName] = useState<string>('Escolha um cargo')
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    console.log('Dados recebidos no Dropdown:', dropdownPositionData) // Debug
-    if (JSON.stringify(positions) !== JSON.stringify(dropdownPositionData)) {
-      setPositions(dropdownPositionData)
+    const fetchPositions = () => {
+      const positionsFetched = PositionService.getAllPositions()
+      positionsFetched.then((data) => {
+        setPositions(data)
+      })
     }
-  }, [dropdownPositionData, positions])
-
-  useEffect(() => {
-    if (id !== null) {
+    if (!id) {
       const selected = positions.find((p) => p.id === id)
       if (selected) {
         setSelectedName(selected.name)
       }
+    }
+    if (positions.length < 1) {
+      fetchPositions()
     }
   }, [id, positions])
 
@@ -83,7 +85,7 @@ export default function DropdownCheckboxPosition({
         >
           <ul className='p-2'>
             {positions.length > 0 ? (
-              positions.map((position) => (
+              positions.map((position: Position) => (
                 <li
                   key={position.id}
                   className={`p-2 cursor-pointer ${

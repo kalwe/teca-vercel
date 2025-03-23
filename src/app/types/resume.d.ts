@@ -10,10 +10,3 @@ type ResumeT = {
 
 export type Resume = ResumeT | Partial<ResumeT>
 export type Resumes = ResumeT[] | Partial<ResumeT>[]
-
-export interface ResumeFormProps {
-  data: Resume | null
-  onSave: (updatedData: Resume) => void
-  onCancel: () => void
-  loading: boolean
-}

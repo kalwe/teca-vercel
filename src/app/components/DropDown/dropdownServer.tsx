@@ -1,4 +1,4 @@
-import { PositionService } from '@/app/services/dropdownService'
+import { PositionService } from '@/app/services/positionService'
 import DropdownCheckboxPosition from './dropdown-position'
 
 export default async function ServerDropdown({
@@ -8,15 +8,13 @@ export default async function ServerDropdown({
   id: number | null
   onChange: (id: number, name: string) => void
 }) {
-  const dropdownPositionData = await PositionService.getAllPositions()
-
-  console.log('Cargos do ServerDropdown:', dropdownPositionData) // TESTE AQUI
+  const positionsFetched = await PositionService.getAllPositions()
 
   return (
     <DropdownCheckboxPosition
       id={id}
       onChange={onChange}
-      dropdownPositionData={dropdownPositionData}
+      positionsData={positionsFetched}
     />
   )
 }

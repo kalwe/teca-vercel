@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <div className='bg-gradient-to-br from-[#0B140B] to-[#4F7452] min-h-screen relative'>
       <Navigation />
-      <ContractForm data={{}} isEditable={false} />
+      <ContractForm data={{}} />
       <ComebackButton />
     </div>
   )
