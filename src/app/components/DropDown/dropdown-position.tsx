@@ -1,6 +1,7 @@
 'use client'
 
 import { PositionService } from '@/app/services/positionService'
+import { Position, Positions } from '@/app/types/position'
 import { useEffect, useRef, useState } from 'react'
 
 export default function DropdownCheckboxPosition({
@@ -9,33 +10,30 @@ export default function DropdownCheckboxPosition({
 }: {
   id: number | null
   onChange: (id: number, name: string) => void
+  positionsData?: Positions
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [positions, setPositions] = useState<{ id: number; name: string }[]>([])
+  const [positions, setPositions] = useState<Positions>([])
   const [selectedName, setSelectedName] = useState<string>('Escolha um cargo')
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const fetchPosition = async () => {
-      try {
-        const positionsData = await PositionService.getAllPositions()
-        console.log('Cargos carregados:', positionsData)
-        setPositions(positionsData)
-
-        // Se houver um ID passado, definir o nome correspondente
-        if (id !== null) {
-          const selected = positionsData.find((p: { id: number }) => p.id === id)
-          if (selected) {
-            setSelectedName(selected.name)
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao carregar cargos:', error)
+    const fetchPositions = () => {
+      const positionsFetched = PositionService.getAllPositions()
+      positionsFetched.then((data) => {
+        setPositions(data)
+      })
+    }
+    if (!id) {
+      const selected = positions.find((p) => p.id === id)
+      if (selected) {
+        setSelectedName(selected.name)
       }
     }
-
-    fetchPosition() // Chamar apenas UMA VEZ
-  }, [id]) // Apenas quando `id` mudar
+    if (positions.length < 1) {
+      fetchPositions()
+    }
+  }, [id, positions])
 
   const handleSelect = (id: number, name: string) => {
     setSelectedName(name)
@@ -43,7 +41,6 @@ export default function DropdownCheckboxPosition({
     setIsDropdownOpen(false)
   }
 
-  // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -88,7 +85,7 @@ export default function DropdownCheckboxPosition({
         >
           <ul className='p-2'>
             {positions.length > 0 ? (
-              positions.map((position) => (
+              positions.map((position: Position) => (
                 <li
                   key={position.id}
                   className={`p-2 cursor-pointer ${

@@ -5,7 +5,7 @@ import { UserService } from '@/app/services/userService'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-export default function UserList({}: { usersData: Users }) {
+export default function UserList({ usersData }: { usersData: Users }) {
   const router = useRouter()
   const [users, setUsers] = useState<Users>([])
   const [error, setError] = useState<string | null>(null)
@@ -13,16 +13,14 @@ export default function UserList({}: { usersData: Users }) {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      setLoading(true)
-      setError(null)
-      setUsers(users)
-
+      setUsers(usersData)
       setLoading(false)
     }
-    if (users.length > 0) {
+    if (usersData) {
+      setLoading(true)
       fetchUsers()
     }
-  }, [setUsers, setLoading, setError])
+  }, [usersData])
 
   const handleEditUser = (id: number) => {
     router.push(`/user-display/${id}`)
@@ -31,7 +29,7 @@ export default function UserList({}: { usersData: Users }) {
   const toggleUserStatus = async (userId: number, user: User) => {
     try {
       await UserService.updateUser(userId, { active: !user.active })
-      setUsers(users.filter((u) => u.id !== userId))
+      setUsers(users.map((u) => (u.id === userId ? { ...u, active: !u.active } : u)))
     } catch (err) {
       console.error('Erro ao alterar status do usuário:', err)
       setError('Erro ao atualizar status do usuário.')
@@ -42,7 +40,7 @@ export default function UserList({}: { usersData: Users }) {
     try {
       if (confirm('Tem certeza que deseja excluir este usuário?')) {
         await UserService.deleteUser(userId)
-        setUsers(users.filter((user) => user.id != userId))
+        setUsers(users.filter((user) => user.id !== userId))
       }
     } catch (err) {
       console.error('Erro ao deletar usuário:', err)

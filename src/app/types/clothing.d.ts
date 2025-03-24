@@ -7,11 +7,3 @@ type ClothingT = {
 
 export type Clothing = ClothingT | Partial<ClothingT>
 export type Clothings = ClothingT[] | Partial<ClothingT>[]
-
-export type ClothingProps = {
-  data: Clothing | null
-  onChange: (updatedData: Clothing) => void
-  onNext: () => void
-  onPrev: () => void
-  employeeId: number | null
-}

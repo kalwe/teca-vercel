@@ -1,30 +1,51 @@
 'use client'
 
 import { BankService } from '@/app/services/bankService'
-import { useState } from 'react'
+import { SwitchTabsComponentProps } from '@/app/types/base'
+import { useEffect, useState } from 'react'
 
-export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
-  const [bankData, setBankData] = useState<any>(data || {})
-  const [loading] = useState(false)
+export function Bank({ data, onNext, onPrev, employeeId }: SwitchTabsComponentProps) {
+  const [bank, setBank] = useState<any>({})
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchBank = () => {
+      setBank(data)
+      setLoading(false)
+    }
+    if (data) {
+      setLoading(true)
+      fetchBank()
+    }
+  }, [data])
 
   const handleInputChange = (field: any, value: any) => {
-    const updatedBankData = { ...bankData, [field]: value }
-    setBankData(updatedBankData)
-    // onChange(updatedBankData)
+    setBank((prev: any) => ({ ...prev, [field]: value }))
   }
 
   const handleSave = async () => {
     try {
-      employeeId = Number(localStorage.getItem('id'))
-      const createdBankAccount = await BankService.createBankAccount({
-        ...bankData,
-        employeeId: Number(employeeId)
-      })
-      console.log(createdBankAccount)
+      setLoading(true)
+      if (employeeId) {
+        const { id, ...bankUpdate } = bank
+        await BankService.updateBankAccount(Number(id), {
+          ...bankUpdate,
+          employeeId: Number(employeeId)
+        })
+      } else {
+        const employeeId = localStorage.getItem('createdEmployeeId')
+        await BankService.createBankAccount({
+          ...bank,
+          employeeId: Number(employeeId)
+        })
+      }
+      alert('Banco salvo com sucesso!')
       onNext()
     } catch (error) {
-      alert('Erro ao cadastrar conta bancária. Verifique os campos.')
-      console.error(error)
+      console.error('Erro ao salvar banco:', error)
+      alert('Erro ao salvar banco. Tente novamente.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -41,7 +62,7 @@ export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
           <input
             type='text'
             name={field.name}
-            value={bankData?.[field.name] || ''}
+            value={bank?.[field.name] || ''}
             onChange={(e) => handleInputChange(field.name, e.target.value)}
             placeholder={field.placeholder}
             className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
@@ -53,7 +74,7 @@ export function Bank({ data = {}, onNext, onPrev, employeeId }: any) {
       <div className='w-full'>
         <select
           name='type'
-          value={bankData?.['type'] || ''}
+          value={bank?.['type'] || ''}
           onChange={(e) => handleInputChange('type', e.target.value)}
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         >

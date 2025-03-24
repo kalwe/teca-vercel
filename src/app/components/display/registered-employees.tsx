@@ -5,7 +5,11 @@ import { Employees } from '@/app/types/employee'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-export default function EmployeesDisplay() {
+export default function EmployeesDisplay({
+  employeesData
+}: {
+  employeesData: Employees
+}) {
   const [employees, setEmployees] = useState<Employees>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -14,21 +18,11 @@ export default function EmployeesDisplay() {
   const router = useRouter()
 
   useEffect(() => {
-    fetchEmployees()
-  }, [])
-
-  const fetchEmployees = async () => {
-    try {
-      setLoading(true)
-      const employeeList = await EmployeeService.getAllEmployees()
-      setEmployees(employeeList)
-    } catch (error) {
-      console.error('Erro ao carregar funcionários:', error)
-      setError('Erro ao carregar funcionários.')
-    } finally {
-      setLoading(false)
+    if (loading) {
+      setEmployees(employeesData)
     }
-  }
+    setLoading(false)
+  }, [employeesData, loading])
 
   const toggleEmployeeStatus = async (employeeId: number, isActive: boolean) => {
     try {

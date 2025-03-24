@@ -4,11 +4,8 @@ import { positionSchema } from './positionSchema'
 export const vacancySchema = z.object({
   id: z.number().optional(),
   quantity: z.number().min(1, 'A quantidade deve ser pelo menos 1'),
-  positionId: z
-    .number()
-    .optional(),
-  position: positionSchema
-    .optional(),
+  positionId: z.number().optional(),
+  position: positionSchema.optional(),
   description: z
     .string()
     .min(3, 'A descrição deve ter no mínimo 3 caracteres')
@@ -27,7 +24,5 @@ export const vacancySchema = z.object({
     .max(500, 'Os benefícios devem ter no máximo 500 caracteres')
     .regex(/^[a-zA-ZÀ-ÿ0-9 ]+$/, 'Os benefícios devem conter apenas letras e números')
     .optional(),
-  salary: z.string().optional(),
+  salary: z.string().optional()
 })
-
-// export type Vacancy = z.infer<typeof vacancySchema>

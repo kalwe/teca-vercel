@@ -6,7 +6,7 @@ import { UserService } from '@/app/services/userService'
 import '../style.css'
 
 export default async function Page() {
-  const users: Users = await UserService.getUsers()
+  const users: Users = await UserService.getAllUsers()
 
   return (
     <div>

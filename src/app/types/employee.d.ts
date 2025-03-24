@@ -32,17 +32,9 @@ type EmployeeT = {
 export type Employee = EmployeeT | Partial<EmployeeT>
 export type Employees = EmployeeT[] | Partial<EmployeeT>[]
 
-export interface EmployeeFormProps {
-  data?: Employee | null
-  onChange: (updatedData: Employee) => void
-  onNext: () => void
-  onPrev: () => void
-  employeeId: number | null
-}
-
 export interface ContractFormProps {
   data?: Employee | null
-  isEditable?: boolean
+  // isEditable?: boolean
 }
 
 export interface CpfMaskProps {

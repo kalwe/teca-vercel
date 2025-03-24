@@ -2,74 +2,76 @@
 
 import { ResumeService } from '@/app/services/resumeService'
 import type { Resume } from '@/app/types/resume'
-import { useParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export default function ResumeForm() {
+export default function ResumeForm({ resumeData }: { resumeData: Resume }) {
   const router = useRouter()
-  const { id } = useParams()
-  const isEditMode = !!id
-  const resumeId = isEditMode ? Number(id) : null
   const [loading, setLoading] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
-  const [resume, setResume] = useState<Partial<Resume>>({})
+  const [file] = useState<File | null>(null)
+  const [resume, setResume] = useState<Resume>({})
+  const [isEditable, setIsEditable] = useState<boolean>(false)
+
+  useEffect(() => {
+    const fetchResume = () => {
+      setResume(resumeData)
+      setIsEditable(true)
+      setLoading(false)
+    }
+    if (resumeData) {
+      setLoading(true)
+      fetchResume()
+    }
+  }, [resumeData])
 
   const handleChange = <K extends keyof Resume>(field: K, value: Resume[K]) => {
     setResume((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = event.target.files?.[0]
-    if (uploadedFile) {
-      setFile(uploadedFile)
+  // const handleFileUpload = (resumeId: number, file: File) => {
+  //   const uploadedFile = event.target.files?.[0]
+  //   if (uploadedFile) {
+  //     setFile(uploadedFile)
+  //   }
+  // }
+
+  const handleSave = async (): Promise<number> => {
+    let savedResume
+    if (isEditable) {
+      const { id, ...resumeUpdate } = resume
+      savedResume = await ResumeService.updateResume(Number(id), resumeUpdate)
+    } else {
+      savedResume = await ResumeService.createResume(resume)
     }
+    const resumeId: number = savedResume?.id
+    return resumeId
   }
 
-  const handleSaveAll = async () => {
-    try {
-      setLoading(true)
-
-      const resumeIdSaved = await handleSave()
-
-      // if (resumeIdSaved && file) {
-      //   await ResumeService.uploadResumeFile(resumeIdSaved, file)
-      // }
-
-      alert(`Currículo salvo com sucesso! ${resumeIdSaved}`)
-      router.push('/curriculo-display/visualize-cv')
-    } catch (error) {
-      console.error('Erro ao salvar currículo:', error)
-      alert('Erro ao salvar currículo. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSave = async () => {
-    try {
-      let savedResume
-      if (isEditMode && resumeId) {
-        console.log('RESUME-ID', resumeId)
-        await ResumeService.updateResume(resumeId, resume)
-        savedResume = { id: resumeId }
-      } else {
-        savedResume = await ResumeService.createResume(resume)
-      }
-      return savedResume.id
-    } catch (error) {
-      console.error('Erro ao salvar currículo:', error)
-      alert('Erro ao salvar currículo. Tente novamente.')
-      return null
-    }
+  const handleSaveAll = () => {
+    setLoading(true)
+    const resumeIdSaved = handleSave()
+    resumeIdSaved
+      .then((resumeId) => {
+        console.log(resumeId)
+        // handleFileUpload(resumeId, file)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('Error save resume: ', err)
+        alert('Erro ao salvar')
+      })
+      .finally(() => {
+        router.push('/curriculo-display/visualize-cv')
+      })
   }
 
   return (
     <div className='flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-700'>
       <div className='w-full max-w-4xl p-6 bg-gray-800 shadow-md rounded-lg border border-gray-700'>
         <h1 className='text-2xl font-bold text-white mb-6 text-center'>
-          {isEditMode ? 'Editar Currículo' : 'Novo Currículo'}
+          {isEditable ? 'Editar Currículo' : 'Novo Currículo'}
         </h1>
 
         <form onSubmit={(e) => e.preventDefault()} className='space-y-6'>
@@ -86,7 +88,7 @@ export default function ResumeForm() {
               <input
                 id='file-upload'
                 type='file'
-                onChange={handleFileUpload}
+                onChange={(e) => handleChange('fileUrl', e.target.value)}
                 className='hidden'
               />
             </label>
@@ -128,7 +130,7 @@ export default function ResumeForm() {
             >
               {loading
                 ? 'Salvando...'
-                : isEditMode
+                : isEditable
                   ? 'Atualizar Currículo'
                   : 'Salvar Currículo'}
             </button>

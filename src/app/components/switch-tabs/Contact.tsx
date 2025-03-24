@@ -1,29 +1,49 @@
 'use client'
 
 import { ContactService } from '@/app/services/contactService'
-import { useState } from 'react'
+import { SwitchTabsComponentProps } from '@/app/types/base'
+import { useEffect, useState } from 'react'
 
-export function Contact({ data = {}, onNext, onPrev, employeeId }: any) {
-  const [contact, setContact] = useState<any>(data || {})
+export function Contact({ data, onNext, onPrev, employeeId }: SwitchTabsComponentProps) {
+  const [contact, setContact] = useState<any>({})
   const [loading, setLoading] = useState(false)
 
   const handleInputChange = (field: any, value: any) => {
     const contactInput = { ...contact, [field]: value }
     setContact(contactInput)
-    // onChange(contactInput)
   }
+  useEffect(() => {
+    const fetchContact = () => {
+      setContact(data)
+      setLoading(false)
+    }
+    if (data) {
+      setLoading(true)
+      fetchContact()
+    }
+  }, [data])
 
   const handleSave = async () => {
     try {
       setLoading(true)
-      employeeId = localStorage.getItem('employeeId')
-      console.log('Enviando para API:', data)
-      await ContactService.createContact({ ...contact, employeeId: Number(employeeId) })
-      alert('Contato criado com sucesso!')
+      if (employeeId) {
+        const { id, ...contactUpdate } = contact
+        await ContactService.updateContact(Number(id), {
+          ...contactUpdate,
+          employeeId: Number(employeeId)
+        })
+      } else {
+        const employeeId = localStorage.getItem('createdEmployeeId')
+        await ContactService.createContact({
+          ...contact,
+          employeeId: Number(employeeId)
+        })
+      }
+      alert('Contato salvo com sucesso!')
       onNext()
     } catch (error) {
-      console.error('Erro ao criar contato:', error)
-      alert('Erro ao criar contato. Tente novamente.')
+      console.error('Erro ao salvar contato:', error)
+      alert('Erro ao salvar contato. Tente novamente.')
     } finally {
       setLoading(false)
     }

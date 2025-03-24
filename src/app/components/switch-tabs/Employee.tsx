@@ -1,16 +1,33 @@
 'use client'
 
 import { EmployeeService } from '@/app/services/employeeService'
-import { useState } from 'react'
+import { SwitchTabsComponentProps } from '@/app/types/base'
+import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import DropdownCheckboxGender from '../DropDown/dropdown-gender'
 import DropdownCheckboxMaritalStatus from '../DropDown/dropdown-marital-status'
 import DropdownCheckboxPosition from '../DropDown/dropdown-position'
 
-export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
-  const [employee, setEmployee] = useState<any>(employeeData || {})
-  const [loading, setLoading] = useState(false)
+export function EmployeeForm({
+  data,
+  onPrev,
+  onNext,
+  employeeId
+}: SwitchTabsComponentProps) {
+  const [employee, setEmployee] = useState<any>({})
+  const [loading, setLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    const fetchEmployee = () => {
+      setEmployee(data)
+      setLoading(false)
+    }
+    if (data) {
+      setLoading(true)
+      fetchEmployee()
+    }
+  }, [data])
 
   const handleInputChange = (field: any, value: any) => {
     setEmployee((prev: any) => ({ ...prev, [field]: value }))
@@ -19,21 +36,18 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
   const handleSave = async () => {
     try {
       setLoading(true)
-
-      const { maritalStatus, ...employeeInput } = employee
-      console.log(maritalStatus)
-      console.info(employeeInput)
-      const employeeCreated = await EmployeeService.createEmployee({
-        ...employeeInput
-      })
-      console.info(employeeCreated)
-      setEmployee(employeeCreated)
-      localStorage.setItem('employeeId', employeeCreated.id)
-      // alert('Funcionario cadastrado com sucesso!')
+      if (employeeId) {
+        const { id, ...employeeUpdate } = employee
+        await EmployeeService.updateEmployee(Number(id), employeeUpdate)
+      } else {
+        const createdEmployee = await EmployeeService.createEmployee(employee)
+        localStorage.setItem('createdEmployeeId', createdEmployee.id)
+      }
+      alert('Funcionário salvo com sucesso!')
       onNext()
     } catch (error) {
-      console.error('Erro ao cadastrar endereço:', error)
-      alert('Erro ao cadastrar endereço. Tente novamente.')
+      console.error('Erro ao salvar funcionário:', error)
+      alert('Erro ao salvar funcionário. Tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -46,8 +60,8 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
         { name: 'name', placeholder: 'Digite o nome', label: 'Nome' },
         {
           name: 'fullName',
-          placeholder: 'Digite o Nome Completo',
-          label: 'Nome Completo'
+          placeholder: 'Digite o sobrenome',
+          label: 'Sobrenome'
         },
         { name: 'taxId', placeholder: 'Digite o CPF', label: 'CPF' },
         { name: 'nationalId', placeholder: 'Digite o RG', label: 'RG' },
@@ -100,27 +114,6 @@ export function EmployeeForm({ employeeData = {}, onPrev, onNext }: any) {
           value={employee?.registration || ''}
           onChange={(e) => handleInputChange('registration', e.target.value)}
           placeholder='Digite a matrícula'
-          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
-        />
-      </div>
-
-      {/* Data de Admissão */}
-      <div className='w-full'>
-        <label className='block text-gray-400 mb-2'>Data de Admissão</label>
-        <DatePicker
-          selected={employee?.contractDate ? new Date(employee?.contractDate) : null}
-          onChange={(date) => handleInputChange('contractDate', date)}
-          dateFormat='yyyy-MM-dd'
-          className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
-        />
-      </div>
-
-      <div className='w-full'>
-        <label className='block text-gray-400 mb-2'>Data de Remoção</label>
-        <DatePicker
-          selected={employee?.removalDate ? new Date(employee?.removalDate) : null}
-          onChange={(date) => handleInputChange('removalDate', date)}
-          dateFormat='yyyy-MM-dd'
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         />
       </div>

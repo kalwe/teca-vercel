@@ -1,11 +1,5 @@
-'use client'; // TODO: you sure this is a 'use client', i think is do on server side
+import { z } from 'zod'
 
-import { z } from 'zod';
-// import api from "../services/api"; // Importação do serviço de API
-
-/**
- * Esquema de validação para Endereço
- */
 export const addressSchema = z.object({
   street: z
     .string()
@@ -31,8 +25,5 @@ export const addressSchema = z.object({
   state: z
     .string()
     .max(60, 'O nome do estado não pode ter mais de 60 caracteres')
-    .nonempty('O nome do estado é obrigatório'),
-});
-
-// Tipo inferido automaticamente pelo Zod
-export type Address = z.infer<typeof addressSchema>;
+    .nonempty('O nome do estado é obrigatório')
+})

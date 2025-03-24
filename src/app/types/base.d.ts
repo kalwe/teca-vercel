@@ -1,10 +1,6 @@
-export type baseType = {
-  id: number
-  created_at: Date
-  updated_at: Date
-  is_active: boolean
-  deleted_at: Date
-  version: number
+export interface SwitchTabsComponentProps {
+  data: any
+  onNext: () => void
+  onPrev: () => void
+  employeeId?: number
 }
-
-// TODO: tem dois type pra banco remove um

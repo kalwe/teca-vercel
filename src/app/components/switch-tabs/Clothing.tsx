@@ -1,13 +1,23 @@
 'use client'
 
 import { ClothingService } from '@/app/services/clothingService'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { SwitchTabsComponentProps } from '@/app/types/base'
+import { useEffect, useState } from 'react'
 
-export function Clothing({ data = {}, onPrev, employeeId }: any) {
-  const [clothing, setClothing] = useState<any>(data || {})
+export function Clothing({ data, onNext, onPrev, employeeId }: SwitchTabsComponentProps) {
+  const [clothing, setClothing] = useState<any>({})
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
+
+  useEffect(() => {
+    const fetchClothing = () => {
+      setClothing(data)
+      setLoading(false)
+    }
+    if (data) {
+      setLoading(true)
+      fetchClothing()
+    }
+  }, [data])
 
   const handleInputChange = (field: any, value: any) => {
     const updatedClothing = { ...clothing, [field]: value }
@@ -18,16 +28,24 @@ export function Clothing({ data = {}, onPrev, employeeId }: any) {
   const handleSave = async () => {
     try {
       setLoading(true)
-      employeeId = localStorage.getItem('employeeId')
-      await ClothingService.createClothing({
-        ...clothing,
-        employeeId: Number(employeeId)
-      })
-      alert('Dados de vestuário cadastrados com sucesso!')
-      router.push('/contract-display/employee')
+      if (employeeId) {
+        const { id, ...clothingUpdate } = clothing
+        await ClothingService.updateClothing(Number(id), {
+          ...clothingUpdate,
+          employeeId: Number(employeeId)
+        })
+      } else {
+        const employeeId = localStorage.getItem('createdEmployeeId')
+        await ClothingService.createClothing({
+          ...clothing,
+          employeeId: Number(employeeId)
+        })
+      }
+      alert('Vestuário salvo com sucesso!')
+      onNext()
     } catch (error) {
-      console.error('Erro ao cadastrar vestuário:', error)
-      alert('Erro ao cadastrar vestuário. Tente novamente.')
+      console.error('Erro ao salvar vestuário:', error)
+      alert('Erro ao salvar vestuário. Tente novamente.')
     } finally {
       setLoading(false)
     }

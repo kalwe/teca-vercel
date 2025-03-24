@@ -1,34 +1,54 @@
 'use client'
 
 import { AddressService } from '@/app/services/addressService'
-import { useState } from 'react'
+import { SwitchTabsComponentProps } from '@/app/types/base'
+import { useEffect, useState } from 'react'
 
-export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
-  const [addressData, setAddressData] = useState<any>(data || {})
+export function Address({ data, onNext, onPrev, employeeId }: SwitchTabsComponentProps) {
+  const [address, setAddress] = useState<any>({})
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    const fetchAddress = () => {
+      setAddress(data)
+      setLoading(false)
+    }
+    if (data) {
+      setLoading(true)
+      fetchAddress()
+    }
+  }, [data])
+
   const handleInputChange = (field: any, value: any) => {
-    const updatedAddress = { ...addressData, [field]: value }
-    setAddressData(updatedAddress)
-    // onChange(updatedAddress)
+    setAddress((prev: any) => ({ ...prev, [field]: value }))
   }
+
   const handleSave = async () => {
     try {
       setLoading(true)
-      employeeId = localStorage.getItem('employeeId')
-      await AddressService.createAddress({
-        ...addressData,
-        employeeId: Number(employeeId)
-      })
-      alert('Endereço cadastrado com sucesso!')
+      if (employeeId) {
+        const { id, ...addressUpdate } = address
+        await AddressService.updateAddress(Number(id), {
+          ...addressUpdate,
+          employeeId: Number(employeeId)
+        })
+      } else {
+        const employeeId = localStorage.getItem('createdEmployeeId')
+        await AddressService.createAddress({
+          ...address,
+          employeeId: Number(employeeId)
+        })
+      }
+      alert('Endereço salvo com sucesso!')
       onNext()
     } catch (error) {
-      console.error('Erro ao cadastrar endereço:', error)
-      alert('Erro ao cadastrar endereço. Tente novamente.')
+      console.error('Erro ao salvar endereço:', error)
+      alert('Erro ao salvar endereço. Tente novamente.')
     } finally {
       setLoading(false)
     }
   }
+
   return (
     <div className='p-8 bg-gray-800 rounded-lg shadow-md space-y-3 w-full'>
       <h2 className='text-white text-xl font-bold'>Endereço</h2>
@@ -43,7 +63,7 @@ export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
           <input
             type='text'
             name={field.name}
-            value={addressData?.[field.name] || ''}
+            value={address?.[field.name] || ''}
             onChange={(e) => handleInputChange(field.name, e.target.value)}
             placeholder={field.placeholder}
             className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
@@ -54,7 +74,7 @@ export function Address({ data = {}, onNext, onPrev, employeeId }: any) {
       <div className='w-full'>
         <select
           name='state'
-          value={addressData?.state || ''}
+          value={address?.state || ''}
           onChange={(e) => handleInputChange('state', e.target.value)}
           className='w-full bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3'
         >
